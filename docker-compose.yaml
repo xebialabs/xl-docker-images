@@ -1,0 +1,31 @@
+xld:
+  image: xebialabs/xl-deploy:8.1
+  container_name: xld
+  ports:
+   - "4516:4516"
+  volumes:
+   - ~/XebiaLabs/xl-deploy-docker/conf:/opt/xl-deploy-server/conf
+   - ~/XebiaLabs/xl-deploy-docker/ext:/opt/xl-deploy-server/ext
+   - ~/XebiaLabs/xl-deploy-docker/hotfix/lib:/opt/xl-deploy-server/hotfix/lib
+   - ~/XebiaLabs/xl-deploy-docker/hotfix/plugins:/opt/xl-deploy-server/hotfix/plugins
+   - ~/XebiaLabs/xl-deploy-docker/plugins:/opt/xl-deploy-server/plugins
+   - ~/XebiaLabs/xl-deploy-docker/repository:/opt/xl-deploy-server/repository
+  environment:
+   - ADMIN_PASSWORD=admin
+
+xlr:
+  image: xebialabs/xl-release:8.1
+  container_name: xlr
+  ports:
+   - "5516:5516"
+  links:
+   - xld
+  volumes:
+   - ~/XebiaLabs/xl-release-docker/archive:/opt/xl-release-server/archive
+   - ~/XebiaLabs/xl-release-docker/conf:/opt/xl-release-server/conf
+   - ~/XebiaLabs/xl-release-docker/ext:/opt/xl-release-server/ext
+   - ~/XebiaLabs/xl-release-docker/hotfix/:/opt/xl-release-server/hotfix/
+   - ~/XebiaLabs/xl-release-docker/plugins:/opt/xl-release-server/plugins
+   - ~/XebiaLabs/xl-release-docker/repository:/opt/xl-release-server/repository
+  environment:
+   - ADMIN_PASSWORD=admin
