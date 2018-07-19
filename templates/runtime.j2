@@ -1,0 +1,14 @@
+COPY resources/amd64/tini ${APP_ROOT}
+RUN chmod ugo+x ${APP_ROOT}/tini
+
+WORKDIR ${APP_HOME}
+
+# Don't run as root
+USER 10001
+
+VOLUME ["${APP_HOME}/conf", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository"]
+EXPOSE 4516
+
+# Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
+# expanded when using the shell form, but that results in tini running with a PID higher than 1.
+ENTRYPOINT ["/opt/xebialabs/tini", "/opt/xebialabs/xl-deploy-server/bin/run-in-container.sh"]

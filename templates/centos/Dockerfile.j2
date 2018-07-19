@@ -1,0 +1,22 @@
+FROM alpine:3.7 as installer
+
+# Install dependencies
+RUN apk add --no-cache gawk unzip
+
+{% include 'install.j2' %}
+
+FROM centos:7
+
+{% include 'metadata.j2' %}
+
+{% include 'variables.j2' %}
+
+# Install dependencies
+RUN yum update -y && \
+    yum install -y java-1.8.0-openjdk-headless && \
+    yum clean all -q
+
+# Copy installed XL Deploy
+COPY --from=installer ${APP_ROOT} ${APP_ROOT}
+
+{% include 'runtime.j2' %}

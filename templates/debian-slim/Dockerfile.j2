@@ -1,0 +1,17 @@
+FROM alpine:3.7 as installer
+
+# Install dependencies
+RUN apk add --no-cache gawk unzip
+
+{% include 'install.j2' %}
+
+FROM openjdk:8-jdk-slim-stretch
+
+{% include 'metadata.j2' %}
+
+{% include 'variables.j2' %}
+
+# Copy installed XL Deploy
+COPY --from=installer ${APP_ROOT} ${APP_ROOT}
+
+{% include 'runtime.j2' %}
