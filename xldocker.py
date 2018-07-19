@@ -1,29 +1,13 @@
 #!/usr/bin/env python3
 import argparse
-import docker
-import json
-import re
-import sys
-import urllib
 from xldocker.downloader import XLDevOpsPlatformDownloader
 from xldocker.renderer import XLDockerRenderer
 from xldocker.builder import XLDockerImageBuilder
-from xldocker import ALL_TARGET_SYSTEMS
-
-products = {
-    "xl-deploy": {
-        "nexusUrl": 'https://nexus.xebialabs.com/nexus/service/local/repositories/%s/content/com/xebialabs/deployit/xl-deploy/%s/',
-        "distUrl": 'https://dist.xebialabs.com/customer/xl-deploy/product/%s/'
-    },
-    "xl-release": {
-        "nexusUrl": 'https://nexus.xebialabs.com/nexus/service/local/repositories/%s/content/com/xebialabs/xl-release/%s/',
-        "distUrl": 'https://dist.xebialabs.com/customer/xl-release/product/%s/'
-    }
-}
+from xldocker import ALL_TARGET_SYSTEMS, PRODUCTS
 
 
 def add_common_arguments(parser):
-    parser.add_argument('--product', help="The product to build the files / images for.", action="append", choices=["xl-deploy", "xl-release"])
+    parser.add_argument('--product', help="The product to build the files / images for.", action="append", choices=PRODUCTS.keys())
     parser.add_argument('--xl-version', help="Product version, e.g. 8.1.0", required=True)
     parser.add_argument('--suffix', help="The (optional) suffix attached to the Docker and Git commit tags. Only used when a new version of the Docker images is released for the same product version")
 

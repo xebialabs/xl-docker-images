@@ -1,6 +1,17 @@
 DEFAULT_OS = "debian-slim"
 ALL_TARGET_SYSTEMS = ['debian-slim', 'centos', 'rhel']
 
+PRODUCTS = {
+    "xl-deploy": {
+        "nexusUrl": 'https://nexus.xebialabs.com/nexus/service/local/repositories/%s/content/com/xebialabs/deployit/xl-deploy/%s/',
+        "distUrl": 'https://dist.xebialabs.com/customer/xl-deploy/product/%s/'
+    },
+    "xl-release": {
+        "nexusUrl": 'https://nexus.xebialabs.com/nexus/service/local/repositories/%s/content/com/xebialabs/xl-release/%s/',
+        "distUrl": 'https://dist.xebialabs.com/customer/xl-release/product/%s/'
+    }
+}
+
 
 def image_version(version, suffix):
     """Return the image version from the version and suffix passed in"""
