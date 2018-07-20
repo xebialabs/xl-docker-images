@@ -36,14 +36,16 @@ class XLDockerRenderer(object):
 
         origin = repo.remotes.origin
 
-        # Only add the changed Dockerfiles to the index
-        diff = [diff.a_path for diff in repo.index.diff(None)]
+        # Only add the changed (or added) Dockerfiles to the index
+        diff = [diff.a_path for diff in repo.index.diff(None)] + repo.untracked_files
         changed = False
+        print(diff)
         for target_os in ALL_TARGET_SYSTEMS:
             for product in PRODUCTS.keys():
-                df = self.__get_target_path(target_os, product) / "Dockerfile"
+                df = str(self.__get_target_path(target_os, product) / "Dockerfile")
+                print("Checking diff for %s" % df)
                 if df in diff:
-                    print("Adding %s" % df)
+                    print("Adding modified %s" % df)
                     changed = True
                     repo.index.add([df])
 
@@ -51,7 +53,7 @@ class XLDockerRenderer(object):
         if not changed:
             print("No change detected, not committing")
             return
-        # repo.index.commit("Update Dockerfiles to version %s" % self.version)
+        repo.index.commit("Update Dockerfiles to version %s" % self.version)
         print("Committed updated Dockerfiles to %s" % repo.head.ref)
 
         # Attempt tagging and rewind if failed.
