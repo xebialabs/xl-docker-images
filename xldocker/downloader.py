@@ -1,36 +1,42 @@
+from . import PRODUCTS
+from pathlib import Path
+import urllib
+
+
 class XLDevOpsPlatformDownloader(object):
 
     def __init__(self, commandline_args, product):
         self.product = product
         self.download_source = commandline_args.download_source
+        self.use_cache = commandline_args.use_cache
+        self.download_source = commandline_args.download_source
+        self.download_username = commandline_args.download_username
+        self.download_password = commandline_args.download_password
+        self.product_version = commandline_args.xl_version
         pass
 
-    def filename_template(self):
-        return "%s-%%s-server.zip" % self.product
+    def target_path(self):
+        return Path('resources') / self.product_filename()
+        pass
 
-    def download_product(self, product, product_version, download_source, download_username, download_password, use_cache):
+    def product_filename(self):
+        return "{product}-{version}-server.zip".format(product=self.product, version=self.product_version)
+
+    def download_product(self):
         # Determine filename and download URL
-        product_filename = self.filename_template() % (product_version)
+        product_filename = self.product_filename()
         download_url = None
-        if download_source == 'dist':
-            download_url = DIST_DOWNLOAD_URL_TEMPLATE % (product_version) + product_filename
-        elif download_source == 'nexus':
-            nexus_repository = "alphas" if "alpha" in product_version else "releases"
-            download_url = NEXUS_DOWNLOAD_URL_TEMPLATE % (nexus_repository, product_version) + product_filename
-        else:
-            raise ValueError("--download-source should be 'dist' or 'nexus'")
-        target_filename = path.join('resources', product_filename)
-        if use_cache and path.exists(target_filename):
-            print("Product ZIP %s has already been download" % (product_filename))
-            return
-
+        urlTemplate = PRODUCTS[self.product][self.download_source]
+        nexus_repository = "alphas" if "alpha" in self.product_version else "releases"
+        download_url = urlTemplate.format(repo=nexus_repository, version=self.product_version) + product_filename
+        target_filename = self.target_path()
         # Set up basic auth for urllib
-        if not download_username:
-            raise ValueError('--download-username is required if --download is set')
-        if not download_password:
-            raise ValueError('--download-password is required if --download is set')
+        if not self.download_username:
+            raise ValueError('--download-username is needed')
+        if not self.download_password:
+            raise ValueError('--download-password is needed')
         passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-        passman.add_password(None, download_url, download_username, download_password)
+        passman.add_password(None, download_url, self.download_username, self.download_password)
         authhandler = urllib.request.HTTPBasicAuthHandler(passman)
         opener = urllib.request.build_opener(authhandler)
         urllib.request.install_opener(opener)
@@ -40,3 +46,5 @@ class XLDevOpsPlatformDownloader(object):
         data = response.read()
         with open(target_filename, 'wb') as f:
             f.write(data)
+
+        print("Product ZIP downloaded to %s" % target_filename)

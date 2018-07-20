@@ -31,19 +31,22 @@ args = parser.parse_args()
 if args.action == 'render':
     renderer = XLDockerRenderer(args)
     for target_os in ALL_TARGET_SYSTEMS:
-        print("Generating Dockerfile for %s" % (target_os))
-        renderer.generate_dockerfile(target_os)
+        for product in (args.product or PRODUCTS.keys()):
+            print("Generating %s Dockerfile for %s" % (product, target_os))
+            renderer.generate_dockerfile(target_os, product)
     if args.commit:
         print("Commiting generated Dockerfiles")
         renderer.git_commit_dockerfiles()
 elif args.action == 'build':
-    builder = XLDockerImageBuilder(args)
-    downloader = XLDevOpsPlatformDownloader(args)
-    if not args.use_cache or not downloader.check_already_downloaded():
-        print("Download the shizzle")
-        download_product(XL_PRODUCT, args.xl_version, args.download_source, args.download_username, args.download_password, args.use_cache)
-    for target_os in target_systems:
-        print("Building Docker image for %s" % (target_os))
-        builder.build_docker_image(target_os)
-        if args.push:
-            print("TODO PUSH!")
+    for product in (args.product or PRODUCTS.keys()):
+        downloader = XLDevOpsPlatformDownloader(args, product)
+        if not args.use_cache or not downloader.target_path().exists():
+            print("Going to download product ZIP for %s version %s" % (product, args.xl_version))
+            downloader.download_product()
+
+        builder = XLDockerImageBuilder(args, product)
+        for target_os in (args.target_os or ALL_TARGET_SYSTEMS):
+            print("Building Docker image for %s %s" % (product, target_os))
+            builder.build_docker_image(target_os)
+        #     if args.push:
+        #         print("TODO PUSH!")

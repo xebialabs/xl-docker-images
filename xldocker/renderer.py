@@ -1,7 +1,7 @@
 from jinja2 import Environment, FileSystemLoader
 from os import path
 from git import Repo
-from . import image_version, ALL_TARGET_SYSTEMS, all_tags
+from . import image_version, ALL_TARGET_SYSTEMS, major_minor, PRODUCTS, dockerfile_path
 
 
 class XLDockerRenderer(object):
@@ -12,14 +12,21 @@ class XLDockerRenderer(object):
         self.image_version = image_version(commandline_args.xl_version, commandline_args.suffix)
         self.context['image_version'] = self.image_version
 
-    def generate_dockerfile(self, target_os):
+    def generate_dockerfile(self, target_os, product):
         env = Environment(
             loader=FileSystemLoader('templates')
         )
         docker_file_template = env.get_template(path.join(target_os, 'Dockerfile.j2'))
-        with open(path.join(target_os, 'Dockerfile'), 'w') as f:
+        target_path = self.__get_target_path(target_os, product)
+        with open(target_path / 'Dockerfile', 'w') as f:
             f.write(docker_file_template.render(self.context))
         print("Dockerfile template for '%s' rendered" % target_os)
+
+    def __get_target_path(self, target_os, product):
+        target_path = dockerfile_path(self.version, target_os, product)
+        if not target_path.exists():
+            target_path.mkdir(parents=True)
+        return target_path
 
     def git_commit_dockerfiles(self):
         repo = Repo.init('.')
@@ -33,25 +40,28 @@ class XLDockerRenderer(object):
         diff = [diff.a_path for diff in repo.index.diff(None)]
         changed = False
         for target_os in ALL_TARGET_SYSTEMS:
-            df = path.join(target_os, 'Dockerfile')
-            if df in diff:
-                changed = True
-                repo.index.add([df])
+            for product in PRODUCTS.keys():
+                df = self.__get_target_path(target_os, product) / "Dockerfile"
+                if df in diff:
+                    print("Adding %s" % df)
+                    changed = True
+                    repo.index.add([df])
 
         # If nothing changed, no commit/tag operation is needed.
         if not changed:
             print("No change detected, not committing")
             return
-        repo.index.commit("Update Dockerfiles to version %s" % self.version)
+        # repo.index.commit("Update Dockerfiles to version %s" % self.version)
         print("Committed updated Dockerfiles to %s" % repo.head.ref)
 
         # Attempt tagging and rewind if failed.
-        try:
-            for tag, force in all_tags(None, self.image_version):
-                repo.create_tag(tag, force=force)
-        except Exception as e:
-            print("Resetting commit because tagging failed.")
-            repo.head.reset('HEAD~1', index=True, working_tree=False)
-            raise e
+        # No longer doing this due to new directory structure
+        # try:
+        #     for tag, force in all_tags(None, self.image_version):
+        #         repo.create_tag(tag, force=force)
+        # except Exception as e:
+        #     print("Resetting commit because tagging failed.")
+        #     repo.head.reset('HEAD~1', index=True, working_tree=False)
+        #     raise e
         origin.push()
         print("Dockerfiles have been committed and pushed to %s on %s" % (repo.head.ref, origin))

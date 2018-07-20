@@ -1,19 +1,19 @@
 from . import ALL_TARGET_SYSTEMS
 import json
 import docker
-from os import path
 import re
 import sys
-from . import image_version, all_tags
+from . import image_version, all_tags, dockerfile_path
 
 
 class XLDockerImageBuilder(object):
-    def __init__(self, commandline_args):
+    def __init__(self, commandline_args, product):
         self.target_systems = commandline_args.target_os or ALL_TARGET_SYSTEMS
-        self.registry = commandline_args.registry,
-        self.repository = commandline_args.repository
-        self.image_version = image_version(commandline_args.version, commandline_args.suffix)
+        self.registry = commandline_args.registry
+        self.repository = product
+        self.image_version = image_version(commandline_args.xl_version, commandline_args.suffix)
         self.use_cache = commandline_args.use_cache
+        self.product = product
 
     @staticmethod
     def convert_logs(generator):
@@ -32,7 +32,7 @@ class XLDockerImageBuilder(object):
             nocache=not self.use_cache,
             pull=not self.use_cache,
             path=".",
-            dockerfile=path.join(target_os, 'Dockerfile'),
+            dockerfile=str(dockerfile_path(self.image_version, target_os, self.product) / "Dockerfile"),
             rm=True,
         )
         for line in self.convert_logs(generator):
@@ -46,7 +46,9 @@ class XLDockerImageBuilder(object):
 
         print("Built image %s for %s" % (image_id, target_os))
         image = client.images.get(image_id)
+        repo = "%s/%s" % (self.registry, self.repository)
         for tag, force in all_tags(target_os, self.image_version):
-            image.tag("%s/%s" % (self.registry, self.repository), tag)
+            print("Tag image with %s:%s" % (repo, tag))
+            image.tag(repo, tag)
         image.reload()
         print("Image %s has been tagged with %s" % (image_id, ', '.join(image.tags)))

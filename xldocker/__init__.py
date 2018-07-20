@@ -1,16 +1,22 @@
+from pathlib import Path
+
 DEFAULT_OS = "debian-slim"
 ALL_TARGET_SYSTEMS = ['debian-slim', 'centos', 'rhel']
 
 PRODUCTS = {
     "xl-deploy": {
-        "nexusUrl": 'https://nexus.xebialabs.com/nexus/service/local/repositories/%s/content/com/xebialabs/deployit/xl-deploy/%s/',
-        "distUrl": 'https://dist.xebialabs.com/customer/xl-deploy/product/%s/'
+        "nexus": 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/',
+        "dist": 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/'
     },
     "xl-release": {
-        "nexusUrl": 'https://nexus.xebialabs.com/nexus/service/local/repositories/%s/content/com/xebialabs/xl-release/%s/',
-        "distUrl": 'https://dist.xebialabs.com/customer/xl-release/product/%s/'
+        "nexus": 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlrelease/xl-release/{version}/',
+        "dist": 'https://dist.xebialabs.com/customer/xl-release/product/{version}/'
     }
 }
+
+
+def dockerfile_path(version, target_os, product):
+    return Path(major_minor(version)) / target_os / product
 
 
 def image_version(version, suffix):
@@ -18,11 +24,15 @@ def image_version(version, suffix):
     return version if not suffix else "%s-%s" % (version, suffix)
 
 
+def major_minor(image_version):
+    return image_version.rsplit('.', 1)[0]
+
+
 def all_tags(target_os, image_version):
-    major_minor = image_version.rsplit('.', 1)[0]
+    major_version = major_minor(image_version)
     if target_os:
         yield ("%s-%s" % (image_version, target_os), False)
-        yield ("%s-%s" % (major_minor, target_os), True)
+        yield ("%s-%s" % (major_version, target_os), True)
     if DEFAULT_OS == target_os or not target_os:
         yield (image_version, False)
-        yield (major_minor, True)
+        yield (major_version, True)
