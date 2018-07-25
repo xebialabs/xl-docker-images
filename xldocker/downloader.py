@@ -6,6 +6,7 @@ import urllib
 class XLDevOpsPlatformDownloader(object):
 
     def __init__(self, commandline_args, product):
+        """Initialize the XebiaLabs DevOps Platform download client."""
         self.product = product
         self.download_source = commandline_args.download_source
         self.use_cache = commandline_args.use_cache

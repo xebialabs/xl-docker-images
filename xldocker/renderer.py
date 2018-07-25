@@ -7,6 +7,7 @@ from . import image_version, ALL_TARGET_SYSTEMS, PRODUCTS, dockerfile_path
 
 class XLDockerRenderer(object):
     def __init__(self, commandline_args):
+        """Initialize the XebiaLabs Dockerfile template rendering engine."""
         self.context = vars(commandline_args)
         self.commit = commandline_args.commit
         self.version = commandline_args.xl_version

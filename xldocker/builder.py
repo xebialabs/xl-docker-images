@@ -8,6 +8,7 @@ from . import image_version, all_tags, dockerfile_path
 
 class XLDockerImageBuilder(object):
     def __init__(self, commandline_args, product):
+        """Initialize the Docker Image builder."""
         self.target_systems = commandline_args.target_os or ALL_TARGET_SYSTEMS
         self.registry = commandline_args.registry
         self.repository = product
