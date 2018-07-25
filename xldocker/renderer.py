@@ -1,7 +1,8 @@
 from jinja2 import Environment, FileSystemLoader
 from os import path
+from pathlib import Path
 from git import Repo
-from . import image_version, ALL_TARGET_SYSTEMS, major_minor, PRODUCTS, dockerfile_path
+from . import image_version, ALL_TARGET_SYSTEMS, PRODUCTS, dockerfile_path
 
 
 class XLDockerRenderer(object):
@@ -12,14 +13,17 @@ class XLDockerRenderer(object):
         self.image_version = image_version(commandline_args.xl_version, commandline_args.suffix)
         self.context['image_version'] = self.image_version
 
-    def generate_dockerfile(self, target_os, product):
+    def __render_jinja_template(self, templates_path, template_file, target_file):
         env = Environment(
-            loader=FileSystemLoader('templates')
+            loader=FileSystemLoader(str(templates_path))
         )
-        docker_file_template = env.get_template(path.join(target_os, 'Dockerfile.j2'))
+        template = env.get_template(str(template_file))
+        with open(target_file, 'w') as f:
+            f.write(template.render(self.context))
+
+    def generate_dockerfile(self, target_os, product):
         target_path = self.__get_target_path(target_os, product)
-        with open(target_path / 'Dockerfile', 'w') as f:
-            f.write(docker_file_template.render(self.context))
+        self.__render_jinja_template(Path('templates') / 'dockerfiles', Path(target_os) / 'Dockerfile.j2', target_path / 'Dockerfile')
         print("Dockerfile template for '%s' rendered" % target_os)
 
     def __get_target_path(self, target_os, product):

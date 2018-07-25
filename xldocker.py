@@ -47,6 +47,6 @@ elif args.action == 'build':
         builder = XLDockerImageBuilder(args, product)
         for target_os in (args.target_os or ALL_TARGET_SYSTEMS):
             print("Building Docker image for %s %s" % (product, target_os))
-            builder.build_docker_image(target_os)
-        #     if args.push:
-        #         print("TODO PUSH!")
+            image_id = builder.build_docker_image(target_os)
+            if args.push:
+                builder.push_image(image_id)

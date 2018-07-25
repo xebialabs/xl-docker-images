@@ -52,3 +52,7 @@ class XLDockerImageBuilder(object):
             image.tag(repo, tag)
         image.reload()
         print("Image %s has been tagged with %s" % (image_id, ', '.join(image.tags)))
+        return image_id
+
+    def push_image(self, image_id):
+        pass
