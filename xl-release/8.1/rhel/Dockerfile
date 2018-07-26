@@ -2,14 +2,14 @@ FROM registry.access.redhat.com/rhel7/rhel-atomic
 
 MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 
-LABEL name="xebialabs/xl-deploy" \
+LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
       version="8.1.0" \
       release="1" \
-      summary="XL Deploy" \
+      summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
-      url="https://www.xebialabs.com/xl-deploy"
+      url="https://www.xebialabs.com/xl-release"
 
 COPY resources/help.md /tmp/
 
@@ -31,35 +31,35 @@ RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-1.
 
 
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
-ENV APP_HOME=${APP_ROOT}/xl-deploy-server
+ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install XL Deploy
-COPY resources/xl-deploy-8.1.0-server.zip /tmp
+COPY resources/xl-release-8.1.0-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-8.1.0-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-8.1.0-server ${APP_HOME}
+    unzip /tmp/xl-release-8.1.0-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-8.1.0-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
 # Modify bin/run.sh so that java becomes a child process of dumb-init
-RUN sed -i 's/^\($JAVACMD $XL_DEPLOY_SERVER_OPTS\)/exec \1/' ${APP_HOME}/bin/run.sh
+RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
 # Move and augment conf directory of regular install
 RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
     mkdir ${APP_HOME}/conf
 COPY resources/default-conf ${APP_HOME}/default-conf
 
-# Modify conf/xld-wrapper-linux.conf to add node-conf to the classpath and to add container-specific VM options
-COPY resources/modify-xld-wrapper-linux-conf.gawk /tmp
-RUN chmod +x /tmp/modify-xld-wrapper-linux-conf.gawk && \
-    /tmp/modify-xld-wrapper-linux-conf.gawk ${APP_HOME}/default-conf/xld-wrapper-linux.conf > /tmp/xld-wrapper-linux.conf && \
-    mv /tmp/xld-wrapper-linux.conf ${APP_HOME}/default-conf/xld-wrapper-linux.conf && \
-    rm /tmp/modify-xld-wrapper-linux-conf.gawk
+# Modify conf/xlr-wrapper-linux.conf to add node-conf to the classpath and to add container-specific VM options
+COPY resources/modify-wrapper-linux-conf.gawk /tmp
+RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
+    /tmp/modify-wrapper-linux-conf.gawk ${APP_HOME}/default-conf/xlr-wrapper-linux.conf > /tmp/xlr-wrapper-linux.conf && \
+    mv /tmp/xlr-wrapper-linux.conf ${APP_HOME}/default-conf/xlr-wrapper-linux.conf && \
+    rm /tmp/modify-wrapper-linux-conf.gawk
 
-# Create node-specific conf directory and add template for node-specific xl-deploy.conf file
+# Create node-specific conf directory and add template for node-specific xl-release.conf file
 RUN mkdir ${APP_HOME}/node-conf
-COPY resources/node-conf/xl-deploy.conf.template ${APP_HOME}/node-conf
+COPY resources/node-conf/xl-release.conf.template ${APP_HOME}/node-conf
 
 # Move plugins directory
 RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
@@ -81,9 +81,9 @@ WORKDIR ${APP_HOME}
 # Don't run as root
 USER 10001
 
-VOLUME ["${APP_HOME}/conf", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository"]
-EXPOSE 4516
+VOLUME ["${APP_HOME}/archive", "${APP_HOME}/conf", "${APP_HOME}/hotfix", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository"]
+EXPOSE 5516
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
-ENTRYPOINT ["/opt/xebialabs/tini", "/opt/xebialabs/xl-deploy-server/bin/run-in-container.sh"]
+ENTRYPOINT ["/opt/xebialabs/tini", "/opt/xebialabs/xl-release-server/bin/run-in-container.sh"]

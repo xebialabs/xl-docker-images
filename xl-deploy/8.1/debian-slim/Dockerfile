@@ -16,7 +16,7 @@ RUN mkdir -p ${APP_ROOT} && \
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
 # Modify bin/run.sh so that java becomes a child process of dumb-init
-RUN sed -i 's/^\($JAVACMD $XL_DEPLOY_SERVER_OPTS\)/exec \1/' ${APP_HOME}/bin/run.sh
+RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
 # Move and augment conf directory of regular install
 RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
@@ -24,11 +24,11 @@ RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
 COPY resources/default-conf ${APP_HOME}/default-conf
 
 # Modify conf/xld-wrapper-linux.conf to add node-conf to the classpath and to add container-specific VM options
-COPY resources/modify-xld-wrapper-linux-conf.gawk /tmp
-RUN chmod +x /tmp/modify-xld-wrapper-linux-conf.gawk && \
-    /tmp/modify-xld-wrapper-linux-conf.gawk ${APP_HOME}/default-conf/xld-wrapper-linux.conf > /tmp/xld-wrapper-linux.conf && \
+COPY resources/modify-wrapper-linux-conf.gawk /tmp
+RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
+    /tmp/modify-wrapper-linux-conf.gawk ${APP_HOME}/default-conf/xld-wrapper-linux.conf > /tmp/xld-wrapper-linux.conf && \
     mv /tmp/xld-wrapper-linux.conf ${APP_HOME}/default-conf/xld-wrapper-linux.conf && \
-    rm /tmp/modify-xld-wrapper-linux-conf.gawk
+    rm /tmp/modify-wrapper-linux-conf.gawk
 
 # Create node-specific conf directory and add template for node-specific xl-deploy.conf file
 RUN mkdir ${APP_HOME}/node-conf
