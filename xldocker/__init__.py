@@ -8,11 +8,41 @@ ALL_TARGET_SYSTEMS = ['debian-slim', 'centos', 'rhel']
 PRODUCTS = {
     "xl-deploy": {
         "nexus": 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/',
-        "dist": 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/'
+        "dist": 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/',
+        "jinja_context": {
+            "product": "xl-deploy",
+            "product_name": "XL Deploy",
+            "product_description": "Enterprise-scale Application Release Automation for any environment",
+            "port": 4516,
+            "volumes": [
+                "${APP_HOME}/conf",
+                "${APP_HOME}/hotfix/lib",
+                "${APP_HOME}/hotfix/plugins",
+                "${APP_HOME}/ext",
+                "${APP_HOME}/plugins",
+                "${APP_HOME}/repository"
+            ],
+            "wrapper_conf": "xld-wrapper-linux.conf"
+        }
     },
     "xl-release": {
         "nexus": 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlrelease/xl-release/{version}/',
-        "dist": 'https://dist.xebialabs.com/customer/xl-release/product/{version}/'
+        "dist": 'https://dist.xebialabs.com/customer/xl-release/product/{version}/',
+        "jinja_context": {
+            "product": "xl-release",
+            "product_name": "XL Release",
+            "product_description": "Automate, orchestrate and get visibility into your release pipelines — at enterprise scale",
+            "port": 5516,
+            "volumes": [
+                "${APP_HOME}/archive",
+                "${APP_HOME}/conf",
+                "${APP_HOME}/hotfix",
+                "${APP_HOME}/ext",
+                "${APP_HOME}/plugins",
+                "${APP_HOME}/repository"
+            ],
+            "wrapper_conf": "xlr-wrapper-linux.conf"
+        }
     }
 }
 

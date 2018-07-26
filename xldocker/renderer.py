@@ -8,19 +8,17 @@ from . import image_version, ALL_TARGET_SYSTEMS, PRODUCTS, dockerfile_path, targ
 class XLDockerRenderer(object):
     def __init__(self, commandline_args):
         """Initialize the XebiaLabs Dockerfile template rendering engine."""
-        self.context = vars(commandline_args)
         self.commit = commandline_args.commit
         self.version = commandline_args.xl_version
         self.image_version = image_version(commandline_args.xl_version, commandline_args.suffix)
-        self.context['image_version'] = self.image_version
 
-    def __render_jinja_template(self, templates_path, template_file, target_file):
+    def __render_jinja_template(self, templates_path, template_file, target_file, context):
         env = Environment(
             loader=FileSystemLoader(str(templates_path))
         )
         template = env.get_template(str(template_file))
         with open(target_file, 'w') as f:
-            f.write(template.render(self.context))
+            f.write(template.render(context))
 
     def render(self, target_os, product):
         self.__generate_dockerfile(target_os, product)
@@ -29,8 +27,15 @@ class XLDockerRenderer(object):
 
     def __generate_dockerfile(self, target_os, product):
         target_path = self.__get_target_path(target_os, product)
-        self.__render_jinja_template(Path('templates') / 'dockerfiles', Path(target_os) / 'Dockerfile.j2', target_path / 'Dockerfile')
+        context = self.__build_render_context(product)
+        self.__render_jinja_template(Path('templates') / 'dockerfiles', Path(target_os) / 'Dockerfile.j2', target_path / 'Dockerfile', context)
         print("Dockerfile template for '%s' rendered" % target_os)
+
+    def __build_render_context(self, product):
+        context = dict(PRODUCTS[product]['jinja_context'])
+        context['image_version'] = self.image_version
+        context['xl_version'] = self.version
+        return context
 
     def __copy_render_resources(self, source_dir, product):
         source_path = Path('templates') / 'resources' / source_dir

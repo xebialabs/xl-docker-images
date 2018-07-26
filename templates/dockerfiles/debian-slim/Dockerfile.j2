@@ -11,7 +11,7 @@ FROM openjdk:8-jdk-slim-stretch
 
 {% include 'variables.j2' %}
 
-# Copy installed XL Deploy
+# Copy installed {{ product_name }}
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 {% include 'runtime.j2' %}
