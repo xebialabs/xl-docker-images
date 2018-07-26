@@ -1,3 +1,4 @@
 .idea
 .python-version
 __pycache__
+*.zip

@@ -3,7 +3,8 @@ import json
 import docker
 import re
 import sys
-from . import image_version, all_tags, dockerfile_path
+from pathlib import Path
+from . import image_version, all_tags, target_path
 
 
 class XLDockerImageBuilder(object):
@@ -32,8 +33,8 @@ class XLDockerImageBuilder(object):
         generator = client.api.build(
             nocache=not self.use_cache,
             pull=not self.use_cache,
-            path=".",
-            dockerfile=str(dockerfile_path(self.image_version, target_os, self.product) / "Dockerfile"),
+            path=str(target_path(self.product, self.image_version)),
+            dockerfile=str(Path(target_os) / "Dockerfile"),
             rm=True,
         )
         for line in self.convert_logs(generator):

@@ -17,9 +17,23 @@ PRODUCTS = {
 }
 
 
+def _copy(self, target):
+    import shutil
+    assert self.is_file()
+    shutil.copy(str(self), str(target))  # str() only there for Python < (3, 6)
+
+
+Path.copy = _copy
+
+
+def target_path(product, version):
+    """Construct the target output path for all the generated artifacts."""
+    return Path(product) / major_minor(version)
+
+
 def dockerfile_path(version, target_os, product):
     """Construct the path to where the Dockerfile template resides for a specific product, version and target_os."""
-    return Path(major_minor(version)) / target_os / product
+    return target_path(product, version) / target_os
 
 
 def image_version(version, suffix):

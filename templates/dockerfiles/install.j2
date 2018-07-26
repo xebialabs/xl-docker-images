@@ -10,7 +10,7 @@ RUN mkdir -p ${APP_ROOT} && \
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
 # Modify bin/run.sh so that java becomes a child process of dumb-init
-RUN sed -i 's/^\($JAVACMD $XL_DEPLOY_SERVER_OPTS\)/exec \1/' ${APP_HOME}/bin/run.sh
+RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
 # Move and augment conf directory of regular install
 RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \

@@ -1,4 +1,4 @@
-from . import PRODUCTS
+from . import PRODUCTS, target_path
 from pathlib import Path
 import urllib
 
@@ -17,8 +17,7 @@ class XLDevOpsPlatformDownloader(object):
         pass
 
     def target_path(self):
-        return Path('resources') / self.product_filename()
-        pass
+        return target_path(self.product, self.product_version) / 'resources' / self.product_filename()
 
     def product_filename(self):
         return "{product}-{version}-server.zip".format(product=self.product, version=self.product_version)
@@ -31,6 +30,9 @@ class XLDevOpsPlatformDownloader(object):
         nexus_repository = "alphas" if "alpha" in self.product_version else "releases"
         download_url = urlTemplate.format(repo=nexus_repository, version=self.product_version) + product_filename
         target_filename = self.target_path()
+        if not target_filename.parent.is_dir():
+            print("Creating resources directory '{}'.".format(target_filename.parent))
+            target_filename.parent.mkdir()
         # Set up basic auth for urllib
         if not self.download_username:
             raise ValueError('--download-username is needed')

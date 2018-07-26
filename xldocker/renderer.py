@@ -2,7 +2,7 @@ from jinja2 import Environment, FileSystemLoader
 from os import path
 from pathlib import Path
 from git import Repo
-from . import image_version, ALL_TARGET_SYSTEMS, PRODUCTS, dockerfile_path
+from . import image_version, ALL_TARGET_SYSTEMS, PRODUCTS, dockerfile_path, target_path
 
 
 class XLDockerRenderer(object):
@@ -22,10 +22,28 @@ class XLDockerRenderer(object):
         with open(target_file, 'w') as f:
             f.write(template.render(self.context))
 
-    def generate_dockerfile(self, target_os, product):
+    def render(self, target_os, product):
+        self.__generate_dockerfile(target_os, product)
+        self.__copy_render_resources('common', product)
+        self.__copy_render_resources(product, product)
+
+    def __generate_dockerfile(self, target_os, product):
         target_path = self.__get_target_path(target_os, product)
         self.__render_jinja_template(Path('templates') / 'dockerfiles', Path(target_os) / 'Dockerfile.j2', target_path / 'Dockerfile')
         print("Dockerfile template for '%s' rendered" % target_os)
+
+    def __copy_render_resources(self, source_dir, product):
+        source_path = Path('templates') / 'resources' / source_dir
+        dest_path = target_path(product, self.version) / 'resources'
+        if not dest_path.is_dir():
+            dest_path.mkdir()
+        for p in sorted(source_path.rglob('*')):
+            relative = p.relative_to(source_path)
+            if p.is_dir() and not (dest_path / relative).is_dir():
+                (dest_path / p.name).mkdir(parents=True)
+            elif p.is_file():
+                p.copy(dest_path / relative)
+
 
     def __get_target_path(self, target_os, product):
         target_path = dockerfile_path(self.version, target_os, product)
@@ -33,7 +51,11 @@ class XLDockerRenderer(object):
             target_path.mkdir(parents=True)
         return target_path
 
-    def git_commit_dockerfiles(self):
+    def commit_rendered(self):
+        self.__git_commit_dockerfiles()
+        pass
+
+    def __git_commit_dockerfiles(self):
         repo = Repo.init('.')
         # Check whether the index of the repository is empty so we can do a clean commit.
         if repo.index.diff('HEAD'):

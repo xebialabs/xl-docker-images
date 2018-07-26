@@ -33,10 +33,10 @@ if args.action == 'render':
     for target_os in ALL_TARGET_SYSTEMS:
         for product in (args.product or PRODUCTS.keys()):
             print("Generating %s Dockerfile for %s" % (product, target_os))
-            renderer.generate_dockerfile(target_os, product)
+            renderer.render(target_os, product)
     if args.commit:
         print("Commiting generated Dockerfiles")
-        renderer.git_commit_dockerfiles()
+        renderer.commit_rendered()
 elif args.action == 'build':
     for product in (args.product or PRODUCTS.keys()):
         downloader = XLDevOpsPlatformDownloader(args, product)
