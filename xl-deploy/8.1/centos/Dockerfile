@@ -38,8 +38,8 @@ COPY resources/node-conf/xl-deploy.conf.template ${APP_HOME}/node-conf
 RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
     mkdir ${APP_HOME}/plugins
 
-# Create empty repository directory
-RUN mkdir ${APP_HOME}/repository
+# Create empty 'repository' and 'archive' directory
+RUN mkdir ${APP_HOME}/repository ${APP_HOME}/archive
 
 # Set permissions
 RUN chgrp -R 0 ${APP_ROOT} && \
