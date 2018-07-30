@@ -13,6 +13,7 @@ PRODUCTS = {
             "product": "xl-deploy",
             "product_name": "XL Deploy",
             "product_description": "Enterprise-scale Application Release Automation for any environment",
+            "product_conf": "deployit",
             "port": 4516,
             "volumes": [
                 "${APP_HOME}/conf",
@@ -32,6 +33,7 @@ PRODUCTS = {
             "product": "xl-release",
             "product_name": "XL Release",
             "product_description": "Automate, orchestrate and get visibility into your release pipelines — at enterprise scale",
+            "product_conf": "xl-release",
             "port": 5516,
             "volumes": [
                 "${APP_HOME}/archive",
