@@ -2,6 +2,7 @@ from jinja2 import Environment, FileSystemLoader
 from os import path
 from pathlib import Path
 from git import Repo
+from datetime import datetime
 from . import image_version, ALL_TARGET_SYSTEMS, PRODUCTS, dockerfile_path, target_path
 
 
@@ -35,20 +36,30 @@ class XLDockerRenderer(object):
         context = dict(PRODUCTS[product]['jinja_context'])
         context['image_version'] = self.image_version
         context['xl_version'] = self.version
+        context['today'] = datetime.now().strftime('%Y-%m-%d')
         return context
 
     def __copy_render_resources(self, source_dir, product):
-        source_path = Path('templates') / 'resources' / source_dir
+        template_path = Path('templates') / 'resources'
+        source_path = template_path / source_dir
         dest_path = target_path(product, self.version) / 'resources'
         if not dest_path.is_dir():
             dest_path.mkdir()
         for p in sorted(source_path.rglob('*')):
             relative = p.relative_to(source_path)
-            if p.is_dir() and not (dest_path / relative).is_dir():
-                (dest_path / p.name).mkdir(parents=True)
+            if p.is_dir() and p.name == 'includes':
+                # Skip over the j2 includes directory
+                continue
+            elif p.is_dir() and not (dest_path / relative).is_dir():
+                (dest_path / relative).mkdir(parents=True)
+            elif p.is_file() and '.j2' in p.suffixes:
+                # Render J2 template
+                render_dest = dest_path / relative.parent / relative.stem
+                context = self.__build_render_context(product)
+                print(context)
+                self.__render_jinja_template(template_path, Path(source_dir) / relative, render_dest, context)
             elif p.is_file():
                 p.copy(dest_path / relative)
-
 
     def __get_target_path(self, target_os, product):
         target_path = dockerfile_path(self.version, target_os, product)
