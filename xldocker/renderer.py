@@ -56,7 +56,6 @@ class XLDockerRenderer(object):
                 # Render J2 template
                 render_dest = dest_path / relative.parent / relative.stem
                 context = self.__build_render_context(product)
-                print(context)
                 self.__render_jinja_template(template_path, Path(source_dir) / relative, render_dest, context)
             elif p.is_file():
                 p.copy(dest_path / relative)

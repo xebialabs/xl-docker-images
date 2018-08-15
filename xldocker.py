@@ -49,4 +49,4 @@ elif args.action == 'build':
             print("Building Docker image for %s %s" % (product, target_os))
             image_id = builder.build_docker_image(target_os)
             if args.push:
-                builder.push_image(image_id)
+                builder.push_image(image_id, target_os)
