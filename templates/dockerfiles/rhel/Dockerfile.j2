@@ -1,0 +1,26 @@
+FROM registry.access.redhat.com/rhel7/rhel-atomic
+
+{% include 'metadata.j2' %}
+
+COPY resources/help.md /tmp/
+
+### add licenses to this directory
+COPY resources/licenses /licenses
+
+# Install dependencies
+RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname" && \
+    microdnf install --enablerepo=rhel-7-server-rpms --enablerepo=rhel-7-server-optional-rpms --nodocs ${INSTALL_PKGS} && \
+    microdnf update && \
+### help file markdown to man conversion
+    go-md2man -in /tmp/help.md -out /help.1 && \
+    microdnf clean all
+
+RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
+### Set the Java random source
+    echo "securerandom.source=file:/dev/urandom" >> /usr/lib/jvm/java/jre/lib/security/java.security && \
+    microdnf clean all
+
+
+{% include 'install.j2' %}
+
+{% include 'runtime.j2' %}
