@@ -7,8 +7,8 @@ ALL_TARGET_SYSTEMS = ['debian-slim', 'centos', 'rhel']
 
 PRODUCTS = {
     "xl-deploy": {
-        "nexus": 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/',
-        "dist": 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/',
+        "nexus": 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/{product}-{version}-server-trial-edition.zip',
+        "dist": 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/{product}-{version}-server.zip',
         "jinja_context": {
             "product": "xl-deploy",
             "product_name": "XL Deploy",
@@ -27,8 +27,8 @@ PRODUCTS = {
         }
     },
     "xl-release": {
-        "nexus": 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlrelease/xl-release/{version}/',
-        "dist": 'https://dist.xebialabs.com/customer/xl-release/product/{version}/',
+        "nexus": 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlrelease/xl-release/{version}/{product}-{version}-server-trial-edition.zip',
+        "dist": 'https://dist.xebialabs.com/customer/xl-release/product/{version}/{product}-{version}-server.zip',
         "jinja_context": {
             "product": "xl-release",
             "product_name": "XL Release",
@@ -75,7 +75,7 @@ def image_version(version, suffix):
 
 def major_minor(image_version):
     """Split a version into its 2 root components (major, minor)."""
-    return image_version.rsplit('.', 1)[0]
+    return '.'.join(image_version.split('.')[0:2])
 
 
 def all_tags(target_os, image_version):

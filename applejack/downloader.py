@@ -1,4 +1,5 @@
 from . import PRODUCTS, target_path
+from getpass import getpass
 from pathlib import Path
 import urllib
 
@@ -24,11 +25,10 @@ class XLDevOpsPlatformDownloader(object):
 
     def download_product(self):
         # Determine filename and download URL
-        product_filename = self.product_filename()
         download_url = None
         urlTemplate = PRODUCTS[self.product][self.download_source]
         nexus_repository = "alphas" if "alpha" in self.product_version else "releases"
-        download_url = urlTemplate.format(repo=nexus_repository, version=self.product_version) + product_filename
+        download_url = urlTemplate.format(repo=nexus_repository, version=self.product_version, product=self.product)
         target_filename = self.target_path()
         if not target_filename.parent.is_dir():
             print("Creating resources directory '{}'.".format(target_filename.parent))
@@ -37,7 +37,9 @@ class XLDevOpsPlatformDownloader(object):
         if not self.download_username:
             raise ValueError('--download-username is needed')
         if not self.download_password:
-            raise ValueError('--download-password is needed')
+            self.download_password = getpass()
+            if not self.download_password:
+                raise ValueError("Either specify --download-password on the commandline or input the password at the prompt")
         passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
         passman.add_password(None, download_url, self.download_username, self.download_password)
         authhandler = urllib.request.HTTPBasicAuthHandler(passman)

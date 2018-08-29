@@ -7,7 +7,7 @@ from pathlib import Path
 from . import image_version, all_tags, target_path
 
 
-class XLDockerImageBuilder(object):
+class ImageBuilder(object):
     def __init__(self, commandline_args, product):
         """Initialize the Docker Image builder."""
         self.target_systems = commandline_args.target_os or ALL_TARGET_SYSTEMS
