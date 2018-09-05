@@ -33,7 +33,7 @@ PRODUCTS = {
             "product": "xl-release",
             "product_name": "XL Release",
             "product_description": "Automate, orchestrate and get visibility into your release pipelines — at enterprise scale",
-            "product_conf": "xl-release",
+            "product_conf": "xl-release-server",
             "port": 5516,
             "volumes": [
                 "${APP_HOME}/archive",
