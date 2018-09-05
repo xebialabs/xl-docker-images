@@ -6,7 +6,7 @@ from datetime import datetime
 from . import image_version, ALL_TARGET_SYSTEMS, PRODUCTS, dockerfile_path, target_path
 
 
-class XLDockerRenderer(object):
+class Renderer(object):
     def __init__(self, commandline_args):
         """Initialize the XebiaLabs Dockerfile template rendering engine."""
         self.commit = commandline_args.commit

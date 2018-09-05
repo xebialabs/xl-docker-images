@@ -1,7 +1,11 @@
 = XebiaLabs DevOps Platform docker images
 Author: XebiaLabs Development Team
-:executable: ./xldocker.py
+:executable: ./applejack.py
 :source-highligher: pygments
+
+== Meet Applejack
+image::applejack.png[]
+Applejack loves to help you generate Dockerfiles for the XebiaLabs DevOps Platform. She is also able to commit them to version control or create the Docker images from whatever she generates. You just have to feed her a Python environment.
 
 == Prerequisites
 If you want to generate Dockerfiles for new versions of the XebiaLabs DevOps platform, or build a container out of them using the script provided, you need to setup your Python environment.
@@ -30,7 +34,6 @@ $ pipenv shell
 ----
 
 This will install all the dependencies and activate the `virtualenv` containing all the installed dependencies.
-
 
 == Generating the Dockerfiles for a new version of the XebiaLabs DevOps Platform
 In order to generate a new set of Dockerfiles for all components of the XebiaLabs DevOps Platform and commit them to version control, you can execute the following command:

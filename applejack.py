@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import argparse
-from xldocker.downloader import XLDevOpsPlatformDownloader
-from xldocker.renderer import XLDockerRenderer
-from xldocker.builder import XLDockerImageBuilder
-from xldocker import ALL_TARGET_SYSTEMS, PRODUCTS
+from applejack.downloader import XLDevOpsPlatformDownloader
+from applejack.renderer import Renderer
+from applejack.builder import ImageBuilder
+from applejack import ALL_TARGET_SYSTEMS, PRODUCTS
 
 
 def __add_common_arguments(parser):
@@ -28,8 +28,9 @@ build_parser.add_argument('--registry', help="Registry to push the Docker image 
 build_parser.add_argument('--use-cache', action='store_true', help="Don't download product ZIP if already downloaded, don't pull the base image and use the Docker build cache")
 args = parser.parse_args()
 
+print("🦄 Whee! Let's go!")
 if args.action == 'render':
-    renderer = XLDockerRenderer(args)
+    renderer = Renderer(args)
     for target_os in ALL_TARGET_SYSTEMS:
         for product in (args.product or PRODUCTS.keys()):
             print("Generating %s Dockerfile for %s" % (product, target_os))
@@ -43,10 +44,11 @@ elif args.action == 'build':
         if not args.use_cache or not downloader.target_path().exists():
             print("Going to download product ZIP for %s version %s" % (product, args.xl_version))
             downloader.download_product()
-
-        builder = XLDockerImageBuilder(args, product)
+        builder = ImageBuilder(args, product)
         for target_os in (args.target_os or ALL_TARGET_SYSTEMS):
             print("Building Docker image for %s %s" % (product, target_os))
             image_id = builder.build_docker_image(target_os)
             if args.push:
                 builder.push_image(image_id, target_os)
+
+print("🦄 🌈 Friendship is Magic... Like Docker 🦄")
