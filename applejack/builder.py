@@ -16,6 +16,13 @@ class ImageBuilder(object):
         self.image_version = image_version(commandline_args.xl_version, commandline_args.suffix)
         self.use_cache = commandline_args.use_cache
         self.product = product
+        self.push = commandline_args.push
+        self.validate()
+
+    def validate(self):
+        if self.push and ('alpha' in self.image_version or 'beta' in self.image_version) and self.registry == 'xebialabs':
+            raise Exception("Cannot push a non-release(candidate) to the official repository, please specify 'xebialabsunsupported'")
+        pass
 
     @staticmethod
     def convert_build_logs(generator):

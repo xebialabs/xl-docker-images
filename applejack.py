@@ -11,7 +11,6 @@ def __add_common_arguments(parser):
     parser.add_argument('--xl-version', help="Product version, e.g. 8.1.0", required=True)
     parser.add_argument('--suffix', help="The (optional) suffix attached to the Docker and Git commit tags. Only used when a new version of the Docker images is released for the same product version")
 
-
 parser = argparse.ArgumentParser(description="Render and build the Dockerfile templates")
 subparsers = parser.add_subparsers(dest="action")
 render_parser = subparsers.add_parser("render", help="Render the templates")

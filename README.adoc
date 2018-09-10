@@ -69,7 +69,7 @@ This command will only succeed if you've already downloaded the binaries for bot
 
 [source,shell,subs="verbatim,attributes"]
 ----
-$ {executable} render --xl-version <version> --download-username <username> --download-password <password>
+$ {executable} build --xl-version <version> --download-username <username> --download-password <password>
 ----
 
 This command will use the provided username and password to login to the XebiaLabs distribution site and download your copy of the XebiaLabs DevOps Platform to embed in the built image.
@@ -83,5 +83,18 @@ If you only want to build a Docker image for a specific target operating system,
 
 [source,shell,subs="verbatim,attributes"]
 ----
-$ {executable} render --xl-version <version> --target-os {rhel,centos,debian-slim}
+$ {executable} bio;d --xl-version <version> --target-os {rhel,centos,debian-slim}
+----
+
+=== Building an image for an alpha version of XL Deploy or XL Release
+[source,shell,subs="verbatim,attributes"]
+----
+$ {executable} build --xl-version <version> --download-username <LDAP username> --download-source nexus
+----
+
+If you also want to push it to the xebialabsunsupported organisation, use the following commandline:
+
+[source,shell,subs="verbatim,attributes"]
+----
+$ {executable} build --xl-version <version> --download-username <LDAP username> --download-source nexus --registry xebialabsunsupported
 ----
