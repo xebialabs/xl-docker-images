@@ -18,10 +18,15 @@ websocket-client = "==0.48.0"
 GitPython = "==2.1.11"
 "Jinja2" = "==2.10"
 MarkupSafe = "==1.0"
+pyyaml = "*"
+click = "*"
 
 [dev-packages]
 "autopep8" = "*"
 pylint = "*"
+"flake8" = "*"
+"pep8" = "*"
+rope = "*"
 
 [requires]
 python_version = "3.7"

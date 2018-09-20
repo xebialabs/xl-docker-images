@@ -1,0 +1,27 @@
+name: xl-deploy
+dockerfiles:
+  default: 'debian-slim'
+  os:
+    rhel: rhel/Dockerfile.j2
+    debian-slim: debian-slim/Dockerfile.j2
+    centos: centos/Dockerfile.j2
+repositories:
+  nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/{product}-{version}-server-trial-edition.zip'
+  dist: 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/{product}-{version}-server.zip'
+context:
+  product: xl-deploy
+  product_name: XL Deploy
+  product_description: Enterprise-scale Application Release Automation for any environment
+  product_conf: deployit
+  port: 4516
+  volumes:
+    - "${APP_HOME}/conf"
+    - "${APP_HOME}/hotfix/lib"
+    - "${APP_HOME}/hotfix/plugins"
+    - "${APP_HOME}/ext"
+    - "${APP_HOME}/plugins"
+    - "${APP_HOME}/repository"
+  wrapper_conf: xld-wrapper-linux.conf
+
+
+

@@ -1,52 +1,6 @@
 """xldocker package."""
 from pathlib import Path
-
-
-DEFAULT_OS = "debian-slim"
-ALL_TARGET_SYSTEMS = ['debian-slim', 'centos', 'rhel']
-
-PRODUCTS = {
-    "xl-deploy": {
-        "nexus": 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/{product}-{version}-server-trial-edition.zip',
-        "dist": 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/{product}-{version}-server.zip',
-        "jinja_context": {
-            "product": "xl-deploy",
-            "product_name": "XL Deploy",
-            "product_description": "Enterprise-scale Application Release Automation for any environment",
-            "product_conf": "deployit",
-            "port": 4516,
-            "volumes": [
-                "${APP_HOME}/conf",
-                "${APP_HOME}/hotfix/lib",
-                "${APP_HOME}/hotfix/plugins",
-                "${APP_HOME}/ext",
-                "${APP_HOME}/plugins",
-                "${APP_HOME}/repository"
-            ],
-            "wrapper_conf": "xld-wrapper-linux.conf"
-        }
-    },
-    "xl-release": {
-        "nexus": 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlrelease/xl-release/{version}/{product}-{version}-server-trial-edition.zip',
-        "dist": 'https://dist.xebialabs.com/customer/xl-release/product/{version}/{product}-{version}-server.zip',
-        "jinja_context": {
-            "product": "xl-release",
-            "product_name": "XL Release",
-            "product_description": "Automate, orchestrate and get visibility into your release pipelines — at enterprise scale",
-            "product_conf": "xl-release-server",
-            "port": 5516,
-            "volumes": [
-                "${APP_HOME}/archive",
-                "${APP_HOME}/conf",
-                "${APP_HOME}/hotfix",
-                "${APP_HOME}/ext",
-                "${APP_HOME}/plugins",
-                "${APP_HOME}/repository"
-            ],
-            "wrapper_conf": "xlr-wrapper-linux.conf"
-        }
-    }
-}
+import yaml
 
 
 def _copy(self, target):
@@ -56,6 +10,28 @@ def _copy(self, target):
 
 
 Path.copy = _copy
+
+
+def load_product_config(product):
+    p = Path("applejack/conf/products") / ("%s.yml" % product)
+    if not p.exists():
+        raise Exception("Could not find configuration for product %s in %s" % (product, p))
+    return yaml.load(p.read_text())
+
+
+def all_products():
+    """Return all products for which a configuration exists."""
+    return [x.stem for x in Path("applejack/conf/products").iterdir() if x.is_file()]
+
+
+def all_product_configs():
+    for p in all_products():
+        yield load_product_config(p)
+
+
+def target_systems(product_conf):
+    """Return all configured target systems"""
+    return product_conf['dockerfiles']['os'].keys()
 
 
 def target_path(product, version):
@@ -78,12 +54,12 @@ def major_minor(image_version):
     return '.'.join(image_version.split('.')[0:2])
 
 
-def all_tags(target_os, image_version):
+def all_tags(target_os, image_version, default_os=None):
     """Create a generator that yields all the version tags for a specific target_os and image_version."""
     major_version = major_minor(image_version)
     if target_os:
         yield ("%s-%s" % (image_version, target_os), False)
         yield ("%s-%s" % (major_version, target_os), True)
-    if DEFAULT_OS == target_os or not target_os:
+    if default_os == target_os or not target_os:
         yield (image_version, False)
         yield (major_version, True)

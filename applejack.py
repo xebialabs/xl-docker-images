@@ -1,53 +1,82 @@
 #!/usr/bin/env python3
-import argparse
 from applejack.downloader import XLDevOpsPlatformDownloader
 from applejack.renderer import Renderer
 from applejack.builder import ImageBuilder
-from applejack import ALL_TARGET_SYSTEMS, PRODUCTS
+from applejack import all_products, all_product_configs, load_product_config, target_systems
+import click
 
 
-def __add_common_arguments(parser):
-    parser.add_argument('--product', help="The product to build the files / images for.", action="append", choices=PRODUCTS.keys())
-    parser.add_argument('--xl-version', help="Product version, e.g. 8.1.0", required=True)
-    parser.add_argument('--suffix', help="The (optional) suffix attached to the Docker and Git commit tags. Only used when a new version of the Docker images is released for the same product version")
+class ProductConfigType(click.Choice):
+    name = 'product_config'
 
-parser = argparse.ArgumentParser(description="Render and build the Dockerfile templates")
-subparsers = parser.add_subparsers(dest="action")
-render_parser = subparsers.add_parser("render", help="Render the templates")
-__add_common_arguments(render_parser)
-render_parser.add_argument('-c', '--commit', action='store_true', help="Commit and tag the generated Dockerfiles.")
-build_parser = subparsers.add_parser("build", help="Build the Docker images from the generated templates")
-__add_common_arguments(build_parser)
-build_parser.add_argument('-p', '--push', action='store_true', help="Push the Docker images to the hub.")
-build_parser.add_argument('--download-source', help="Download source: dist (default) or nexus.", default='dist', choices=["dist", "nexus"])
-build_parser.add_argument('--download-username', help="Username to use to download product ZIP.")
-build_parser.add_argument('--download-password', help="Password to use to download product ZIP.")
-build_parser.add_argument('--target-os', action='append', help="The target container OS to build and/or push.", choices=ALL_TARGET_SYSTEMS)
-build_parser.add_argument('--registry', help="Registry to push the Docker image to.", default='xebialabs')
-build_parser.add_argument('--use-cache', action='store_true', help="Don't download product ZIP if already downloaded, don't pull the base image and use the Docker build cache")
-args = parser.parse_args()
+    def __init__(self, choices):
+        click.Choice.__init__(self, choices)
 
-print("🦄 Whee! Let's go!")
-if args.action == 'render':
-    renderer = Renderer(args)
-    for target_os in ALL_TARGET_SYSTEMS:
-        for product in (args.product or PRODUCTS.keys()):
-            print("Generating %s Dockerfile for %s" % (product, target_os))
+    def convert(self, value, param, ctx):
+        if value:
+            product = super(ProductConfigType, self).convert(value, param, ctx)
+            return load_product_config(product)
+        else:
+            return None
+
+
+_shared_opts = [
+    click.option('--product', multiple=True, help="The product to build the files / images for.", type=ProductConfigType(all_products())),
+    click.option('--xl-version', help="Product version, e.g. 8.1.0", required=True),
+    click.option('--suffix', help="The (optional) suffix attached to the Docker and Git commit tags. Only used when a new version of the Docker images is released for the same product version"),
+]
+
+
+def shared_opts(func):
+    for option in reversed(_shared_opts):
+        func = option(func)
+    return func
+
+
+@click.group(help="Render and build the Dockerfile templates")
+def applejack():
+    print("🦄 Whee! Let's go!")
+    pass
+
+
+@applejack.command(help="Render the templates")
+@shared_opts
+@click.option('--commit', '-c', is_flag=True, help="Commit and tag the generated Dockerfiles.")
+def render(**kwargs):
+    renderer = Renderer(kwargs)
+    for product in (kwargs['product'] or all_product_configs()):
+        for target_os in target_systems(product):
+            print("Generating %s Dockerfile for %s" % (product['name'], target_os))
             renderer.render(target_os, product)
-    if args.commit:
+    if kwargs['commit']:
         print("Commiting generated Dockerfiles")
         renderer.commit_rendered()
-elif args.action == 'build':
-    for product in (args.product or PRODUCTS.keys()):
-        downloader = XLDevOpsPlatformDownloader(args, product)
-        if not args.use_cache or not downloader.target_path().exists():
-            print("Going to download product ZIP for %s version %s" % (product, args.xl_version))
+
+
+@applejack.command(help="Build the Docker images from the generated templates")
+@shared_opts
+@click.option('--push', '-p', is_flag=True, help="Push the Docker images to the hub.")
+@click.option('--download-source', help="Download source: dist (default) or nexus.", default='dist', type=click.Choice(["dist", "nexus"]))
+@click.option('--download-username', help="Username to use to download product ZIP.")
+@click.option('--download-password', help="Password to use to download product ZIP.")
+@click.option('--target-os', multiple=True, help="The target container OS to build and/or push.")
+@click.option('--registry', help="Registry to push the Docker image to.", default='xebialabs')
+@click.option('--use-cache', is_flag=True, help="Don't download product ZIP if already downloaded, don't pull the base image and use the Docker build cache")
+def build(**kwargs):
+    for product_conf in (kwargs['product'] or all_product_configs()):
+        downloader = XLDevOpsPlatformDownloader(kwargs, product_conf)
+        if not kwargs['use_cache'] or not downloader.is_cached():
+            print("Going to download product ZIP for %s version %s" %
+                  (product_conf['name'], kwargs['xl_version']))
             downloader.download_product()
-        builder = ImageBuilder(args, product)
-        for target_os in (args.target_os or ALL_TARGET_SYSTEMS):
-            print("Building Docker image for %s %s" % (product, target_os))
+        builder = ImageBuilder(kwargs, product_conf)
+        for target_os in (kwargs['target_os'] or target_systems(product_conf)):
+            print("Building Docker image for %s %s" % (product_conf['name'], target_os))
             image_id = builder.build_docker_image(target_os)
-            if args.push:
+            if kwargs['push']:
                 builder.push_image(image_id, target_os)
 
-print("🦄 🌈 Friendship is Magic... Like Docker 🦄")
+
+if __name__ == '__main__':
+    applejack()
+    print("🦄 🌈 Friendship is Magic... Like Docker 🦄")

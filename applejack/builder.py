@@ -1,22 +1,21 @@
-from . import ALL_TARGET_SYSTEMS
 import json
 import docker
 import re
 import sys
 from pathlib import Path
-from . import image_version, all_tags, target_path
+from . import image_version, all_tags, target_path, target_systems
 
 
 class ImageBuilder(object):
-    def __init__(self, commandline_args, product):
+    def __init__(self, commandline_args, product_conf):
         """Initialize the Docker Image builder."""
-        self.target_systems = commandline_args.target_os or ALL_TARGET_SYSTEMS
-        self.registry = commandline_args.registry
-        self.repository = product
-        self.image_version = image_version(commandline_args.xl_version, commandline_args.suffix)
-        self.use_cache = commandline_args.use_cache
-        self.product = product
-        self.push = commandline_args.push
+        self.target_systems = commandline_args['target_os'] or target_systems(product_conf)
+        self.registry = commandline_args['registry']
+        self.repository = product_conf['context']['product']
+        self.image_version = image_version(commandline_args['xl_version'], commandline_args['suffix'])
+        self.use_cache = commandline_args['use_cache']
+        self.product_conf = product_conf
+        self.push = commandline_args['push']
         self.validate()
 
     def validate(self):
@@ -40,7 +39,7 @@ class ImageBuilder(object):
         generator = client.api.build(
             nocache=not self.use_cache,
             pull=not self.use_cache,
-            path=str(target_path(self.product, self.image_version)),
+            path=str(target_path(self.product_conf['name'], self.image_version)),
             dockerfile=str(Path(target_os) / "Dockerfile"),
             rm=True,
         )
@@ -56,7 +55,7 @@ class ImageBuilder(object):
         print("Built image %s for %s" % (image_id, target_os))
         image = client.images.get(image_id)
         repo = "%s/%s" % (self.registry, self.repository)
-        for tag, force in all_tags(target_os, self.image_version):
+        for tag, _ in all_tags(target_os, self.image_version, self.product_conf['dockerfiles']['default']):
             print("Tag image with %s:%s" % (repo, tag))
             image.tag(repo, tag)
         image.reload()
@@ -82,7 +81,7 @@ class ImageBuilder(object):
         client = docker.from_env()
         image = client.images.get(image_id)
         print("image = %s" % image)
-        for tag, force in all_tags(target_os, self.image_version):
+        for tag, _ in all_tags(target_os, self.image_version, self.product_conf['dockerfiles']['default']):
             repo = "%s/%s" % (self.registry, self.repository)
             for line in self.convert_push_logs(client.images.push(repo, tag=tag, stream=True)):
                 print(line)

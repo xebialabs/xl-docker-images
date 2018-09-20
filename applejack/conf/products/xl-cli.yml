@@ -1,0 +1,14 @@
+name: xl-cli
+dockerfiles:
+  default: 'alpine'
+  os:
+    alpine: xl-cli/Dockerfile.j2
+repositories:
+  nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlclient/xl-client/{version}/{product}-{version}-linux-amd64.bin'
+  # Todo proper DIST URL
+  dist: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlclient/xl-client/{version}/{product}-{version}-linux-amd64.bin'
+context:
+  product: xl-client
+  product_name: XL Client
+  product_description: Remote control your XebiaLabs DevOps Platform!
+  

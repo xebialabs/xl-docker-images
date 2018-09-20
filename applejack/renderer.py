@@ -1,17 +1,16 @@
 from jinja2 import Environment, FileSystemLoader
-from os import path
 from pathlib import Path
 from git import Repo
 from datetime import datetime
-from . import image_version, ALL_TARGET_SYSTEMS, PRODUCTS, dockerfile_path, target_path
+from . import image_version, dockerfile_path, target_path, all_products, load_product_config, target_systems, all_product_configs
 
 
 class Renderer(object):
     def __init__(self, commandline_args):
         """Initialize the XebiaLabs Dockerfile template rendering engine."""
-        self.commit = commandline_args.commit
-        self.version = commandline_args.xl_version
-        self.image_version = image_version(commandline_args.xl_version, commandline_args.suffix)
+        self.commit = commandline_args['commit']
+        self.version = commandline_args['xl_version']
+        self.image_version = image_version(commandline_args['xl_version'], commandline_args['suffix'])
 
     def __render_jinja_template(self, templates_path, template_file, target_file, context):
         env = Environment(
@@ -21,28 +20,28 @@ class Renderer(object):
         with open(target_file, 'w') as f:
             f.write(template.render(context))
 
-    def render(self, target_os, product):
-        self.__generate_dockerfile(target_os, product)
-        self.__copy_render_resources('common', product)
-        self.__copy_render_resources(product, product)
+    def render(self, target_os, product_conf):
+        self.__generate_dockerfile(target_os, product_conf)
+        self.__copy_render_resources('common', product_conf)
+        self.__copy_render_resources(product_conf['name'], product_conf)
 
-    def __generate_dockerfile(self, target_os, product):
-        target_path = self.__get_target_path(target_os, product)
-        context = self.__build_render_context(product)
-        self.__render_jinja_template(Path('templates') / 'dockerfiles', Path(target_os) / 'Dockerfile.j2', target_path / 'Dockerfile', context)
+    def __generate_dockerfile(self, target_os, product_conf):
+        target_path = self.__get_target_path(target_os, product_conf['name'])
+        context = self.__build_render_context(product_conf)
+        self.__render_jinja_template(Path('templates') / 'dockerfiles', product_conf['dockerfiles']['os'][target_os], target_path / 'Dockerfile', context)
         print("Dockerfile template for '%s' rendered" % target_os)
 
-    def __build_render_context(self, product):
-        context = dict(PRODUCTS[product]['jinja_context'])
+    def __build_render_context(self, product_conf):
+        context = dict(product_conf['context'])
         context['image_version'] = self.image_version
         context['xl_version'] = self.version
         context['today'] = datetime.now().strftime('%Y-%m-%d')
         return context
 
-    def __copy_render_resources(self, source_dir, product):
+    def __copy_render_resources(self, source_dir, product_conf):
         template_path = Path('templates') / 'resources'
         source_path = template_path / source_dir
-        dest_path = target_path(product, self.version) / 'resources'
+        dest_path = target_path(product_conf['name'], self.version) / 'resources'
         if not dest_path.is_dir():
             dest_path.mkdir()
         for p in sorted(source_path.rglob('*')):
@@ -55,13 +54,13 @@ class Renderer(object):
             elif p.is_file() and '.j2' in p.suffixes:
                 # Render J2 template
                 render_dest = dest_path / relative.parent / relative.stem
-                context = self.__build_render_context(product)
+                context = self.__build_render_context(product_conf)
                 self.__render_jinja_template(template_path, Path(source_dir) / relative, render_dest, context)
             elif p.is_file():
                 p.copy(dest_path / relative)
 
-    def __get_target_path(self, target_os, product):
-        target_path = dockerfile_path(self.version, target_os, product)
+    def __get_target_path(self, target_os, product_name):
+        target_path = dockerfile_path(self.version, target_os, product_name)
         if not target_path.exists():
             target_path.mkdir(parents=True)
         return target_path
@@ -82,9 +81,9 @@ class Renderer(object):
         diff = [diff.a_path for diff in repo.index.diff(None)] + repo.untracked_files
         changed = False
         print(diff)
-        for target_os in ALL_TARGET_SYSTEMS:
-            for product in PRODUCTS.keys():
-                df = str(self.__get_target_path(target_os, product) / "Dockerfile")
+        for product_conf in all_product_configs():
+            for target_os in target_systems(product_conf):
+                df = str(self.__get_target_path(target_os, product_conf['name']) / "Dockerfile")
                 print("Checking diff for %s" % df)
                 if df in diff:
                     print("Adding modified %s" % df)
@@ -98,14 +97,5 @@ class Renderer(object):
         repo.index.commit("Update Dockerfiles to version %s" % self.version)
         print("Committed updated Dockerfiles to %s" % repo.head.ref)
 
-        # Attempt tagging and rewind if failed.
-        # No longer doing this due to new directory structure
-        # try:
-        #     for tag, force in all_tags(None, self.image_version):
-        #         repo.create_tag(tag, force=force)
-        # except Exception as e:
-        #     print("Resetting commit because tagging failed.")
-        #     repo.head.reset('HEAD~1', index=True, working_tree=False)
-        #     raise e
         origin.push()
         print("Dockerfiles have been committed and pushed to %s on %s" % (repo.head.ref, origin))

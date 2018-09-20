@@ -1,0 +1,24 @@
+name: xl-release
+dockerfiles:
+  default: 'debian-slim'
+  os:
+    rhel: rhel/Dockerfile.j2
+    debian-slim: debian-slim/Dockerfile.j2
+    centos: centos/Dockerfile.j2
+repositories:
+  nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlrelease/xl-release/{version}/{product}-{version}-server.zip'
+  dist: 'https://dist.xebialabs.com/customer/xl-release/product/{version}/{product}-{version}-server.zip'
+context:
+  product: xl-release
+  product_name: XL Release
+  product_description: Automate, orchestrate and get visibility into your release pipelines — at enterprise scale
+  product_conf: xl-release-server
+  port: 5516
+  volumes:
+    - "${APP_HOME}/archive"
+    - "${APP_HOME}/conf"
+    - "${APP_HOME}/hotfix"
+    - "${APP_HOME}/ext"
+    - "${APP_HOME}/plugins"
+    - "${APP_HOME}/repository"
+  wrapper_conf: xlr-wrapper-linux.conf
