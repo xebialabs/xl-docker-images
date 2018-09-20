@@ -1,0 +1,152 @@
+apiVersion: v1
+kind: Template
+labels:
+  createdBy: xl-deploy-template
+metadata:
+  annotations:
+    openshift.io/display-name: XL Deploy
+    description: |-
+      TODO
+    iconClass: icon-xebialabs
+    tags: instant-app,xl-deploy,xebialabs,devops,ci-cd
+    openshift.io/provider-display-name: XebiaLabs
+    openshift.io/documentation-url: https://docs.xebialabs.com/xl-deploy/
+    openshift.io/support-url: https://support.xebialabs.com/
+  name: xl-deploy
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    tags:
+    - from:
+        kind: DockerImage
+        name: xebialabs/xl-deploy:${APPLICATION_VERSION}
+      name: xl-deploy-${APPLICATION_VERSION}
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: ${APPLICATION_NAME}-user
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    replicas: 1
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}
+    strategy:
+      recreateParams: {}
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          app: ${APPLICATION_NAME}
+          deploymentconfig: ${APPLICATION_NAME}
+      spec:
+        containers:
+        - env:
+          - name: ADMIN_PASSWORD
+            value: ${ADMIN_PASSWORD}
+          image: xl-deploy
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 4516
+              scheme: HTTP
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: xl-deploy
+          ports:
+          - containerPort: 4516
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 4516
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: '1'
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 1Gi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        serviceAccount: ${APPLICATION_NAME}-user
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - xl-deploy
+        from:
+          kind: ImageStreamTag
+          name: ${APPLICATION_NAME}:xl-deploy-${APPLICATION_VERSION}
+      type: ImageChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+  spec:
+    ports:
+    - name: 4516-http
+      port: 4516
+      protocol: TCP
+      targetPort: 4516
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Route
+  spec:
+    host: ${XLD_HOSTNAME}
+    port:
+      targetPort: 4516-http
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+    to:
+      kind: Service
+      name: ${APPLICATION_NAME}
+parameters:
+- description: The name for the application. The service will be named like the application.
+  displayName: Application name.
+  name: APPLICATION_NAME
+  value: xl-deploy
+- description: (Major) Version of XL Deploy to deploy
+  displayName: XL Deploy version
+  name: APPLICATION_VERSION
+- description: Password for the XL Deploy 'admin' user. Must be at least 8 characters
+    long.
+  displayName: XL Deploy Admin User Password
+  name: ADMIN_PASSWORD
+  from: '[a-zA-Z0-9]{8}'
+  generate: expression
+- description: Hostname for the XL Deploy application.
+  displayName: XL Deploy host name
+  name: XLD_HOSTNAME
