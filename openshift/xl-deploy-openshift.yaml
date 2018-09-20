@@ -123,6 +123,8 @@ objects:
     type: ClusterIP
 - apiVersion: v1
   kind: Route
+  metadata:
+    name: ${APPLICATION_NAME}-route
   spec:
     host: ${XLD_HOSTNAME}
     port:
