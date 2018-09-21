@@ -83,7 +83,7 @@ If you only want to build a Docker image for a specific target operating system,
 
 [source,shell,subs="verbatim,attributes"]
 ----
-$ {executable} bio;d --xl-version <version> --target-os {rhel,centos,debian-slim}
+$ {executable} build --xl-version <version> --target-os {rhel,centos,debian-slim}
 ----
 
 === Building an image for an alpha version of XL Deploy or XL Release
