@@ -1,0 +1,37 @@
+xl {
+x;cluster {
+    # mode: "default", "hot-standby", "full"
+    mode = ${XL_CLUSTER_MODE}
+    name = "{{ product }}_cluster"
+    node {
+      id = ${XL_NODE_NAME}
+      hostname = ${XL_NODE_NAME}
+      clusterPort = 5531
+    }
+    akka {
+      loglevel = "INFO"
+      actor.debug.receive = off
+      remote {
+        log-received-messages = off
+        log-sent-messages = off
+      }
+    }
+  }
+
+  repository {
+    artifacts {
+      type = "db"
+    }
+    database {
+      db-driver-classname="${XL_REPO_DB_DRIVER}"
+      db-password="${XL_REPO_DB_PASSWORD}"
+      db-url="${XL_REPO_DB_URL}"
+      db-username=${XL_REPO_DB_USERNAME}
+      max-pool-size=10
+    }
+  }
+
+  metrics {
+    enabled = ${XL_METRICS_ENABLED}
+  }
+}

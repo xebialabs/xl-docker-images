@@ -9,6 +9,12 @@ RUN mkdir -p ${APP_ROOT} && \
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
+# Add (and run) Database driver download script
+COPY resources/bin/db-drivers.sh ${APP_ROOT}/
+RUN chmod ugo+x ${APP_ROOT}/db-drivers.sh && \
+    /bin/sh ${APP_ROOT}/db-drivers.sh && \
+    rm ${APP_ROOT}/db-drivers.sh
+
 # Modify bin/run.sh so that java becomes a child process of dumb-init
 RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
@@ -16,7 +22,7 @@ RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
     mkdir ${APP_HOME}/conf
 COPY resources/default-conf ${APP_HOME}/default-conf
-RUN mv ${APP_HOME}/default-conf/product.conf.template ${APP_HOME}/default-conf/{{ product_conf }}.conf.template
+RUN mv ${APP_HOME}/default-conf/boot.conf.template ${APP_HOME}/default-conf/{{ product_conf }}.conf.template
 
 # Modify conf/{{ wrapper_conf }} to add node-conf to the classpath and to add container-specific VM options
 COPY resources/modify-wrapper-linux-conf.gawk /tmp
@@ -27,7 +33,7 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
 
 # Create node-specific conf directory and add template for node-specific {{ product }}.conf file
 RUN mkdir ${APP_HOME}/node-conf
-COPY resources/node-conf/cluster.conf.template ${APP_HOME}/node-conf/{{ product }}.conf.template
+COPY resources/node-conf ${APP_HOME}/node-conf
 
 # Move plugins directory
 RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
