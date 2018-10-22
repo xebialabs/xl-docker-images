@@ -14,7 +14,8 @@ ENV XL_CLUSTER_MODE=default \
     XL_REPO_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-repo \
     XL_REPO_DB_USERNAME=sa \
     XL_REPO_DB_PASSWORD=123 \
-    XL_METRICS_ENABLED=false
+    XL_METRICS_ENABLED=false \
+    XL_CLUSTER_MODE=default
 
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
