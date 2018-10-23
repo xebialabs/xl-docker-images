@@ -18,17 +18,20 @@ xl {
     }
   }
 
-  repository {
-    artifacts {
-      type = "db"
-    }
-    database {
-      db-driver-classname="${XL_REPO_DB_DRIVER}"
-      db-password="${XL_REPO_DB_PASSWORD}"
-      db-url="${XL_REPO_DB_URL}"
-      db-username=${XL_REPO_DB_USERNAME}
-      max-pool-size=10
-    }
+  database {
+    db-driver-classname="${XL_REPO_DB_DRIVER}"
+    db-password="${XL_REPO_DB_PASSWORD}"
+    db-url="${XL_REPO_DB_URL}"
+    db-username=${XL_REPO_DB_USERNAME}
+    max-pool-size=10
+  }
+
+  # TODO XLR does not support (H2) running in one schema.
+  reporting {
+    db-driver-classname="${XL_REPO_DB_DRIVER}"
+    db-password="${XL_REPO_DB_PASSWORD}"
+    db-url="${XL_REPO_DB_URL}"
+    db-username=${XL_REPO_DB_USERNAME}
   }
 
   metrics {
