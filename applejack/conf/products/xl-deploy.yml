@@ -8,6 +8,11 @@ dockerfiles:
 repositories:
   nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/{product}-{version}-server-trial-edition.zip'
   dist: 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/{product}-{version}-server.zip'
+resources:
+  dirs:
+  - all
+  - common
+  - xl-deploy
 context:
   product: xl-deploy
   product_name: XL Deploy
@@ -15,12 +20,26 @@ context:
   product_conf: deployit
   port: 4516
   volumes:
+    - "${APP_ROOT}/bootstrap"
     - "${APP_HOME}/conf"
     - "${APP_HOME}/hotfix/lib"
     - "${APP_HOME}/hotfix/plugins"
     - "${APP_HOME}/ext"
     - "${APP_HOME}/plugins"
     - "${APP_HOME}/repository"
+  environment:
+  - key: XL_CLUSTER_MODE
+    value: default
+  - key: XL_REPO_DB_URL
+    value: "jdbc:h2:file:${APP_HOME}/repository/xl-deploy"
+  - key: XL_REPO_DB_USERNAME
+    value: sa
+  - key: XL_REPO_DB_PASSWORD
+    value: 123
+  - key: XL_METRICS_ENABLED
+    value: false
+  - key: XL_CLUSTER_MODE
+    value: default
   wrapper_conf: xld-wrapper-linux.conf
 
 

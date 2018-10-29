@@ -10,13 +10,9 @@ USER 10001
 VOLUME ["{{ volumes|join('", "') }}"]
 EXPOSE {{ port }}
 
-ENV XL_CLUSTER_MODE=default \
-    XL_REPO_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-repo \
-    XL_REPO_DB_USERNAME=sa \
-    XL_REPO_DB_PASSWORD=123 \
-    XL_METRICS_ENABLED=false \
-    XL_CLUSTER_MODE=default
-
+{% for env in environment %}
+    {{- 'ENV ' if loop.first else '    ' -}}{{ [env['key'], env['value']]|join('=') }}{{ ' \\' if not loop.last else '' }}
+{% endfor %}
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
