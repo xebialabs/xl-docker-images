@@ -1,0 +1,35 @@
+xl {
+  cluster {
+    # mode: "default", "hot-standby", "full"
+    mode = ${XL_CLUSTER_MODE}
+    name = "{{ product }}_cluster"
+    akka {
+      loglevel = "INFO"
+      actor.debug.receive = off
+      remote {
+        log-received-messages = off
+        log-sent-messages = off
+      }
+    }
+  }
+
+  database {
+    db-driver-classname="${XL_REPO_DB_DRIVER}"
+    db-password="${XL_REPO_DB_PASSWORD}"
+    db-url="${XL_REPO_DB_URL}"
+    db-username=${XL_REPO_DB_USERNAME}
+    max-pool-size=10
+  }
+
+  # TODO XLR does not support (H2) running in one schema.
+  reporting {
+    db-driver-classname="${XL_REPO_DB_DRIVER}"
+    db-password="${XL_REPO_DB_PASSWORD}"
+    db-url="${XL_REPO_DB_URL}"
+    db-username=${XL_REPO_DB_USERNAME}
+  }
+
+  metrics {
+    enabled = ${XL_METRICS_ENABLED}
+  }
+}

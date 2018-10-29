@@ -39,23 +39,50 @@ function copy_db_driver {
   esac
 }
 
-function generate_product_conf {
-  echo "Generate configuration file from environment parameters"
+function store_license {
+  if [ -z "${XL_LICENSE}" ]; then
+    echo "No license provided in \${XL_LICENSE}"
+    return
+  fi
+
+  if [ -f "${APP_HOME}/conf/{{ product_conf }}-license.lic" ]; then
+    echo "Pre-existing license found, not overwriting"
+    return
+  fi
+
+  echo ${XL_LICENSE} > ${APP_HOME}/conf/{{ product_conf }}-license.lic
+}
+
+function generate_node_conf {
+  echo "Re-generate node cluster configuration"
   IP_ADDRESS=$(hostname -i)
   sed -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
+      ${APP_HOME}/node-conf/{{ product }}.conf.template > ${APP_HOME}/node-conf/{{ product }}.conf
+
+}
+
+function generate_product_conf {
+  echo "Generate configuration file from environment parameters"
+  if [ -e "${APP_HOME}/conf/{{ product }}.conf" ]; then
+    return
+  fi
+
+  sed \
   {% for env in environment %}
       {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
   {% endfor %}
       # -e "s#\${XL_ARCHIVE_DB_URL}#${XL_ARCHIVE_DB_URL}#g" \
       # -e "s#\${XL_ARCHIVE_DB_USERNAME}#${XL_ARCHIVE_DB_USERNAME}#g" \
       # -e "s#\${XL_ARCHIVE_DB_PASSWORD}#${XL_ARCHIVE_DB_PASSWORD}#g" \
-      ${APP_HOME}/node-conf/{{ product }}.conf.template > ${APP_HOME}/node-conf/{{ product }}.conf
+      ${APP_HOME}/default-conf/{{ product }}.conf.template > ${APP_HOME}/conf/{{ product }}.conf
 }
 
-{% include 'includes/' + product + '-run-script.j2' %}}
+{% include 'includes/' + product + '-run-script.j2' %}
 
 copy_db_driver
 generate_product_conf
+generate_node_conf
+store_license
 
 # Start regular startup process
 exec ${APP_HOME}/bin/run.sh "$@"

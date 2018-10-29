@@ -10,10 +10,9 @@ RUN mkdir -p ${APP_ROOT} && \
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
 # Add (and run) Database driver download script
-COPY resources/bin/db-drivers.sh ${APP_ROOT}/
-RUN chmod ugo+x ${APP_ROOT}/db-drivers.sh && \
-    /bin/sh ${APP_ROOT}/db-drivers.sh && \
-    rm ${APP_ROOT}/db-drivers.sh
+COPY resources/bin/db-drivers.sh /tmp
+RUN chmod ugo+x /tmp/db-drivers.sh && \
+    /bin/sh /tmp/db-drivers.sh
 
 # Modify bin/run.sh so that java becomes a child process of dumb-init
 RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh

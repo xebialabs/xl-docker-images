@@ -35,4 +35,5 @@ match($0, /^(wrapper.java.additional).([0-9]+)=(.*)$/, a) {
 END {
   printf("wrapper.java.additional.%d=-XX:+UnlockExperimentalVMOptions\n", additionals + 1);
   printf("wrapper.java.additional.%d=-XX:+UseCGroupMemoryLimitForHeap\n", additionals + 2);
+  printf("wrapper.java.additional.%d=-XX:MaxRAMFraction=2\n", additionals + 3);
 }
