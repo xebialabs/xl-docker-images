@@ -5,7 +5,7 @@ function pwgen {
 }
 
 function copy_db_driver {
-  case ${XL_REPO_DB_URL} in
+  case ${XL_DB_URL} in
     jdbc:h2:*)
       XL_DB_DRIVER="org.h2.Driver"
       cp ${APP_ROOT}/db-libs/h2* ${APP_HOME}/lib
@@ -45,12 +45,12 @@ function store_license {
     return
   fi
 
-  if [ -f "${APP_HOME}/conf/{{ product_conf }}-license.lic" ]; then
+  if [ -f "${APP_HOME}/conf/{{ license_file }}" ]; then
     echo "Pre-existing license found, not overwriting"
     return
   fi
 
-  echo ${XL_LICENSE} > ${APP_HOME}/conf/{{ product_conf }}-license.lic
+  echo ${XL_LICENSE} > ${APP_HOME}/conf/{{ license_file }}
 }
 
 function generate_node_conf {
@@ -62,18 +62,16 @@ function generate_node_conf {
 }
 
 function generate_product_conf {
-  echo "Generate configuration file from environment parameters"
   if [ -e "${APP_HOME}/conf/{{ product }}.conf" ]; then
+    echo "... Skipping generating conf/{{ product }}.conf, it already exists."
     return
   fi
 
-  sed \
+  echo "Generate configuration file from environment parameters"
+  sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
   {% for env in environment %}
       {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
-  {% endfor %}
-      # -e "s#\${XL_ARCHIVE_DB_URL}#${XL_ARCHIVE_DB_URL}#g" \
-      # -e "s#\${XL_ARCHIVE_DB_USERNAME}#${XL_ARCHIVE_DB_USERNAME}#g" \
-      # -e "s#\${XL_ARCHIVE_DB_PASSWORD}#${XL_ARCHIVE_DB_PASSWORD}#g" \
+  {% endfor -%}
       ${APP_HOME}/default-conf/{{ product }}.conf.template > ${APP_HOME}/conf/{{ product }}.conf
 }
 

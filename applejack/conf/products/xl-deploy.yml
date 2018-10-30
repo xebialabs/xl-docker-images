@@ -17,7 +17,9 @@ context:
   product: xl-deploy
   product_name: XL Deploy
   product_description: Enterprise-scale Application Release Automation for any environment
-  product_conf: deployit
+  license_file: deployit-license.lic
+  boot_conf: deployit.conf
+  wrapper_conf: xld-wrapper-linux.conf
   port: 4516
   volumes:
     - "${APP_ROOT}/bootstrap"
@@ -30,17 +32,16 @@ context:
   environment:
   - key: XL_CLUSTER_MODE
     value: default
-  - key: XL_REPO_DB_URL
+  - key: XL_DB_URL
     value: "jdbc:h2:file:${APP_HOME}/repository/xl-deploy"
-  - key: XL_REPO_DB_USERNAME
+  - key: XL_DB_USERNAME
     value: sa
-  - key: XL_REPO_DB_PASSWORD
-    value: 123
+  - key: XL_DB_PASSWORD
+    value: "123"
   - key: XL_METRICS_ENABLED
-    value: false
+    value: "false"
   - key: XL_CLUSTER_MODE
     value: default
-  wrapper_conf: xld-wrapper-linux.conf
 
 
 

@@ -14,19 +14,19 @@ xl {
   }
 
   database {
-    db-driver-classname="${XL_REPO_DB_DRIVER}"
-    db-password="${XL_REPO_DB_PASSWORD}"
-    db-url="${XL_REPO_DB_URL}"
-    db-username=${XL_REPO_DB_USERNAME}
+    db-driver-classname="${XL_DB_DRIVER}"
+    db-password="${XL_DB_PASSWORD}"
+    db-url="${XL_DB_URL}"
+    db-username=${XL_DB_USERNAME}
     max-pool-size=10
   }
 
   # TODO XLR does not support (H2) running in one schema.
   reporting {
-    db-driver-classname="${XL_REPO_DB_DRIVER}"
-    db-password="${XL_REPO_DB_PASSWORD}"
-    db-url="${XL_REPO_DB_URL}"
-    db-username=${XL_REPO_DB_USERNAME}
+    db-driver-classname="${XL_DB_DRIVER}"
+    db-password="${XL_REPORT_DB_PASSWORD}"
+    db-url="${XL_REPORT_DB_URL}"
+    db-username=${XL_REPORT_DB_USERNAME}
   }
 
   metrics {

@@ -12,12 +12,14 @@ resources:
   dirs:
   - all
   - common
-  - xl-deploy
+  - xl-release
 context:
   product: xl-release
   product_name: XL Release
   product_description: Automate, orchestrate and get visibility into your release pipelines — at enterprise scale
-  product_conf: xl-release-server
+  license_file: xl-release-license.lic
+  boot_conf: xl-release-server.conf
+  wrapper_conf: xlr-wrapper-linux.conf
   port: 5516
   volumes:
     - "${APP_ROOT}/bootstrap"
@@ -30,16 +32,21 @@ context:
   environment:
   - key: XL_CLUSTER_MODE
     value: default
-  - key: XL_REPO_DB_URL
+  - key: XL_DB_URL
     value: "jdbc:h2:file:${APP_HOME}/repository/xl-release"
-  - key: XL_REPO_DB_USERNAME
+  - key: XL_DB_USERNAME
     value: sa
-  - key: XL_REPO_DB_PASSWORD
-    value: 123
+  - key: XL_DB_PASSWORD
+    value: "123"
   - key: XL_METRICS_ENABLED
-    value: false
+    value: "false"
   - key: XL_CLUSTER_MODE
     value: default
   - key: SERVER_URL
     value: "http://localhost:5516/"
-  wrapper_conf: xlr-wrapper-linux.conf
+  - key: XL_REPORT_DB_URL
+    value: "jdbc:h2:file:${APP_HOME}/repository/xl-release-report"
+  - key: XL_REPORT_DB_USERNAME
+    value: "\\${xl.database.db-username}"
+  - key: XL_REPORT_DB_PASSWORD
+    value: "\\${xl.database.db-password}"

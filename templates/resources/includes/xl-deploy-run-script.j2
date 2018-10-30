@@ -18,12 +18,15 @@ if [ -z "$(ls -A ${APP_HOME}/plugins)" ]; then
 fi
 
 # Set up new installation
-if [ ! -f "${APP_HOME}/conf/deployit.conf" ]; then
-  echo "No ${APP_HOME}/conf/deployit.conf file detected:"
+if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
+  echo "No ${APP_HOME}/conf/{{ boot_conf }} file detected:"
   echo "... Copying default configuration from ${APP_HOME}/default-conf"
 
   cd ${APP_HOME}/default-conf
   for f in *; do
+    if [[ $f == *.template ]]; then
+      continue
+    fi
     if [ -f ${APP_HOME}/conf/$f ]; then
       echo "... Not copying $f because it already exists in the conf directory"
     else
@@ -50,8 +53,8 @@ if [ ! -f "${APP_HOME}/conf/deployit.conf" ]; then
     echo "... Generating repository keystore"
     keytool -genseckey -alias deployit-passsword-key -keyalg aes -keysize 128 -keypass "deployit" -keystore ${APP_HOME}/conf/repository-keystore.jceks -storetype jceks -storepass ${REPOSITORY_KEYSTORE_PASSPHRASE}
 
-    echo "... Generating deployit.conf"
-    sed -e "s/\${ADMIN_PASSWORD}/${ADMIN_PASSWORD}/g" -e "s/\${REPOSITORY_KEYSTORE_PASSPHRASE}/${REPOSITORY_KEYSTORE_PASSPHRASE}/g" ${APP_HOME}/conf/deployit.conf.template > ${APP_HOME}/conf/deployit.conf
+    echo "... Generating {{ boot_conf }}"
+    sed -e "s/\${ADMIN_PASSWORD}/${ADMIN_PASSWORD}/g" -e "s/\${REPOSITORY_KEYSTORE_PASSPHRASE}/${REPOSITORY_KEYSTORE_PASSPHRASE}/g" ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
 
     echo "Done"
   fi

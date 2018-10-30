@@ -27,12 +27,18 @@ if [ -z "$(ls -A ${APP_HOME}/plugins)" ]; then
 fi
 
 # Set up new installation
-if [ ! -f "${APP_HOME}/conf/xl-release-server.conf" ]; then
-  echo "No ${APP_HOME}/conf/xl-release-server.conf file detected:"
+if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
+  echo "No ${APP_HOME}/conf/{{ boot_conf }} file detected:"
   echo "... Copying default configuration from ${APP_HOME}/default-conf"
 
+  # Clean out of the box empty config file to generate template.
+  rm ${APP_HOME}/default-conf/{{ product }}.conf
+  
   cd ${APP_HOME}/default-conf
   for f in *; do
+    if [[ $f == *.template ]]; then
+      continue
+    fi
     if [ -f ${APP_HOME}/conf/$f ]; then
       echo "... Not copying $f because it already exists in the conf directory"
     else
@@ -60,10 +66,10 @@ if [ ! -f "${APP_HOME}/conf/xl-release-server.conf" ]; then
     echo "... Generating repository keystore"
     keytool -genseckey -alias deployit-passsword-key -keyalg aes -keysize 128 -keypass "deployit" -keystore ${APP_HOME}/conf/repository-keystore.jceks -storetype jceks -storepass ${REPOSITORY_KEYSTORE_PASSPHRASE}
 
-    echo "... Generating xl-release-server.conf"
-    sed -e "s/\${ADMIN_PASSWORD}/${ADMIN_PASSWORD}/g" -e "s/\${REPOSITORY_KEYSTORE_PASSPHRASE}/${REPOSITORY_KEYSTORE_PASSPHRASE}/g" ${APP_HOME}/conf/xl-release-server.conf.template > ${APP_HOME}/conf/xl-release-server.conf
+    echo "... Generating {{ boot_conf }}"
+    sed -e "s/\${ADMIN_PASSWORD}/${ADMIN_PASSWORD}/g" -e "s/\${REPOSITORY_KEYSTORE_PASSPHRASE}/${REPOSITORY_KEYSTORE_PASSPHRASE}/g" ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
     if [ ! "${SERVER_URL}" = "" ]; then
-      cat "server.url=${SERVER_URL}" >> ${APP_HOME}/conf/xl-release-server.conf
+      echo "server.url=${SERVER_URL}" >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
 
     echo "Done"
