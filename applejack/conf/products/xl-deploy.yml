@@ -22,13 +22,13 @@ context:
   wrapper_conf: xld-wrapper-linux.conf
   port: 4516
   volumes:
-    - "${APP_ROOT}/bootstrap"
     - "${APP_HOME}/conf"
     - "${APP_HOME}/hotfix/lib"
     - "${APP_HOME}/hotfix/plugins"
     - "${APP_HOME}/ext"
     - "${APP_HOME}/plugins"
     - "${APP_HOME}/repository"
+    - "${APP_HOME}/work"
   environment:
   - key: XL_CLUSTER_MODE
     value: default
@@ -40,8 +40,6 @@ context:
     value: "123"
   - key: XL_METRICS_ENABLED
     value: "false"
-  - key: XL_CLUSTER_MODE
-    value: default
 
 
 
