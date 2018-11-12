@@ -8,17 +8,45 @@ dockerfiles:
 repositories:
   nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlrelease/xl-release/{version}/{product}-{version}-server.zip'
   dist: 'https://dist.xebialabs.com/customer/xl-release/product/{version}/{product}-{version}-server.zip'
+resources:
+  dirs:
+  - all
+  - common
+  - xl-release
 context:
   product: xl-release
   product_name: XL Release
   product_description: Automate, orchestrate and get visibility into your release pipelines — at enterprise scale
-  product_conf: xl-release-server
+  license_file: xl-release-license.lic
+  boot_conf: xl-release-server.conf
+  wrapper_conf: xlr-wrapper-linux.conf
   port: 5516
   volumes:
+    - "${APP_ROOT}/bootstrap"
     - "${APP_HOME}/archive"
     - "${APP_HOME}/conf"
     - "${APP_HOME}/hotfix"
     - "${APP_HOME}/ext"
     - "${APP_HOME}/plugins"
     - "${APP_HOME}/repository"
-  wrapper_conf: xlr-wrapper-linux.conf
+  environment:
+  - key: XL_CLUSTER_MODE
+    value: default
+  - key: XL_DB_URL
+    value: "jdbc:h2:file:${APP_HOME}/repository/xl-release"
+  - key: XL_DB_USERNAME
+    value: sa
+  - key: XL_DB_PASSWORD
+    value: "123"
+  - key: XL_METRICS_ENABLED
+    value: "false"
+  - key: XL_CLUSTER_MODE
+    value: default
+  - key: SERVER_URL
+    value: "http://localhost:5516/"
+  - key: XL_REPORT_DB_URL
+    value: "jdbc:h2:file:${APP_HOME}/repository/xl-release-report"
+  - key: XL_REPORT_DB_USERNAME
+    value: "\\${xl.database.db-username}"
+  - key: XL_REPORT_DB_PASSWORD
+    value: "\\${xl.database.db-password}"

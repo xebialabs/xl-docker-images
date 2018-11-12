@@ -22,8 +22,8 @@ class Renderer(object):
 
     def render(self, target_os, product_conf):
         self.__generate_dockerfile(target_os, product_conf)
-        self.__copy_render_resources('common', product_conf)
-        self.__copy_render_resources(product_conf['name'], product_conf)
+        for dir in product_conf['resources']['dirs']:
+            self.__copy_render_resources(dir, product_conf)
 
     def __generate_dockerfile(self, target_os, product_conf):
         target_path = self.__get_target_path(target_os, product_conf['name'])

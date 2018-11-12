@@ -1,0 +1,86 @@
+#!/bin/bash
+
+function pwgen {
+  tr -cd '[:alnum:]' < /dev/urandom | fold -w$1 | head -n1
+}
+
+function copy_db_driver {
+  case ${XL_DB_URL} in
+    jdbc:h2:*)
+      XL_DB_DRIVER="org.h2.Driver"
+      cp ${APP_ROOT}/db-libs/h2* ${APP_HOME}/lib
+      ;;
+    jdbc:oracle:*)
+      XL_DB_DRIVER="oracle.jdbc.OracleDriver"
+      echo "Still need support for 'oracle' jdbc driver"
+      exit 1
+      ;;
+    jdbc:mysql:*)
+      XL_DB_DRIVER="com.mysql.jdbc.Driver"
+      cp ${APP_ROOT}/db-libs/mysql* ${APP_HOME}/lib
+      ;;
+    jdbc:postgresql:*)
+      XL_DB_DRIVER="org.postgresql.Driver"
+      cp ${APP_ROOT}/db-libs/postgresql* ${APP_HOME}/lib
+      ;;
+    jdbc:sqlserver:*)
+      XL_DB_DRIVER="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+      cp ${APP_ROOT}/db-libs/mssql* ${APP_HOME}/lib
+      ;;
+    jdbc:db2:*)
+      XL_DB_DRIVER="com.ibm.db2.jcc.DB2Driver"
+      echo "Still need support for 'db2' jdbc driver"
+      exit 1
+      ;;
+    *)
+        echo "Database type could not be inferred from url '${XL_REPO_DB_URL}', supported db types are 'h2', 'oracle', 'mysql', 'postgresql', 'sqlserver', 'db2'"
+        exit 1
+        ;;
+  esac
+}
+
+function store_license {
+  if [ -z "${XL_LICENSE}" ]; then
+    echo "No license provided in \${XL_LICENSE}"
+    return
+  fi
+
+  if [ -f "${APP_HOME}/conf/{{ license_file }}" ]; then
+    echo "Pre-existing license found, not overwriting"
+    return
+  fi
+
+  echo ${XL_LICENSE} > ${APP_HOME}/conf/{{ license_file }}
+}
+
+function generate_node_conf {
+  echo "Re-generate node cluster configuration"
+  IP_ADDRESS=$(hostname -i)
+  sed -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
+      ${APP_HOME}/node-conf/{{ product }}.conf.template > ${APP_HOME}/node-conf/{{ product }}.conf
+
+}
+
+function generate_product_conf {
+  if [ -e "${APP_HOME}/conf/{{ product }}.conf" ]; then
+    echo "... Skipping generating conf/{{ product }}.conf, it already exists."
+    return
+  fi
+
+  echo "Generate configuration file from environment parameters"
+  sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+  {% for env in environment %}
+      {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
+  {% endfor -%}
+      ${APP_HOME}/default-conf/{{ product }}.conf.template > ${APP_HOME}/conf/{{ product }}.conf
+}
+
+{% include 'includes/' + product + '-run-script.j2' %}
+
+copy_db_driver
+generate_product_conf
+generate_node_conf
+store_license
+
+# Start regular startup process
+exec ${APP_HOME}/bin/run.sh "$@"
