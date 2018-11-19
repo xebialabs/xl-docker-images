@@ -8,7 +8,7 @@ COPY resources/help.md /tmp/
 COPY resources/licenses /licenses
 
 # Install dependencies
-RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname" && \
+RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname shadow-utils" && \
     microdnf install --enablerepo=rhel-7-server-rpms --enablerepo=rhel-7-server-optional-rpms --nodocs ${INSTALL_PKGS} && \
     microdnf update && \
 ### help file markdown to man conversion
