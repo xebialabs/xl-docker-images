@@ -28,8 +28,7 @@ class XLDevOpsPlatformDownloader(object):
         return target_path(self.product_conf['name'], self.product_version) / 'resources' / self.__product_filename(download_url)
 
     def __product_filename(self, download_url):
-        return download_url.split('/')[-1]
-        # return "{product}-{version}-server.zip".format(product=self.product, version=self.product_version)
+        return self.product_conf['resources']['target_name'].format(version=self.product_version, product=self.product_conf['name'])
 
     def download_product(self):
         # Determine filename and download URL

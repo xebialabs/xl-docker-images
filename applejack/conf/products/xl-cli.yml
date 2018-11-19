@@ -8,6 +8,7 @@ repositories:
   # Todo proper DIST URL
   dist: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlclient/xl-client/{version}/{product}-{version}-linux-amd64.bin'
 resources:
+  target_name: '{product}-{version}-linux-amd64.bin'
   dirs:
   - all
 context:
