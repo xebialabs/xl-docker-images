@@ -1,7 +1,7 @@
 FROM alpine:3.7 as installer
 
 # Install dependencies
-RUN apk add --no-cache gawk unzip
+RUN apk add --no-cache gawk unzip curl
 
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
@@ -15,6 +15,11 @@ RUN mkdir -p ${APP_ROOT} && \
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
+# Add (and run) Database driver download script
+COPY resources/bin/db-drivers.sh /tmp
+RUN chmod ugo+x /tmp/db-drivers.sh && \
+    /bin/sh /tmp/db-drivers.sh
+
 # Modify bin/run.sh so that java becomes a child process of dumb-init
 RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
@@ -22,6 +27,7 @@ RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
     mkdir ${APP_HOME}/conf
 COPY resources/default-conf ${APP_HOME}/default-conf
+RUN mv ${APP_HOME}/default-conf/boot.conf.template ${APP_HOME}/default-conf/xl-release-server.conf.template
 
 # Modify conf/xlr-wrapper-linux.conf to add node-conf to the classpath and to add container-specific VM options
 COPY resources/modify-wrapper-linux-conf.gawk /tmp
@@ -32,14 +38,14 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
 
 # Create node-specific conf directory and add template for node-specific xl-release.conf file
 RUN mkdir ${APP_HOME}/node-conf
-COPY resources/node-conf/xl-release.conf.template ${APP_HOME}/node-conf
+COPY resources/node-conf ${APP_HOME}/node-conf
 
 # Move plugins directory
 RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
     mkdir ${APP_HOME}/plugins
 
-# Create empty 'repository' and 'archive' directory
-RUN mkdir ${APP_HOME}/repository ${APP_HOME}/archive
+# Create empty 'repository', 'work' and 'archive' directory
+RUN mkdir ${APP_HOME}/repository ${APP_HOME}/archive ${APP_HOME}/work
 
 # Set permissions
 RUN chgrp -R 0 ${APP_ROOT} && \
@@ -76,10 +82,23 @@ RUN chmod ugo+x ${APP_ROOT}/tini
 WORKDIR ${APP_HOME}
 
 # Don't run as root
+RUN useradd -r -M -u 10001 -g 0 xebialabs
 USER 10001
 
-VOLUME ["${APP_HOME}/archive", "${APP_HOME}/conf", "${APP_HOME}/hotfix", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository"]
+VOLUME ["${APP_ROOT}/bootstrap", "${APP_HOME}/archive", "${APP_HOME}/conf", "${APP_HOME}/hotfix", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository"]
 EXPOSE 5516
+
+ENV XL_CLUSTER_MODE=default \
+    XL_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-release \
+    XL_DB_USERNAME=sa \
+    XL_DB_PASSWORD=123 \
+    XL_METRICS_ENABLED=false \
+    XL_CLUSTER_MODE=default \
+    SERVER_URL=http://localhost:5516/ \
+    XL_REPORT_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-release-report \
+    XL_REPORT_DB_USERNAME=\${xl.database.db-username} \
+    XL_REPORT_DB_PASSWORD=\${xl.database.db-password}
+
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
