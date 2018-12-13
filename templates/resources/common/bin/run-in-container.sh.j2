@@ -63,7 +63,7 @@ function generate_node_conf {
 
 function generate_product_conf {
   if [ -z "$XL_DB_URL" ]; then
-    echo "... Skipping generating conf/{{ product }}.conf, it already exists."
+    echo "... Using default conf/{{ product }}.conf"
     return
   fi
 
