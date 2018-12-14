@@ -55,18 +55,17 @@ function store_license {
 
 function generate_node_conf {
   echo "Re-generate node cluster configuration"
-  IP_ADDRESS=$(hostname -i)
-  sed -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
-      ${APP_HOME}/node-conf/xl-deploy.conf.template > ${APP_HOME}/node-conf/xl-deploy.conf
+  #IP_ADDRESS=$(hostname -i)
+  #sed -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
+  #    ${APP_HOME}/node-conf/system.conf.template > ${APP_HOME}/node-conf/system.conf
 
-}
-
-function generate_system_conf {
-  echo "Re-generate node cluster configuration"
-  IP_ADDRESS=$(hostname -i)
-  sed -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
-      ${APP_HOME}/node-conf/xl-deploy.conf.template > ${APP_HOME}/node-conf/xl-deploy.conf
-
+  sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+      -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
+      -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
+      -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
+      -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
+      -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
+  ${APP_HOME}/node-conf/system.conf.template > ${APP_HOME}/node-conf/system.conf
 }
 
 function generate_product_conf {
