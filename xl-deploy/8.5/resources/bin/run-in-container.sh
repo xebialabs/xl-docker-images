@@ -53,11 +53,10 @@ function store_license {
   echo ${XL_LICENSE} > ${APP_HOME}/conf/deployit-license.lic
 }
 
+
+
 function generate_node_conf {
   echo "Re-generate node cluster configuration"
-  #IP_ADDRESS=$(hostname -i)
-  #sed -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
-  #    ${APP_HOME}/node-conf/system.conf.template > ${APP_HOME}/node-conf/system.conf
 
   sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
       -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
@@ -67,6 +66,8 @@ function generate_node_conf {
       -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
   ${APP_HOME}/node-conf/system.conf.template > ${APP_HOME}/node-conf/system.conf
 }
+
+
 
 function generate_product_conf {
   if [ -z "$XL_DB_URL" ]; then

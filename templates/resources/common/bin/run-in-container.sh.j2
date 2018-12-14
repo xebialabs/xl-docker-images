@@ -53,11 +53,10 @@ function store_license {
   echo ${XL_LICENSE} > ${APP_HOME}/conf/{{ license_file }}
 }
 
+{% if product == "xl-deploy" %}
+
 function generate_node_conf {
   echo "Re-generate node cluster configuration"
-  #IP_ADDRESS=$(hostname -i)
-  #sed -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
-  #    ${APP_HOME}/node-conf/system.conf.template > ${APP_HOME}/node-conf/system.conf
 
   sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
   {% for env in environment %}
@@ -65,6 +64,8 @@ function generate_node_conf {
   {% endfor -%}
       ${APP_HOME}/node-conf/system.conf.template > ${APP_HOME}/node-conf/system.conf
 }
+
+{% endif %}
 
 function generate_product_conf {
   if [ -z "$XL_DB_URL" ]; then
