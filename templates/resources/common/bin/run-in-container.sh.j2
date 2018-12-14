@@ -61,6 +61,14 @@ function generate_node_conf {
 
 }
 
+function generate_system_conf {
+  echo "Re-generate node cluster configuration"
+  IP_ADDRESS=$(hostname -i)
+  sed -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
+      ${APP_HOME}/node-conf/{{ product }}.conf.template > ${APP_HOME}/node-conf/{{ product }}.conf
+
+}
+
 function generate_product_conf {
   if [ -z "$XL_DB_URL" ]; then
     echo "... Using default conf/{{ product }}.conf"
