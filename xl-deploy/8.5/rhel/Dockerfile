@@ -52,6 +52,8 @@ RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
 # Move and augment conf directory of regular install
 RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
+    rm ${APP_HOME}/default-conf/xl-deploy.conf && \
+    rm ${APP_HOME}/default-conf/system.conf && \
     mkdir ${APP_HOME}/conf
 COPY resources/default-conf ${APP_HOME}/default-conf
 RUN mv ${APP_HOME}/default-conf/boot.conf.template ${APP_HOME}/default-conf/deployit.conf.template

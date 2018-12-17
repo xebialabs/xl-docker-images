@@ -21,6 +21,9 @@ context:
   license_file: deployit-license.lic
   boot_conf: deployit.conf
   wrapper_conf: xld-wrapper-linux.conf
+  conf_files:
+  - xl-deploy.conf
+  - system.conf
   port: 4516
   volumes:
     - "${APP_HOME}/conf"

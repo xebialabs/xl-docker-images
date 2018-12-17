@@ -53,21 +53,33 @@ function store_license {
   echo ${XL_LICENSE} > ${APP_HOME}/conf/deployit-license.lic
 }
 
-
-
 function generate_node_conf {
   echo "Re-generate node cluster configuration"
-
-  sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
-      -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
-      -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
-      -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
-      -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
-      -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
-  ${APP_HOME}/node-conf/system.conf.template > ${APP_HOME}/node-conf/system.conf
+  IP_ADDRESS=$(hostname -i)
+  
+    if [ -e ${APP_HOME}/node-conf/xl-deploy.conf.template ]; then
+      sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+          -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
+          -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
+          -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
+          -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
+          -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
+          -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
+      ${APP_HOME}/node-conf/xl-deploy.conf.template > ${APP_HOME}/node-conf/xl-deploy.conf
+    fi
+  
+    if [ -e ${APP_HOME}/node-conf/system.conf.template ]; then
+      sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+          -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
+          -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
+          -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
+          -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
+          -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
+          -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
+      ${APP_HOME}/node-conf/system.conf.template > ${APP_HOME}/node-conf/system.conf
+    fi
+  
 }
-
-
 
 function generate_product_conf {
   if [ -z "$XL_DB_URL" ]; then
@@ -75,14 +87,29 @@ function generate_product_conf {
     return
   fi
 
-  echo "Generate configuration file from environment parameters"
-  sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
-      -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
-      -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
-      -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
-      -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
-      -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
-  ${APP_HOME}/default-conf/xl-deploy.conf.template > ${APP_HOME}/conf/xl-deploy.conf
+  
+    if [ -e ${APP_HOME}/default-conf/xl-deploy.conf.template ]; then
+      echo "Generate configuration file xl-deploy.conf from environment parameters"
+      sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+          -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
+          -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
+          -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
+          -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
+          -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
+      ${APP_HOME}/default-conf/xl-deploy.conf.template > ${APP_HOME}/conf/xl-deploy.conf
+    fi
+  
+    if [ -e ${APP_HOME}/default-conf/system.conf.template ]; then
+      echo "Generate configuration file system.conf from environment parameters"
+      sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+          -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
+          -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
+          -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
+          -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
+          -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
+      ${APP_HOME}/default-conf/system.conf.template > ${APP_HOME}/conf/system.conf
+    fi
+  
 }
 
 # Copy default plugins
