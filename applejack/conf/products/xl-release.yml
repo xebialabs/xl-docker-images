@@ -21,6 +21,8 @@ context:
   license_file: xl-release-license.lic
   boot_conf: xl-release-server.conf
   wrapper_conf: xlr-wrapper-linux.conf
+  conf_files:
+  - xl-release.conf
   port: 5516
   volumes:
     - "${APP_ROOT}/bootstrap"

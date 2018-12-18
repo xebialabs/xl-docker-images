@@ -1,0 +1,58 @@
+<configuration>
+
+    <jmxConfigurator />
+    <contextName>XL Release</contextName>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] {%mdc} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <logger name="com.xebialabs" level="info" />
+    <logger name="com.xebialabs.xlrelease.XLReleaseServer" level="info" />
+    <logger name="com.xebialabs.deployit.core.api.resteasy.http" level="info" />
+    <logger name="com.xebialabs.deployit.jetty.HttpHeaderOverrideServletRequest" level="info" />
+    <logger name="com.xebialabs.deployit.jetty.FlexRestCompatibilityServletRequest" level="info" />
+    <logger name="com.xebialabs.overthere" level="info" />
+    <logger name="com.xebialabs.overthere.spi.BaseOverthereConnection" level="warn" />
+    <logger name="com.xebialabs.xlplatform.ui" level="warn" />
+    <logger name="net.schmizz.sshj" level="error" />
+    <logger name="org.springframework" level="warn"/>
+    <logger name="com.zaxxer" level="warn"/>
+    <logger name="com.typesafe.akka.extension.quartz" level="warn" />
+    <logger name="org.quartz" level="warn" />
+    <logger name="org.terracotta.quartz" level="off" />
+    <logger name="com.atomikos" level="warn" />
+    <logger name="org.crsh" level="warn" />
+
+    <!--  Audit logging -->
+    <appender name="AUDIT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>[AUDIT] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] {%mdc} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="audit" level="off" additivity="false">
+        <appender-ref ref="AUDIT" />
+    </logger>
+
+    <!-- access log -->
+    <appender name="ACCESS" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>[ACCESS] %d{yyyy-MM-dd HH:mm:ss.SSS} [%logger{36}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.xebialabs.deployit.plumbing.AccessLogFilter" level="trace" additivity="false">
+        <appender-ref ref="ACCESS" />
+    </logger>
+
+</configuration>
