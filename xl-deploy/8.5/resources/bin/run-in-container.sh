@@ -172,7 +172,7 @@ if [ ! -f "${APP_HOME}/conf/deployit.conf" ]; then
     fi
 
     echo "... Generating deployit.conf"
-    sed -e "s/\${ADMIN_PASSWORD}/${ADMIN_PASSWORD}/g" -e "s/\${REPOSITORY_KEYSTORE_PASSPHRASE}/${REPOSITORY_KEYSTORE_PASSPHRASE}/g" ${APP_HOME}/default-conf/deployit.conf.template > ${APP_HOME}/conf/deployit.conf
+    sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g" ${APP_HOME}/default-conf/deployit.conf.template > ${APP_HOME}/conf/deployit.conf
 
     echo "Done"
   fi
