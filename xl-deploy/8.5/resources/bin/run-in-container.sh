@@ -160,15 +160,19 @@ if [ ! -f "${APP_HOME}/conf/deployit.conf" ]; then
       echo "... Generating admin password: ${ADMIN_PASSWORD}"
     fi
 
-    if [ "${REPOSITORY_KEYSTORE_PASSPHRASE}" = "" ]; then
-      REPOSITORY_KEYSTORE_PASSPHRASE=`pwgen 16`
-      echo "... Generating repository keystore passphrase: ${REPOSITORY_KEYSTORE_PASSPHRASE}"
+    if [ "${REPOSITORY_KEYSTORE}" = "" ]; then
+      if [ "${REPOSITORY_KEYSTORE_PASSPHRASE}" = "" ]; then
+        REPOSITORY_KEYSTORE_PASSPHRASE=`pwgen 16`
+        echo "... Generating repository keystore passphrase: ${REPOSITORY_KEYSTORE_PASSPHRASE}"
+      fi
+      echo "... Generating repository keystore"
+      keytool -genseckey -alias deployit-passsword-key -keyalg aes -keysize 128 -keypass "deployit" -keystore ${APP_HOME}/conf/repository-keystore.jceks -storetype jceks -storepass ${REPOSITORY_KEYSTORE_PASSPHRASE}
+    else
+      echo ${REPOSITORY_KEYSTORE} | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
     fi
-    echo "... Generating repository keystore"
-    keytool -genseckey -alias deployit-passsword-key -keyalg aes -keysize 128 -keypass "deployit" -keystore ${APP_HOME}/conf/repository-keystore.jceks -storetype jceks -storepass ${REPOSITORY_KEYSTORE_PASSPHRASE}
 
     echo "... Generating deployit.conf"
-    sed -e "s/\${ADMIN_PASSWORD}/${ADMIN_PASSWORD}/g" -e "s/\${REPOSITORY_KEYSTORE_PASSPHRASE}/${REPOSITORY_KEYSTORE_PASSPHRASE}/g" ${APP_HOME}/default-conf/deployit.conf.template > ${APP_HOME}/conf/deployit.conf
+    sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g" ${APP_HOME}/default-conf/deployit.conf.template > ${APP_HOME}/conf/deployit.conf
 
     echo "Done"
   fi

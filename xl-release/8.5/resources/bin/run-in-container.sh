@@ -53,7 +53,27 @@ function store_license {
   echo ${XL_LICENSE} > ${APP_HOME}/conf/xl-release-license.lic
 }
 
-
+function generate_node_conf {
+  echo "Re-generate node cluster configuration"
+  IP_ADDRESS=$(hostname -i)
+  
+    if [ -e ${APP_HOME}/node-conf/xl-release.conf.template ]; then
+      sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+          -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
+          -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
+          -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
+          -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
+          -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
+          -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
+          -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
+          -e "s#\${SERVER_URL}#${SERVER_URL}#g" \
+          -e "s#\${XL_REPORT_DB_URL}#${XL_REPORT_DB_URL}#g" \
+          -e "s#\${XL_REPORT_DB_USERNAME}#${XL_REPORT_DB_USERNAME}#g" \
+          -e "s#\${XL_REPORT_DB_PASSWORD}#${XL_REPORT_DB_PASSWORD}#g" \
+      ${APP_HOME}/node-conf/xl-release.conf.template > ${APP_HOME}/node-conf/xl-release.conf
+    fi
+  
+}
 
 function generate_product_conf {
   if [ -z "$XL_DB_URL" ]; then
@@ -61,19 +81,23 @@ function generate_product_conf {
     return
   fi
 
-  echo "Generate configuration file from environment parameters"
-  sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
-      -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
-      -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
-      -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
-      -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
-      -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
-      -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
-      -e "s#\${SERVER_URL}#${SERVER_URL}#g" \
-      -e "s#\${XL_REPORT_DB_URL}#${XL_REPORT_DB_URL}#g" \
-      -e "s#\${XL_REPORT_DB_USERNAME}#${XL_REPORT_DB_USERNAME}#g" \
-      -e "s#\${XL_REPORT_DB_PASSWORD}#${XL_REPORT_DB_PASSWORD}#g" \
-  ${APP_HOME}/default-conf/xl-release.conf.template > ${APP_HOME}/conf/xl-release.conf
+  
+    if [ -e ${APP_HOME}/default-conf/xl-release.conf.template ]; then
+      echo "Generate configuration file xl-release.conf from environment parameters"
+      sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+          -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
+          -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
+          -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
+          -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
+          -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
+          -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
+          -e "s#\${SERVER_URL}#${SERVER_URL}#g" \
+          -e "s#\${XL_REPORT_DB_URL}#${XL_REPORT_DB_URL}#g" \
+          -e "s#\${XL_REPORT_DB_USERNAME}#${XL_REPORT_DB_USERNAME}#g" \
+          -e "s#\${XL_REPORT_DB_PASSWORD}#${XL_REPORT_DB_PASSWORD}#g" \
+      ${APP_HOME}/default-conf/xl-release.conf.template > ${APP_HOME}/conf/xl-release.conf
+    fi
+  
 }
 
 
@@ -136,16 +160,23 @@ if [ ! -f "${APP_HOME}/conf/xl-release-server.conf" ]; then
       echo "... Generating admin password: ${ADMIN_PASSWORD}"
     fi
 
-    if [ "${REPOSITORY_KEYSTORE_PASSPHRASE}" = "" ]; then
-      REPOSITORY_KEYSTORE_PASSPHRASE=`pwgen 16`
-      echo "... Generating repository keystore passphrase: ${REPOSITORY_KEYSTORE_PASSPHRASE}"
+    if [ "${REPOSITORY_KEYSTORE}" = "" ]; then
+      if [ "${REPOSITORY_KEYSTORE_PASSPHRASE}" = "" ]; then
+        REPOSITORY_KEYSTORE_PASSPHRASE=`pwgen 16`
+        echo "... Generating repository keystore passphrase: ${REPOSITORY_KEYSTORE_PASSPHRASE}"
+      fi
+      echo "... Generating repository keystore"
+      keytool -genseckey -alias deployit-passsword-key -keyalg aes -keysize 128 -keypass "deployit" -keystore ${APP_HOME}/conf/repository-keystore.jceks -storetype jceks -storepass ${REPOSITORY_KEYSTORE_PASSPHRASE}
+    else
+      if [ "${REPOSITORY_KEYSTORE_PASSPHRASE}" = "" ]; then
+        echo "REPOSITORY_KEYSTORE provided, without an accompanying passphrase. exiting..."
+        exit 1
+      fi
+      echo ${REPOSITORY_KEYSTORE} | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
     fi
 
-    echo "... Generating repository keystore"
-    keytool -genseckey -alias deployit-passsword-key -keyalg aes -keysize 128 -keypass "deployit" -keystore ${APP_HOME}/conf/repository-keystore.jceks -storetype jceks -storepass ${REPOSITORY_KEYSTORE_PASSPHRASE}
-
     echo "... Generating xl-release-server.conf"
-    sed -e "s/\${ADMIN_PASSWORD}/${ADMIN_PASSWORD}/g" -e "s/\${REPOSITORY_KEYSTORE_PASSPHRASE}/${REPOSITORY_KEYSTORE_PASSPHRASE}/g" ${APP_HOME}/default-conf/xl-release-server.conf.template > ${APP_HOME}/conf/xl-release-server.conf
+    sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g" ${APP_HOME}/default-conf/xl-release-server.conf.template > ${APP_HOME}/conf/xl-release-server.conf
     if [ ! "${SERVER_URL}" = "" ]; then
       echo "server.url=${SERVER_URL}" >> ${APP_HOME}/conf/xl-release-server.conf
     fi

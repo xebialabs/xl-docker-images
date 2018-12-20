@@ -1,6 +1,6 @@
 % XL-RELEASE (1) Container Image Pages
 % XebiaLabs Development Team
-% 2018-12-14
+% 2018-12-20
 
 # NAME
 xl-release \- Automate, orchestrate and get visibility into your release pipelines — at enterprise scale
