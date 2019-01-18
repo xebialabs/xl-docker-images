@@ -1,0 +1,5 @@
+xl.cluster.node {
+  id = ${XL_NODE_NAME}
+  hostname = ${XL_NODE_NAME}
+  clusterPort = 5531
+}

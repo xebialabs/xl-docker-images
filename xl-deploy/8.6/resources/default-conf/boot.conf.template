@@ -1,0 +1,23 @@
+# Template for non-HOCON XL Deploy configuration file
+#
+admin.password=${ADMIN_PASSWORD}
+client.automatically.map.all.deployables.on.initial=false
+client.automatically.map.all.deployables.on.update=false
+client.automatically.map.all.deployables=true
+client.server_poll.delay=30000
+client.session.remember.enabled=true
+client.session.timeout.minutes=20
+hide.internals=false
+http.bind.address=0.0.0.0
+http.context.root=/
+http.port=4516
+http.upload.buffer=262144
+importable.packages.path=importablePackages
+maintenance.forbidden_paths=deployit/task\:POST,deployit/tasks/v2\:POST,deployit/control\:POST
+repository.keystore.password=${REPOSITORY_KEYSTORE_PASSPHRASE}
+server.mapping.override.deployed.fields.on.update=true
+server.resolve.application.dependencies=true
+ssl.mutual=false
+ssl=false
+threads.max=150
+threads.min=30
