@@ -55,6 +55,7 @@ function store_license {
 
 function generate_node_conf {
   echo "Re-generate node cluster configuration"
+  IP_ADDRESS=$(hostname -i)
   
     if [ -e ${APP_HOME}/node-conf/xl-deploy.conf.template ]; then
       sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
@@ -79,7 +80,6 @@ function generate_product_conf {
     if [ -e ${APP_HOME}/default-conf/xl-deploy.conf.template ]; then
       echo "Generate configuration file xl-deploy.conf from environment parameters"
       sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
-          -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
           -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
           -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
           -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
@@ -155,8 +155,6 @@ if [ ! -f "${APP_HOME}/conf/deployit.conf" ]; then
     echo "Done"
   fi
 fi
-
-IP_ADDRESS=$(hostname -i)
 
 copy_db_driver
 generate_product_conf

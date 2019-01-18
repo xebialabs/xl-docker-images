@@ -1,7 +1,6 @@
 xl {
 
   server {
-    hostname = ${XL_NODE_NAME}
     port = 8180
   }
 
