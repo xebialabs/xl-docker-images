@@ -55,16 +55,20 @@ function store_license {
 
 function generate_node_conf {
   echo "Re-generate node cluster configuration"
+  HOSTNAME=$(hostname)
   IP_ADDRESS=$(hostname -i)
   
     if [ -e ${APP_HOME}/node-conf/xl-deploy.conf.template ]; then
       sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+          -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
           -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
           -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
           -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
           -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
           -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
           -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
+          -e "s#\${XLD_IN_PROCESS}#${XLD_IN_PROCESS}#g" \
+          -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
       ${APP_HOME}/node-conf/xl-deploy.conf.template > ${APP_HOME}/node-conf/xl-deploy.conf
     fi
   
@@ -85,6 +89,8 @@ function generate_product_conf {
           -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
           -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
           -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
+          -e "s#\${XLD_IN_PROCESS}#${XLD_IN_PROCESS}#g" \
+          -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
       ${APP_HOME}/default-conf/xl-deploy.conf.template > ${APP_HOME}/conf/xl-deploy.conf
     fi
   
@@ -129,7 +135,7 @@ if [ ! -f "${APP_HOME}/conf/deployit.conf" ]; then
 
   echo "Done"
 
-  if [ $# -eq 0 ]; then
+  if [ $# -eq 0 ] || [ $1 == "worker" ]; then
     echo "No arguments passed to container:"
     echo "... Running default setup"
 

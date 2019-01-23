@@ -37,7 +37,7 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
 
   echo "Done"
 
-  if [ $# -eq 0 ]; then
+  if [ $# -eq 0 ] || [ $1 == "worker" ]; then
     echo "No arguments passed to container:"
     echo "... Running default setup"
 

@@ -81,16 +81,18 @@ WORKDIR ${APP_HOME}
 RUN useradd -r -M -u 10001 -g 0 xebialabs
 USER 10001
 
-VOLUME ["${APP_HOME}/conf", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/work"]
+VOLUME ["${APP_HOME}/conf", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/work"]
 EXPOSE 4516
 
 ENV XL_CLUSTER_MODE=default \
     XL_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-deploy \
     XL_DB_USERNAME=sa \
     XL_DB_PASSWORD=123 \
-    XL_METRICS_ENABLED=false
+    XL_METRICS_ENABLED=false \
+    XLD_IN_PROCESS=true \
+    HOSTNAME_SUFFIX=
 
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
-ENTRYPOINT ["/opt/xebialabs/tini", "/opt/xebialabs/xl-deploy-server/bin/run-in-container.sh"]
+ENTRYPOINT ["/opt/xebialabs/tini", "--", "/opt/xebialabs/xl-deploy-server/bin/run-in-container.sh"]
