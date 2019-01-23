@@ -23,7 +23,6 @@ context:
   wrapper_conf: xld-wrapper-linux.conf
   conf_files:
   - xl-deploy.conf
-  - system.conf
   port: 4516
   volumes:
     - "${APP_HOME}/conf"
@@ -44,6 +43,3 @@ context:
     value: "123"
   - key: XL_METRICS_ENABLED
     value: "false"
-
-
-
