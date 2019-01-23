@@ -81,7 +81,7 @@ WORKDIR ${APP_HOME}
 RUN useradd -r -M -u 10001 -g 0 xebialabs
 USER 10001
 
-VOLUME ["${APP_HOME}/conf", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/work"]
+VOLUME ["${APP_HOME}/conf", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/work"]
 EXPOSE 4516
 
 ENV XL_CLUSTER_MODE=default \
