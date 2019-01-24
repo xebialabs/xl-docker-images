@@ -40,17 +40,23 @@ function copy_db_driver {
 }
 
 function store_license {
-  if [ -z "${XL_LICENSE}" ]; then
-    echo "No license provided in \${XL_LICENSE}"
-    return
-  fi
-
   if [ -f "${APP_HOME}/conf/deployit-license.lic" ]; then
     echo "Pre-existing license found, not overwriting"
     return
   fi
 
-  echo ${XL_LICENSE} > ${APP_HOME}/conf/deployit-license.lic
+  if [ -v XL_LICENSE ]; then
+    echo "License has been explicitly provided in \${XL_LICENSE}. Using it"
+    echo ${XL_LICENSE} > ${APP_HOME}/conf/deployit-license.lic
+    return
+  fi
+
+  if [ ! -v XL_NO_UNREGISTERED_LICENSE ]; then
+    echo "XL_NO_UNREGISTERED_LICENSE was not set. Requesting unregistered license"
+    SERVER_HOST_PORT=${XL_LICENSE_ENDPOINT:-10.0.1.235:9090}
+    echo -e $(curl -X POST "http://${SERVER_HOST_PORT}/api/unregistered/xl-deploy" | jq --raw-output .license) | base64 -di >> ${APP_HOME}/conf/deployit-license.lic
+    return
+  fi
 }
 
 function generate_node_conf {
