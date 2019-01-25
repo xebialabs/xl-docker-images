@@ -7,10 +7,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install XL Deploy
-COPY resources/xl-release-8.5.0-server.zip /tmp
+COPY resources/xl-release-8.5.1-alpha.35-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-8.5.0-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-8.5.0-server ${APP_HOME}
+    unzip /tmp/xl-release-8.5.1-alpha.35-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-8.5.1-alpha.35-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -60,7 +60,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="8.5.0" \
+      version="8.5.1-alpha.35" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -71,7 +71,8 @@ ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install dependencies
 RUN yum update -y && \
-    yum install -y java-1.8.0-openjdk-headless && \
+    yum install -y epel-release && \
+    yum install -y java-1.8.0-openjdk-headless curl jq && \
     yum clean all -q
 
 # Copy installed XL Release
