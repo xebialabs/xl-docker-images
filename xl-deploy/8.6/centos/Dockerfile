@@ -77,6 +77,9 @@ RUN yum update -y && \
 # Copy installed XL Deploy
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
+# Set ttl for DNS cache
+RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
+
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 
