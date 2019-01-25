@@ -1,5 +1,5 @@
 xl {
-  server.hostname = ${XL_NODE_NAME}
+  server.hostname = ${HOSTNAME}${HOSTNAME_SUFFIX}
   cluster.node {
     id = ${XL_NODE_NAME}
     hostname = ${XL_NODE_NAME}
