@@ -29,6 +29,9 @@ RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-1.
     echo "securerandom.source=file:/dev/urandom" >> /usr/lib/jvm/java/jre/lib/security/java.security && \
     microdnf clean all
 
+### Install JQ
+RUN JQ_LOCATION="/usr/bin/jq" && \
+    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
 
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
