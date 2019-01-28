@@ -100,7 +100,6 @@ function generate_product_conf {
   
 }
 
-
 # Copy default plugins
 if [ -z "$(ls -A ${APP_HOME}/plugins)" ]; then
   echo "Empty ${APP_HOME}/plugins directory detected:"
@@ -184,6 +183,23 @@ if [ ! -f "${APP_HOME}/conf/xl-release-server.conf" ]; then
     echo "Done"
   fi
 fi
+
+# Enabling SSL for Jython
+case ${OS} in
+  "debian")
+    JAVA_CERT_PATH="/etc/ssl/certs/java"
+    ;;
+  "centos")
+    JAVA_CERT_PATH="/etc/pki/ca-trust/extracted/java"
+    ;;
+  "rhel")
+    JAVA_CERT_PATH="/etc/pki/ca-trust/extracted/java"
+    ;;
+  *)
+    JAVA_CERT_PATH="/etc/ssl/certs/java"
+    ;;
+esac
+sed "s#\${JAVA_CERT_PATH}#${JAVA_CERT_PATH}#g" ${APP_HOME}/default-conf/script.policy.template > ${APP_HOME}/conf/script.policy
 
 copy_db_driver
 generate_product_conf
