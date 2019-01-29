@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/rhel7/rhel-minimal
+FROM registry.access.redhat.com/rhel7/rhel-atomic
 
 MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 

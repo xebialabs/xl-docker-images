@@ -69,7 +69,6 @@ LABEL name="xebialabs/xl-release" \
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
-
 # Install dependencies
 RUN yum update -y && \
     yum install -y java-1.8.0-openjdk-headless && \

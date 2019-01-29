@@ -184,7 +184,7 @@ if [ ! -f "${APP_HOME}/conf/xl-release-server.conf" ]; then
   fi
 fi
 
-# Enabling SSL for Jython
+# Fix OpenJDK SSL issue
 case ${OS} in
   "debian")
     JAVA_CERT_PATH="/etc/ssl/certs/java"
