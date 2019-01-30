@@ -32,6 +32,7 @@ RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-1.
 
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
+ENV URL_OF_TRIAL_FORM=https://xebialabs.com/products/xl-deploy/trial/
 
 # Install XL Deploy
 COPY resources/xl-deploy-8.6.0-alpha.34-server.zip /tmp
