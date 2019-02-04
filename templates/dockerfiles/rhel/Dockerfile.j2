@@ -23,4 +23,6 @@ RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-1.
 
 {% include 'install.j2' %}
 
+ENV OS=rhel
+
 {% include 'runtime.j2' %}
