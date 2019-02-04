@@ -25,6 +25,8 @@ grant {
     permission  java.sql.SQLPermission "callAbort";
     permission  java.sql.SQLPermission "setSyncFactory";
     permission  java.sql.SQLPermission "setNetworkTimeout";
+
+    // Default ssl ca-cert path
     permission  java.io.FilePermission "${JAVA_CERT_PATH}", "read";
     permission  java.io.FilePermission "${JAVA_CERT_PATH}/*", "read";
 };
