@@ -26,4 +26,6 @@ RUN JQ_LOCATION="/usr/bin/jq" && \
 
 {% include 'install.j2' %}
 
+ENV OS=rhel
+
 {% include 'runtime.j2' %}

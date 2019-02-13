@@ -77,6 +77,9 @@ RUN apt-get update -y && \
 # Copy installed XL Deploy
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
+# Set ttl for DNS cache
+RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
+
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 
@@ -93,9 +96,11 @@ ENV XL_CLUSTER_MODE=default \
     XL_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-deploy \
     XL_DB_USERNAME=sa \
     XL_DB_PASSWORD=123 \
-    XL_METRICS_ENABLED=false
+    XL_METRICS_ENABLED=false \
+    XLD_IN_PROCESS=true \
+    HOSTNAME_SUFFIX=
 
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
-ENTRYPOINT ["/opt/xebialabs/tini", "/opt/xebialabs/xl-deploy-server/bin/run-in-container.sh"]
+ENTRYPOINT ["/opt/xebialabs/tini", "--", "/opt/xebialabs/xl-deploy-server/bin/run-in-container.sh"]

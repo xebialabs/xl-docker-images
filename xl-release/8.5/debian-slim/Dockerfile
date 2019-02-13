@@ -77,6 +77,8 @@ RUN apt-get update -y && \
 # Copy installed XL Release
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
+ENV OS=debian
+
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 

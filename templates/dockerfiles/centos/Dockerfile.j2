@@ -20,4 +20,6 @@ RUN yum update -y && \
 # Copy installed {{ product_name }}
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
+ENV OS=centos
+
 {% include 'runtime.j2' %}

@@ -44,3 +44,7 @@ context:
     value: "123"
   - key: XL_METRICS_ENABLED
     value: "false"
+  - key: XLD_IN_PROCESS
+    value: "true"
+  - key: HOSTNAME_SUFFIX
+    value: ""
