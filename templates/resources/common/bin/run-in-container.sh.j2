@@ -4,6 +4,13 @@ function pwgen {
   tr -cd '[:alnum:]' < /dev/urandom | fold -w$1 | head -n1
 }
 
+function check_eula {
+  if [ "$ACCEPT_EULA" != "Y" ]; then
+      echo "You must accept the End User License Agreement before this container can start."
+      exit 1
+  fi;
+}
+
 function copy_db_driver {
   case ${XL_DB_URL} in
     jdbc:h2:*)
@@ -96,6 +103,7 @@ function generate_product_conf {
 
 {% include 'includes/' + product + '-run-script.j2' %}
 
+check_eula
 copy_db_driver
 generate_product_conf
 generate_node_conf
