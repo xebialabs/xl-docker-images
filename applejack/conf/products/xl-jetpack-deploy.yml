@@ -3,14 +3,10 @@ dockerfiles:
   default: 'debian-slim'
   os:
     debian-slim: debian-slim/xljetpack_deploy_Dockerfile.j2
-repositories:
-  nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/xl-deploy-{version}-server-trial-edition.zip'
-  dist: 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/xl-deploy-{version}-server.zip'
 resources:
-  target_name: 'xl-deploy-{version}-server.zip'
   dirs:
     - xl-jetpack
 context:
   product: xl-jetpack-deploy
   product_name: XL Jetpack Deploy
-  product_description: Enterprise-scale Application Release Automation for any environment besides Automate, orchestrate and get visibility into your release pipelines.
+  product_description: Automate, orchestrate and get visibility into your release pipelines at Enterprise-scale.
