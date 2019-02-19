@@ -1,0 +1,6 @@
+FROM xebialabs/xl-release:{{ xl_version }}
+
+# Don't run as root
+USER xebialabs
+
+COPY resources/xl-jetpack-logo.svg ${APP_HOME}/conf/xl-release-logo.svg
