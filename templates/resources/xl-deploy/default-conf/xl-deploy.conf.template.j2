@@ -1,5 +1,28 @@
 xl {
 
+  cluster {
+  #  # mode: "default", "hot-standby", "full"
+    mode = ${XL_CLUSTER_MODE}
+    name = "{{ product }}_cluster"
+
+    membership {
+      jdbc {
+        url = "${XL_DB_URL}"
+        username = ${XL_DB_USERNAME}
+        password = "${XL_DB_PASSWORD}"
+      }
+    }
+
+    akka {
+      loglevel = "INFO"
+      actor.debug.receive = off
+      remote {
+        log-received-messages = off
+        log-sent-messages = off
+      }
+    }
+  }
+
   server {
     port = 8180
   }

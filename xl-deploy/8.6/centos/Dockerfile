@@ -7,10 +7,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install XL Deploy
-COPY resources/xl-deploy-8.6.0-alpha.34-server.zip /tmp
+COPY resources/xl-deploy-8.6.0-alpha.73-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-8.6.0-alpha.34-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-8.6.0-alpha.34-server ${APP_HOME}
+    unzip /tmp/xl-deploy-8.6.0-alpha.73-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-8.6.0-alpha.73-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -60,7 +60,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="8.6.0-alpha.34" \
+      version="8.6.0-alpha.73" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -76,6 +76,8 @@ RUN yum update -y && \
 
 # Copy installed XL Deploy
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
+
+ENV OS=centos
 
 # Set ttl for DNS cache
 RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
