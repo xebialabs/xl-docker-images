@@ -65,7 +65,7 @@ def render(**kwargs):
 def build(**kwargs):
     for product_conf in (kwargs['product'] or all_product_configs()):
         downloader = XLDevOpsPlatformDownloader(kwargs, product_conf)
-        if not kwargs['use_cache'] or not downloader.is_cached():
+        if not kwargs['use_cache'] or 'repositories' in product_conf.keys() or not downloader.is_cached():
             print("Going to download product ZIP for %s version %s" %
                   (product_conf['name'], kwargs['xl_version']))
             downloader.download_product()
