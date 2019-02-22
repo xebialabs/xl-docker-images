@@ -4,6 +4,13 @@ function pwgen {
   tr -cd '[:alnum:]' < /dev/urandom | fold -w$1 | head -n1
 }
 
+function check_eula {
+  if [ "$ACCEPT_EULA" != "Y" ]; then
+      echo "You must accept the End User License Agreement before this container can start."
+      exit 1
+  fi;
+}
+
 function copy_db_driver {
   case ${XL_DB_URL} in
     jdbc:h2:*)
@@ -61,10 +68,12 @@ function store_license {
 
 function generate_node_conf {
   echo "Re-generate node cluster configuration"
+  HOSTNAME=$(hostname)
   IP_ADDRESS=$(hostname -i)
   
     if [ -e ${APP_HOME}/node-conf/xl-release.conf.template ]; then
       sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+          -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
           -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
           -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
           -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
@@ -207,6 +216,7 @@ case ${OS} in
 esac
 sed "s#\${JAVA_CERT_PATH}#${JAVA_CERT_PATH}#g" ${APP_HOME}/default-conf/script.policy.template > ${APP_HOME}/conf/script.policy
 
+check_eula
 copy_db_driver
 generate_product_conf
 generate_node_conf
