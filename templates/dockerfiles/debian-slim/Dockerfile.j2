@@ -11,6 +11,11 @@ FROM openjdk:8-jdk-slim-stretch
 
 {% include 'variables.j2' %}
 
+# Install dependencies
+RUN apt-get update -y && \
+    apt-get install -y curl jq && \
+    apt-get clean all -q
+
 # Copy installed {{ product_name }}
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 

@@ -1,6 +1,6 @@
 % XL-DEPLOY (1) Container Image Pages
 % XebiaLabs Development Team
-% 2019-01-18
+% 2019-01-25
 
 # NAME
 xl-deploy \- Enterprise-scale Application Release Automation for any environment

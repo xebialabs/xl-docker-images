@@ -15,6 +15,7 @@ resources:
   - common
   - xl-deploy
 context:
+  license_server: https://download.xebialabs.com
   product: xl-deploy
   product_name: XL Deploy
   product_description: Enterprise-scale Application Release Automation for any environment

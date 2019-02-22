@@ -1,18 +1,8 @@
 xl {
-  # The cluster setup should be in system.conf
-  #cluster {
-  #  # mode: "default", "hot-standby", "full"
-  #  mode = ${XL_CLUSTER_MODE}
-  #  name = "xl-deploy_cluster"
-  #  akka {
-  #    loglevel = "INFO"
-  #    actor.debug.receive = off
-  #    remote {
-  #      log-received-messages = off
-  #      log-sent-messages = off
-  #    }
-  #  }
-  #}
+
+  server {
+    port = 8180
+  }
 
   repository {
     artifacts {
@@ -35,5 +25,14 @@ xl {
     license {
       daysBeforeWarning = 10
     }
+  }
+
+  task {
+      in-process-worker=${XLD_IN_PROCESS}
+      recovery-dir = work
+      step {
+          retry-delay = 5 seconds
+          execution-threads = 32
+      }
   }
 }
