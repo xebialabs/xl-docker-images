@@ -1,4 +1,4 @@
-FROM xebialabs/xl-deploy:8.5.2-debian-slim
+FROM xebialabs/xl-deploy:8.5.2
 
 # Don't run as root
 USER xebialabs
