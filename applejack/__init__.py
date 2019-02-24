@@ -48,6 +48,10 @@ def image_version(version, suffix):
     """Return the image version from the version and suffix passed in."""
     return version if not suffix else "%s-%s" % (version, suffix)
 
+def pull_registry(pull_registry):
+    """Return the pull registry from the pull-registry passed in."""
+    return pull_registry
+
 
 def major_minor(image_version):
     """Split a version into its 2 root components (major, minor)."""

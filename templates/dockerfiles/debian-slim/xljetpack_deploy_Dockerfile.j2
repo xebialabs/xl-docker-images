@@ -1,4 +1,4 @@
-FROM xebialabs/xl-deploy:{{ xl_version }}
+FROM {{ pull_registry }}/{{ base_product }}:{{ xl_version }}-debian-slim
 
 # Don't run as root
 USER xebialabs

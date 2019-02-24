@@ -42,6 +42,7 @@ def applejack():
 @applejack.command(help="Render the templates")
 @shared_opts
 @click.option('--commit', '-c', is_flag=True, help="Commit and tag the generated Dockerfiles.")
+@click.option('--pull-registry', help="Registry to pull XebiaLabs base Docker image from.", default='xebialabs')
 def render(**kwargs):
     renderer = Renderer(kwargs)
     for product in (kwargs['product'] or all_product_configs()):
