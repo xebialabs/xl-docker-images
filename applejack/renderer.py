@@ -9,7 +9,7 @@ class Renderer(object):
     def __init__(self, commandline_args):
         """Initialize the XebiaLabs Dockerfile template rendering engine."""
         self.commit = commandline_args['commit']
-        self.pull_registry = commandline_args['pull_registry']
+        self.registry = commandline_args['registry']
         self.version = commandline_args['xl_version']
         self.image_version = image_version(commandline_args['xl_version'], commandline_args['suffix'])
 
@@ -36,7 +36,7 @@ class Renderer(object):
         context = dict(product_conf['context'])
         context['image_version'] = self.image_version
         context['xl_version'] = self.version
-        context['pull_registry'] = self.pull_registry
+        context['registry'] = self.registry
         context['today'] = datetime.now().strftime('%Y-%m-%d')
         return context
 

@@ -1,4 +1,4 @@
-FROM {{ pull_registry }}/{{ base_product }}:{{ xl_version }}-centos
+FROM {{ registry }}/{{ base_product }}:{{ xl_version }}-centos
 
 # Don't run as root
 USER xebialabs

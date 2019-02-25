@@ -50,11 +50,11 @@ If you want to generate the Dockerfiles for a specific components of the XebiaLa
 $ {executable} render --xl-version <version> --product xl-deploy --product xl-release
 ----
 
-If you want to specify different base image organisation than default one "xebialabs" in which generated docker images will pull from you can use `--pull-registry`, This may be needed while generating Docker images for XL Jetpack Release and xl JetPack Deploy from xebialabsunsupported organisation.
+If you want to specify different base image organisation than default one "xebialabs" in which generated docker images will pull from you can use `--registry`, This may be needed while generating Docker images for XL Jetpack Release and xl JetPack Deploy from xebialabsunsupported organisation.
 
 [source,shell,subs="verbatim,attributes"]
 ----
-$ {executable} render --xl-version <version> --product xl-jetpack-deploy --pull-registry xebialabsunsupported
+$ {executable} render --xl-version <version> --product xl-jetpack-deploy --registry xebialabsunsupported
 ----
 
 If you want to generate an updated set of Dockerfiles for an already released version of the XebiaLabs DevOps Platform, the following command will generate a version tag of `<version>-<suffix>`:
