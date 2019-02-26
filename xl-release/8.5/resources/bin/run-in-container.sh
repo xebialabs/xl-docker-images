@@ -55,10 +55,12 @@ function store_license {
 
 function generate_node_conf {
   echo "Re-generate node cluster configuration"
+  HOSTNAME=$(hostname)
   IP_ADDRESS=$(hostname -i)
   
     if [ -e ${APP_HOME}/node-conf/xl-release.conf.template ]; then
       sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+          -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
           -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
           -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
           -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
