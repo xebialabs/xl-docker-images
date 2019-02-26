@@ -5,8 +5,8 @@ function pwgen {
 }
 
 function check_eula {
-  if [ "$ACCEPT_EULA" != "Y" ]; then
-      echo "You must accept the End User License Agreement before this container can start."
+  if [[ -z "$XL_LICENSE" && -z "$XL_NO_UNREGISTERED_LICENSE" && ! -f "${APP_HOME}/conf/deployit-license.lic" && "$ACCEPT_EULA" != "Y" ]]; then
+      echo "You must accept the End User License Agreement or provide your own license before this container can start."
       exit 1
   fi;
 }
