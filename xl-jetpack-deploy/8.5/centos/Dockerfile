@@ -1,4 +1,4 @@
-FROM {{ registry }}/{{ base_product }}:{{ xl_version }}
+FROM xebialabs/xl-deploy:8.5.3-centos
 
 # Don't run as root
 USER xebialabs

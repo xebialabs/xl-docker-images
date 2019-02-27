@@ -23,6 +23,7 @@ class ProductConfigType(click.Choice):
 _shared_opts = [
     click.option('--product', multiple=True, help="The product to build the files / images for.", type=ProductConfigType(all_products())),
     click.option('--xl-version', help="Product version, e.g. 8.1.0", required=True),
+    click.option('--registry', help="Docker registry to use, either to pull from when used with render or to push to when used with build", default='xebialabs'),
     click.option('--suffix', help="The (optional) suffix attached to the Docker and Git commit tags. Only used when a new version of the Docker images is released for the same product version"),
 ]
 
@@ -60,7 +61,6 @@ def render(**kwargs):
 @click.option('--download-username', help="Username to use to download product ZIP.")
 @click.option('--download-password', help="Password to use to download product ZIP.")
 @click.option('--target-os', multiple=True, help="The target container OS to build and/or push.")
-@click.option('--registry', help="Registry to push the Docker image to.", default='xebialabs')
 @click.option('--use-cache', is_flag=True, help="Don't download product ZIP if already downloaded, don't pull the base image and use the Docker build cache")
 def build(**kwargs):
     for product_conf in (kwargs['product'] or all_product_configs()):
