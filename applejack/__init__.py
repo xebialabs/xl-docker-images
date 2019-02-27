@@ -49,7 +49,7 @@ def image_version(version, suffix):
     return version if not suffix else "%s-%s" % (version, suffix)
 
 def registry(registry):
-    """Return the pull registry from the --registry passed in."""
+    """Return registry from the --registry passed in."""
     return registry
 
 

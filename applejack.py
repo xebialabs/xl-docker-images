@@ -23,7 +23,7 @@ class ProductConfigType(click.Choice):
 _shared_opts = [
     click.option('--product', multiple=True, help="The product to build the files / images for.", type=ProductConfigType(all_products())),
     click.option('--xl-version', help="Product version, e.g. 8.1.0", required=True),
-    click.option('--registry', help="Docker Registry to use.", default='xebialabs'),
+    click.option('--registry', help="Docker registry to use, either to pull from when used with render or to push to when used with build", default='xebialabs'),
     click.option('--suffix', help="The (optional) suffix attached to the Docker and Git commit tags. Only used when a new version of the Docker images is released for the same product version"),
 ]
 
