@@ -5,7 +5,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="8.5.2" \
+      version="8.5.3" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -29,15 +29,18 @@ RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-1.
     echo "securerandom.source=file:/dev/urandom" >> /usr/lib/jvm/java/jre/lib/security/java.security && \
     microdnf clean all
 
+### Install JQ
+RUN JQ_LOCATION="/usr/bin/jq" && \
+    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
 
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install XL Deploy
-COPY resources/xl-release-8.5.2-server.zip /tmp
+COPY resources/xl-release-8.5.3-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-8.5.2-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-8.5.2-server ${APP_HOME}
+    unzip /tmp/xl-release-8.5.3-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-8.5.3-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/

@@ -4,6 +4,13 @@ function pwgen {
   tr -cd '[:alnum:]' < /dev/urandom | fold -w$1 | head -n1
 }
 
+function check_eula {
+  if [[ -z "$XL_LICENSE" && -z "$XL_NO_UNREGISTERED_LICENSE" && ! -f "${APP_HOME}/conf/deployit-license.lic" && "$ACCEPT_EULA" != "Y" ]]; then
+      echo "You must accept the End User License Agreement or provide your own license before this container can start."
+      exit 1
+  fi;
+}
+
 function copy_db_driver {
   case ${XL_DB_URL} in
     jdbc:h2:*)
@@ -40,43 +47,42 @@ function copy_db_driver {
 }
 
 function store_license {
-  if [ -z "${XL_LICENSE}" ]; then
-    echo "No license provided in \${XL_LICENSE}"
-    return
-  fi
-
   if [ -f "${APP_HOME}/conf/deployit-license.lic" ]; then
     echo "Pre-existing license found, not overwriting"
     return
   fi
 
-  echo ${XL_LICENSE} > ${APP_HOME}/conf/deployit-license.lic
+  if [ -v XL_LICENSE ]; then
+    echo "License has been explicitly provided in \${XL_LICENSE}. Using it"
+    echo ${XL_LICENSE} > ${APP_HOME}/conf/deployit-license.lic
+    return
+  fi
+
+  if [ ! -v XL_NO_UNREGISTERED_LICENSE ]; then
+    echo "XL_NO_UNREGISTERED_LICENSE was not set. Requesting unregistered license"
+    SERVER_PATH_PART=${XL_LICENSE_ENDPOINT:-https://download.xebialabs.com}
+    echo -e $(curl -X POST "${SERVER_PATH_PART}/api/unregistered/xl-deploy" | jq --raw-output .license) | base64 -di >> ${APP_HOME}/conf/deployit-license.lic
+    return
+  fi
 }
 
 function generate_node_conf {
   echo "Re-generate node cluster configuration"
+  HOSTNAME=$(hostname)
   IP_ADDRESS=$(hostname -i)
   
     if [ -e ${APP_HOME}/node-conf/xl-deploy.conf.template ]; then
       sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+          -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
           -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
           -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
           -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
           -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
           -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
           -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
+          -e "s#\${XLD_IN_PROCESS}#${XLD_IN_PROCESS}#g" \
+          -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
       ${APP_HOME}/node-conf/xl-deploy.conf.template > ${APP_HOME}/node-conf/xl-deploy.conf
-    fi
-  
-    if [ -e ${APP_HOME}/node-conf/system.conf.template ]; then
-      sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
-          -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
-          -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
-          -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
-          -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
-          -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
-          -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
-      ${APP_HOME}/node-conf/system.conf.template > ${APP_HOME}/node-conf/system.conf
     fi
   
 }
@@ -96,18 +102,9 @@ function generate_product_conf {
           -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
           -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
           -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
+          -e "s#\${XLD_IN_PROCESS}#${XLD_IN_PROCESS}#g" \
+          -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
       ${APP_HOME}/default-conf/xl-deploy.conf.template > ${APP_HOME}/conf/xl-deploy.conf
-    fi
-  
-    if [ -e ${APP_HOME}/default-conf/system.conf.template ]; then
-      echo "Generate configuration file system.conf from environment parameters"
-      sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
-          -e "s#\${XL_CLUSTER_MODE}#${XL_CLUSTER_MODE}#g" \
-          -e "s#\${XL_DB_URL}#${XL_DB_URL}#g" \
-          -e "s#\${XL_DB_USERNAME}#${XL_DB_USERNAME}#g" \
-          -e "s#\${XL_DB_PASSWORD}#${XL_DB_PASSWORD}#g" \
-          -e "s#\${XL_METRICS_ENABLED}#${XL_METRICS_ENABLED}#g" \
-      ${APP_HOME}/default-conf/system.conf.template > ${APP_HOME}/conf/system.conf
     fi
   
 }
@@ -151,7 +148,7 @@ if [ ! -f "${APP_HOME}/conf/deployit.conf" ]; then
 
   echo "Done"
 
-  if [ $# -eq 0 ]; then
+  if [ $# -eq 0 ] || [ $1 == "worker" ]; then
     echo "No arguments passed to container:"
     echo "... Running default setup"
 
@@ -178,6 +175,7 @@ if [ ! -f "${APP_HOME}/conf/deployit.conf" ]; then
   fi
 fi
 
+check_eula
 copy_db_driver
 generate_product_conf
 generate_node_conf

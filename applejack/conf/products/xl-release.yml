@@ -15,6 +15,7 @@ resources:
   - common
   - xl-release
 context:
+  license_server: https://download.xebialabs.com
   product: xl-release
   product_name: XL Release
   product_description: Automate, orchestrate and get visibility into your release pipelines — at enterprise scale

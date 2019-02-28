@@ -47,7 +47,14 @@ If you want to generate the Dockerfiles for a specific components of the XebiaLa
 
 [source,shell,subs="verbatim,attributes"]
 ----
-$ {executable} render --xl-version <version> --product {xl-deploy,xl-release}
+$ {executable} render --xl-version <version> --product xl-deploy --product xl-release
+----
+
+If you want to specify different base image organisation than default one "xebialabs" in which generated docker images will pull from you can use `--registry`, This may be needed while generating Docker images for XL Jetpack Release and xl JetPack Deploy from xebialabsunsupported organisation.
+
+[source,shell,subs="verbatim,attributes"]
+----
+$ {executable} render --xl-version <version> --product xl-jetpack-deploy --registry xebialabsunsupported
 ----
 
 If you want to generate an updated set of Dockerfiles for an already released version of the XebiaLabs DevOps Platform, the following command will generate a version tag of `<version>-<suffix>`:
@@ -83,10 +90,19 @@ If you only want to build a Docker image for a specific target operating system,
 
 [source,shell,subs="verbatim,attributes"]
 ----
-$ {executable} build --xl-version <version> --target-os {rhel,centos,debian-slim}
+$ {executable} build --xl-version <version> --target-os rhel --target-os centos --target-os debian-slim
+----
+Note: For rhel images you will need to build it in RedHat OS with valid RHEL subscription.
+
+If you want to push Docker image while building you need to use `--push` and `--registry` with dockerhub organisation you need to push to which is by default xebialabs, see following command:
+
+[source,shell,subs="verbatim,attributes"]
+----
+$ {executable} build --xl-version <version> --target-os centos --push --registry xebialabs
 ----
 
 === Building an image for an alpha version of XL Deploy or XL Release
+Alpha versions are not released to Distribution site hence you will need to get those versions from nexus by specifying `--download-source`, see the following command:
 [source,shell,subs="verbatim,attributes"]
 ----
 $ {executable} build --xl-version <version> --download-username <LDAP username> --download-source nexus
@@ -96,5 +112,5 @@ If you also want to push it to the xebialabsunsupported organisation, use the fo
 
 [source,shell,subs="verbatim,attributes"]
 ----
-$ {executable} build --xl-version <version> --download-username <LDAP username> --download-source nexus --registry xebialabsunsupported
+$ {executable} build --xl-version <version> --download-username <LDAP username> --download-source nexus --push --registry xebialabsunsupported
 ----

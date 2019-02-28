@@ -31,29 +31,33 @@ class XLDevOpsPlatformDownloader(object):
         return self.product_conf['resources']['target_name'].format(version=self.product_version, product=self.product_conf['name'])
 
     def download_product(self):
-        # Determine filename and download URL
-        url = self.__download_url()
-        target_filename = self.__target_path(url)
-        if not target_filename.parent.is_dir():
-            print("Creating resources directory '{}'.".format(target_filename.parent))
-            target_filename.parent.mkdir()
-        # Set up basic auth for urllib
-        if not self.download_username:
-            raise ValueError('--download-username is needed')
-        if not self.download_password:
-            self.download_password = getpass()
+        if 'repositories' in self.product_conf.keys():
+            # Determine filename and download URL
+            url = self.__download_url()
+            target_filename = self.__target_path(url)
+            if not target_filename.parent.is_dir():
+                print("Creating resources directory '{}'.".format(target_filename.parent))
+                target_filename.parent.mkdir()
+            # Set up basic auth for urllib
+            if not self.download_username:
+                raise ValueError('--download-username is needed')
             if not self.download_password:
-                raise ValueError("Either specify --download-password on the commandline or input the password at the prompt")
-        passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-        passman.add_password(None, url, self.download_username, self.download_password)
-        authhandler = urllib.request.HTTPBasicAuthHandler(passman)
-        opener = urllib.request.build_opener(authhandler)
-        urllib.request.install_opener(opener)
+                self.download_password = getpass()
+                if not self.download_password:
+                    raise ValueError("Either specify --download-password on the commandline or input the password at the prompt")
+            passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+            passman.add_password(None, url, self.download_username, self.download_password)
+            authhandler = urllib.request.HTTPBasicAuthHandler(passman)
+            opener = urllib.request.build_opener(authhandler)
+            urllib.request.install_opener(opener)
 
-        print("Downloading product ZIP from %s" % (url))
-        response = urllib.request.urlopen(url)
-        data = response.read()
-        with open(target_filename, 'wb') as f:
-            f.write(data)
+            print("Downloading product ZIP from %s" % (url))
+            response = urllib.request.urlopen(url)
+            data = response.read()
+            with open(target_filename, 'wb') as f:
+                f.write(data)
 
-        print("Product ZIP downloaded to %s" % target_filename)
+            print("Product ZIP downloaded to %s" % target_filename)
+        else:
+            print("Skipping Download because Repositories is not defined")
+

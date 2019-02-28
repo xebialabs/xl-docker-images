@@ -1,4 +1,0 @@
----
-hostPort: localhost:9011
-rules:
-- pattern: ".*"

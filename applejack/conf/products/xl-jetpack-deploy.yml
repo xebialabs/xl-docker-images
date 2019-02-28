@@ -1,0 +1,14 @@
+name: xl-jetpack-deploy
+dockerfiles:
+  default: 'debian-slim'
+  os:
+    debian-slim: debian-slim/xljetpack_deploy_Dockerfile.j2
+    centos: centos/xljetpack_deploy_Dockerfile.j2
+resources:
+  dirs:
+    - xl-jetpack
+context:
+  base_product: xl-deploy
+  product: xl-jetpack-deploy
+  product_name: XL Jetpack Deploy
+  product_description: Automate, orchestrate and get visibility into your release pipelines at Enterprise-scale.
