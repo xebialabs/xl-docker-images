@@ -54,3 +54,5 @@ context:
     value: "\\${xl.database.db-username}"
   - key: XL_REPORT_DB_PASSWORD
     value: "\\${xl.database.db-password}"
+  - key: XL_LICENSE_KIND
+    value: byol
