@@ -45,6 +45,9 @@ RUN mkdir -p ${APP_ROOT} && \
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
+# Add jmx-exporter for prometheus
+COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
+
 # Add (and run) Database driver download script
 COPY resources/bin/db-drivers.sh /tmp
 RUN chmod ugo+x /tmp/db-drivers.sh && \
@@ -58,6 +61,7 @@ RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
     rm ${APP_HOME}/default-conf/xl-deploy.conf && \
     mkdir ${APP_HOME}/conf
 COPY resources/default-conf ${APP_HOME}/default-conf
+COPY resources/jmx-exporter/jmx-exporter.yaml ${APP_HOME}/default-conf/
 RUN mv ${APP_HOME}/default-conf/boot.conf.template ${APP_HOME}/default-conf/deployit.conf.template
 
 # Modify conf/xld-wrapper-linux.conf to add node-conf to the classpath and to add container-specific VM options
