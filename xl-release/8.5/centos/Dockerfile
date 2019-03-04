@@ -7,10 +7,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install XL Deploy
-COPY resources/xl-release-8.5.3-server.zip /tmp
+COPY resources/xl-release-8.5.4-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-8.5.3-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-8.5.3-server ${APP_HOME}
+    unzip /tmp/xl-release-8.5.4-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-8.5.4-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -64,7 +64,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="8.5.3" \
+      version="8.5.4" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -108,7 +108,8 @@ ENV XL_CLUSTER_MODE=default \
     SERVER_URL=http://localhost:5516/ \
     XL_REPORT_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-release-report \
     XL_REPORT_DB_USERNAME=\${xl.database.db-username} \
-    XL_REPORT_DB_PASSWORD=\${xl.database.db-password}
+    XL_REPORT_DB_PASSWORD=\${xl.database.db-password} \
+    XL_LICENSE_KIND=byol
 
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
