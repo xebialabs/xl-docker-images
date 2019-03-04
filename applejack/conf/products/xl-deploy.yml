@@ -48,3 +48,5 @@ context:
     value: "true"
   - key: HOSTNAME_SUFFIX
     value: ""
+  - key: XL_LICENSE_KIND
+    value: byol
