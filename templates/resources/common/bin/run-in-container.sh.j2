@@ -5,9 +5,11 @@ function pwgen {
 }
 
 function check_eula {
-  if [[ -z "$XL_LICENSE" && -z "$XL_NO_UNREGISTERED_LICENSE" && ! -f "${APP_HOME}/conf/{{ license_file }}" && "$ACCEPT_EULA" != "Y" ]]; then
-      echo "You must accept the End User License Agreement or provide your own license before this container can start."
-      exit 1
+  if [[ -z "$XL_LICENSE" && -z "$XL_NO_UNREGISTERED_LICENSE" && ! -f "${APP_HOME}/conf/{{ license_file }}" && "$XL_LICENSE_KIND" == "byol" ]]; then
+      if [[  "$ACCEPT_EULA" != "Y" && "$ACCEPT_EULA" != "y" ]]; then
+        echo "You must accept the End User License Agreement or provide your own license before this container can start."
+        exit 1
+      fi
   fi;
 }
 
@@ -57,6 +59,12 @@ function store_license {
     echo ${XL_LICENSE} > ${APP_HOME}/conf/{{ license_file }}
     return
   fi
+
+  if [ $XL_LICENSE_KIND != "byol" ]; then
+    echo "License kind '$XL_LICENSE_KIND' has been configured, not requesting trial license"
+    return
+  fi
+
 
   if [ ! -v XL_NO_UNREGISTERED_LICENSE ]; then
     echo "XL_NO_UNREGISTERED_LICENSE was not set. Requesting unregistered license"
