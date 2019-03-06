@@ -1,4 +1,4 @@
-FROM xebialabs/xl-deploy:8.5.3
+FROM xl-docker.xebialabs.com/xl-deploy:8.5.3
 
 # Don't run as root
 USER xebialabs
