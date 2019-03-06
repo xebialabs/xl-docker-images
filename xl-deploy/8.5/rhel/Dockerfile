@@ -110,7 +110,8 @@ ENV XL_CLUSTER_MODE=default \
     XL_DB_PASSWORD=123 \
     XL_METRICS_ENABLED=false \
     XLD_IN_PROCESS=true \
-    HOSTNAME_SUFFIX=
+    HOSTNAME_SUFFIX= \
+    XL_LICENSE_KIND=byol
 
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
