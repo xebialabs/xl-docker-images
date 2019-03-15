@@ -2,8 +2,9 @@ name: xl-jetpack-deploy
 dockerfiles:
   default: 'debian-slim'
   os:
-    debian-slim: debian-slim/xljetpack_deploy_Dockerfile.j2
-    centos: centos/xljetpack_deploy_Dockerfile.j2
+    debian-slim: debian-slim/xl-jetpack_Dockerfile.j2
+    centos: centos/xl-jetpack_Dockerfile.j2
+    amazonlinux: amazonlinux/xl-jetpack_Dockerfile.j2
 resources:
   dirs:
     - xl-jetpack

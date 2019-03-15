@@ -1,6 +1,0 @@
-FROM {{ registry }}/{{ base_product }}:{{ xl_version }}
-
-# Don't run as root
-USER xebialabs
-
-COPY resources/xl-jetpack-logo.svg ${APP_HOME}/conf/xl-deploy-logo.svg
