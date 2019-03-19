@@ -114,3 +114,23 @@ If you also want to push it to the xebialabsunsupported organisation, use the fo
 ----
 $ {executable} build --xl-version <version> --download-username <LDAP username> --download-source nexus --push --registry xebialabsunsupported
 ----
+
+=== Database driver support
+
+Both XL Release and XL Deploy supports db2, mysql, mssql, postgresql, oracle database for production setups more information can be found on official documentation :
+
+XL-Release : https://docs.xebialabs.com/xl-release/how-to/configure-the-xl-release-sql-repository-in-a-database.html
+
+XL-Deploy : https://docs.xebialabs.com/xl-deploy/how-to/configure-the-xl-deploy-sql-repository.html
+
+To connect with these databases both the products needs jdbc driver in the classpath, example:  inside `/opt/xebialabs/xl-release-server/lib` (for xl release).
+
+By default with these official images we provide jdbc drivers for mysql, mssql and postgresql.
+
+if you have a requirement to connect to the db2, oracle then you will need to provide jdbc drivers by creating your custom docker image on top of official image and copying jdbc drivers in the `lib` directory.
+
+Example : Adding db2 jdbc driver in classpath of xl-release container
+
+[source,shell,subs="verbatim,attributes"]
+FROM xebialabs/xl-release:8.5
+ADD db2jcc4-10.1.jar /opt/xebialabs/xl-release-server/lib
