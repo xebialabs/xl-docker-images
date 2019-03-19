@@ -128,3 +128,9 @@ To connect with these databases both the products needs jdbc driver in the class
 By default with these official images we provide jdbc drivers for mysql, mssql and postgresql.
 
 if you have a requirement to connect to the db2, oracle then you will need to provide jdbc drivers by creating your custom docker image on top of official image and copying jdbc drivers in the `lib` directory.
+
+Example : Adding db2 jdbc driver in classpath of xl-release container
+
+[source,shell,subs="verbatim,attributes"]
+FROM xebialabs/xl-release:8.5
+ADD db2jcc4-10.1.jar /opt/xebialabs/xl-release-server/lib

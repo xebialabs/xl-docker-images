@@ -21,8 +21,7 @@ function copy_db_driver {
       ;;
     jdbc:oracle:*)
       XL_DB_DRIVER="oracle.jdbc.OracleDriver"
-      echo "Still need support for 'oracle' jdbc driver"
-      exit 1
+      echo "oracle jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       ;;
     jdbc:mysql:*)
       XL_DB_DRIVER="com.mysql.jdbc.Driver"
@@ -38,8 +37,7 @@ function copy_db_driver {
       ;;
     jdbc:db2:*)
       XL_DB_DRIVER="com.ibm.db2.jcc.DB2Driver"
-      echo "Still need support for 'db2' jdbc driver"
-      exit 1
+      echo "db2 jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       ;;
     *)
         echo "Database type could not be inferred from url '${XL_REPO_DB_URL}', supported db types are 'h2', 'oracle', 'mysql', 'postgresql', 'sqlserver', 'db2'"
