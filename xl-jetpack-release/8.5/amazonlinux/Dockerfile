@@ -1,4 +1,4 @@
-FROM xl-docker.xebialabs.com/xl-release:8.5.2-centos
+FROM xl-docker.xebialabs.com/xl-release:8.5.2-amazonlinux
 
 # Don't run as root
 USER xebialabs

@@ -1,4 +1,4 @@
-FROM xebialabs/xl-release:8.5.3
+FROM xl-docker.xebialabs.com/xl-release:8.5.2
 
 # Don't run as root
 USER xebialabs
