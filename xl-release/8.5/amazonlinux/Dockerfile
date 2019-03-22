@@ -1,37 +1,7 @@
-FROM registry.access.redhat.com/rhel7/rhel-atomic
-
-MAINTAINER XebiaLabs Development <docker@xebialabs.com>
-
-LABEL name="xebialabs/xl-release" \
-      maintainer="docker@xebialabs.com" \
-      vendor="XebiaLabs" \
-      version="8.5.3" \
-      release="1" \
-      summary="XL Release" \
-      description="Enterprise-scale Application Release Automation for any environment" \
-      url="https://www.xebialabs.com/xl-release"
-
-COPY resources/help.md /tmp/
-
-### add licenses to this directory
-COPY resources/licenses /licenses
+FROM alpine:3.7 as installer
 
 # Install dependencies
-RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname shadow-utils" && \
-    microdnf install --enablerepo=rhel-7-server-rpms --enablerepo=rhel-7-server-optional-rpms --nodocs ${INSTALL_PKGS} && \
-    microdnf update && \
-### help file markdown to man conversion
-    go-md2man -in /tmp/help.md -out /help.1 && \
-    microdnf clean all
-
-RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
-### Set the Java random source
-    echo "securerandom.source=file:/dev/urandom" >> /usr/lib/jvm/java/jre/lib/security/java.security && \
-    microdnf clean all
-
-### Install JQ
-RUN JQ_LOCATION="/usr/bin/jq" && \
-    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
+RUN apk add --no-cache gawk unzip curl
 
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
@@ -87,7 +57,31 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
 
-ENV OS=rhel
+FROM amazonlinux:2
+
+MAINTAINER XebiaLabs Development <docker@xebialabs.com>
+
+LABEL name="xebialabs/xl-release" \
+      maintainer="docker@xebialabs.com" \
+      vendor="XebiaLabs" \
+      version="8.5.3" \
+      release="1" \
+      summary="XL Release" \
+      description="Enterprise-scale Application Release Automation for any environment" \
+      url="https://www.xebialabs.com/xl-release"
+
+ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
+ENV APP_HOME=${APP_ROOT}/xl-release-server
+
+# Install dependencies
+RUN yum update -y && \
+    yum install -y java-1.8.0-openjdk-headless curl jq shadow-utils.x86_64 hostname && \
+    yum clean all -q
+
+# Copy installed XL Release
+COPY --from=installer ${APP_ROOT} ${APP_ROOT}
+
+ENV OS=amazonlinux
 
 # Set ttl for DNS cache
 RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
