@@ -4,7 +4,7 @@ Author: XebiaLabs Development Team
 :source-highligher: pygments
 
 == Meet Applejack
-image::applejack.png[]
+image::applejack.png[applejack, 320, 320]
 Applejack loves to help you generate Dockerfiles for the XebiaLabs DevOps Platform. She is also able to commit them to version control or create the Docker images from whatever she generates. You just have to feed her a Python environment.
 
 == Prerequisites
