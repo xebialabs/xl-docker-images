@@ -12,4 +12,4 @@ RUN curl --fail-early -o /tmp/terraform.zip https://releases.hashicorp.com/terra
 # Don't run as root
 USER xebialabs
 
-COPY resources/xl-jetpack-logo.svg ${APP_HOME}/conf/xl-release-logo.svg
+COPY resources/xl-jetpack-logo.svg ${APP_HOME}/conf/xl-deploy-logo.svg
