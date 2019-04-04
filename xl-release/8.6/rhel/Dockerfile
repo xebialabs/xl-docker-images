@@ -36,7 +36,7 @@ RUN JQ_LOCATION="/usr/bin/jq" && \
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
-# Install XL Deploy
+# Install XL Release
 COPY resources/xl-release-8.6.1-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
     unzip /tmp/xl-release-8.6.1-server.zip -d ${APP_ROOT} && \
