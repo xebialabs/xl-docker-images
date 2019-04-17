@@ -57,7 +57,7 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
 
-FROM centos:7
+FROM amazonlinux:2
 
 MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 
@@ -75,14 +75,13 @@ ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install dependencies
 RUN yum update -y && \
-    yum install -y epel-release && \
-    yum install -y java-1.8.0-openjdk-headless curl jq && \
+    yum install -y java-1.8.0-openjdk-headless curl jq shadow-utils.x86_64 hostname && \
     yum clean all -q
 
 # Copy installed XL Deploy
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
-ENV OS=centos
+ENV OS=amazonlinux
 
 # Set ttl for DNS cache
 RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
