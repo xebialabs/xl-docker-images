@@ -1,4 +1,4 @@
-FROM xebialabs/xl-deploy:8.5.4-centos
+FROM xebialabs/xl-deploy:8.5.4-amazonlinux
 
 # Don't run as root
 USER xebialabs
