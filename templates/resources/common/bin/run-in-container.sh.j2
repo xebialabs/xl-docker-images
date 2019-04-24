@@ -107,6 +107,13 @@ function generate_product_conf {
   {% endfor %}
 }
 
+function check_force_upgrade {
+   FORCE_UPGRADE_FLAG=""
+   if [[ ${FORCE_UPGRADE,,} == "true" ]] ; then
+     echo "Force upgrade setting has been detected. In case of upgrade it will be performed in non-interactive mode. "
+     FORCE_UPGRADE_FLAG="-force-upgrades"
+   fi
+}
 {% include 'includes/' + product + '-run-script.j2' %}
 
 check_eula
@@ -114,6 +121,7 @@ copy_db_driver
 generate_product_conf
 generate_node_conf
 store_license
+check_force_upgrade
 
 # Start regular startup process
-exec ${APP_HOME}/bin/run.sh "$@"
+exec ${APP_HOME}/bin/run.sh ${FORCE_UPGRADE_FLAG} "$@"

@@ -1,4 +1,4 @@
-FROM xebialabs/xl-deploy:8.5.3
+FROM xebialabs/xl-deploy:8.5.4
 
 # Don't run as root
 USER xebialabs
