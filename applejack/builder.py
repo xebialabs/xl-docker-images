@@ -40,7 +40,7 @@ class ImageBuilder(object):
             nocache=not self.use_cache,
             pull=not self.use_cache,
             path=str(target_path(self.product_conf['name'], self.image_version)),
-            dockerfile=str(Path(target_os) / "Dockerfile"),
+            dockerfile=str(Path(target_os) / "Dockerfile").replace('\\', '/'),
             rm=True,
         )
         for line in self.convert_build_logs(generator):
