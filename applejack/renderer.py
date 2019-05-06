@@ -17,7 +17,7 @@ class Renderer(object):
         env = Environment(
             loader=FileSystemLoader(str(templates_path))
         )
-        template = env.get_template(str(template_file))
+        template = env.get_template(str(template_file).replace('\\', '/'))
         with open(target_file, 'w') as f:
             f.write(template.render(context))
 
@@ -69,7 +69,6 @@ class Renderer(object):
 
     def commit_rendered(self):
         self.__git_commit_dockerfiles()
-        pass
 
     def __git_commit_dockerfiles(self):
         repo = Repo.init('.')
