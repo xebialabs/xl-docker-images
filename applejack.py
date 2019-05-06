@@ -57,7 +57,7 @@ def render(**kwargs):
 @applejack.command(help="Build the Docker images from the generated templates")
 @shared_opts
 @click.option('--push', '-p', is_flag=True, help="Push the Docker images to the hub.")
-@click.option('--download-source', help="Download source: dist (default) or nexus.", default='dist', type=click.Choice(["dist", "nexus"]))
+@click.option('--download-source', help="Download source: dist (default) or nexus.", default='dist', type=click.Choice(["dist", "nexus", "localm2"]))
 @click.option('--download-username', help="Username to use to download product ZIP.")
 @click.option('--download-password', help="Password to use to download product ZIP.")
 @click.option('--target-os', multiple=True, help="The target container OS to build and/or push.")
