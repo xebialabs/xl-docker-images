@@ -62,6 +62,7 @@ def render(**kwargs):
 @click.option('--download-password', help="Password to use to download product ZIP.")
 @click.option('--target-os', multiple=True, help="The target container OS to build and/or push.")
 @click.option('--use-cache', is_flag=True, help="Don't download product ZIP if already downloaded, don't pull the base image and use the Docker build cache")
+@click.option('--m2location', help="The location of the .m2 repository for localm2 download sources. Defaults to ~/.m2/repository")
 def build(**kwargs):
     for product_conf in (kwargs['product'] or all_product_configs()):
         downloader = XLDevOpsPlatformDownloader(kwargs, product_conf)
