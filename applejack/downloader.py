@@ -12,11 +12,11 @@ class XLDevOpsPlatformDownloader(object):
         self.product_conf = product_conf
         self.download_source = commandline_args['download_source']
         self.use_cache = commandline_args['use_cache']
-        self.download_source = commandline_args['download_source']
         self.download_username = commandline_args['download_username']
         self.download_password = commandline_args['download_password']
         self.product_version = commandline_args['xl_version']
         self.m2location = commandline_args['m2location']
+        self.zipfile = commandline_args['zipfile']
 
     def is_cached(self):
         return self.__target_path().exists()
@@ -33,7 +33,10 @@ class XLDevOpsPlatformDownloader(object):
         return self.product_conf['resources']['target_name'].format(version=self.product_version, product=self.product_conf['name'])
 
     def download_product(self):
-        if self.download_source == 'localm2':
+        if self.download_source == 'zip':
+            if not self.zipfile: raise Exception('--zipfile=xyz must be specified for --download-source=zip')
+            copyfile(self.zipfile, self.__target_path())
+        elif self.download_source == 'localm2':
             m2 = Path(self.m2location) if self.m2location else Path.home() / '.m2' / 'repository'
             m2path = str(self.product_conf['repositories']['localm2']).format(version=self.product_version, product=self.product_conf['name'])
             print('Copying server zip from %s' % str(m2 / m2path))
