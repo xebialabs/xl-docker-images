@@ -11,7 +11,6 @@ class XLDevOpsPlatformDownloader(object):
         """Initialize the XebiaLabs DevOps Platform download client."""
         self.product_conf = product_conf
         self.download_source = commandline_args['download_source']
-        self.use_cache = commandline_args['use_cache']
         self.download_username = commandline_args['download_username']
         self.download_password = commandline_args['download_password']
         self.product_version = commandline_args['xl_version']

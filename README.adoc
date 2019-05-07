@@ -115,6 +115,21 @@ If you also want to push it to the xebialabsunsupported organisation, use the fo
 $ {executable} build --xl-version <version> --download-username <LDAP username> --download-source nexus --push --registry xebialabsunsupported
 ----
 
+=== Development versions
+You can create 'official' Docker versions from your SNAPSHOT server zips. (Tip: use `--target-os=centos` or `--target-os=debian-slim`.) Install your SNAPSHOTs into your local `.m2` folder (or explicitly specify one as below) and issue the following command:
+[source,shell,subs="verbatim,attributes"]
+----
+$ {executable} build --xl-version <version> --download-source=localm2 # looks inside ~/.m2/repository
+
+$ {executable} build --xl-version <version> --download-source=localm2 --m2location=/tmp/foo/m2/repo
+----
+This relies on `./applejack/conf/products/*.yml` each having a key `repositories.localm2` (sibling to `repositories.nexus` and `repositories.dist`) with a value specifying a relative path inside the repository (e.g. 'com/xebialabs/deployit/xl-deploy-base/{version}/{product}-base-{version}-server.zip')
+
+For building an image for one specific product only, you can also just point to the specific zipfile to use:
+[source,shell,subs="verbatim,attributes"]
+----
+$ {executable} build --xl-version <version> --product=xl-deploy --download-source=zip --zipfile=/tmp/foo/xld-9.0.0-SNAPSHOT.zip
+----
 === Database driver support
 
 Both XL Release and XL Deploy supports db2, mysql, mssql, postgresql, oracle database for production setups more information can be found on official documentation :
