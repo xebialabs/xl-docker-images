@@ -28,4 +28,8 @@ RUN JQ_LOCATION="/usr/bin/jq" && \
 
 ENV OS=rhel
 
+{% if 'deploy' in product %}
+    {% include 'terraform.j2' %}
+{% endif %}
+
 {% include 'runtime.j2' %}

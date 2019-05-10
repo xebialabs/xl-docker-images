@@ -14,12 +14,16 @@ FROM centos:7
 # Install dependencies
 RUN yum update -y && \
     yum install -y epel-release && \
-    yum install -y java-1.8.0-openjdk-headless curl jq && \
+    yum install -y java-1.8.0-openjdk-headless curl jq unzip && \
     yum clean all -q
 
 # Copy installed {{ product_name }}
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 ENV OS=centos
+
+{% if 'deploy' in product %}
+    {% include 'terraform.j2' %}
+{% endif %}
 
 {% include 'runtime.j2' %}

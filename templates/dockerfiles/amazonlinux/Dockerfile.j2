@@ -13,12 +13,16 @@ FROM amazonlinux:2
 
 # Install dependencies
 RUN yum update -y && \
-    yum install -y java-1.8.0-openjdk-headless curl jq shadow-utils.x86_64 hostname && \
+    yum install -y java-1.8.0-openjdk-headless curl jq shadow-utils.x86_64 hostname unzip && \
     yum clean all -q
 
 # Copy installed {{ product_name }}
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 ENV OS=amazonlinux
+
+{% if 'deploy' in product %}
+    {% include 'terraform.j2' %}
+{% endif %}
 
 {% include 'runtime.j2' %}
