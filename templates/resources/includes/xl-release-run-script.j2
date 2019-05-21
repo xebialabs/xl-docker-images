@@ -69,7 +69,7 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
         echo "REPOSITORY_KEYSTORE provided, without an accompanying passphrase. exiting..."
         exit 1
       fi
-      echo ${REPOSITORY_KEYSTORE} | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
+      echo "${REPOSITORY_KEYSTORE}" | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
     fi
 
     echo "... Generating {{ boot_conf }}"
