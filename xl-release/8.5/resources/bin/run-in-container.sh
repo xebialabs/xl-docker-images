@@ -5,9 +5,11 @@ function pwgen {
 }
 
 function check_eula {
-  if [[ -z "$XL_LICENSE" && -z "$XL_NO_UNREGISTERED_LICENSE" && ! -f "${APP_HOME}/conf/xl-release-license.lic" && "$ACCEPT_EULA" != "Y" ]]; then
-      echo "You must accept the End User License Agreement or provide your own license before this container can start."
-      exit 1
+  if [[ -z "$XL_LICENSE" && -z "$XL_NO_UNREGISTERED_LICENSE" && ! -f "${APP_HOME}/conf/xl-release-license.lic" && "$XL_LICENSE_KIND" == "byol" ]]; then
+      if [[  "$ACCEPT_EULA" != "Y" && "$ACCEPT_EULA" != "y" ]]; then
+        echo "You must accept the End User License Agreement or provide your own license before this container can start."
+        exit 1
+      fi
   fi;
 }
 
@@ -56,6 +58,12 @@ function store_license {
     return
   fi
 
+  if [ $XL_LICENSE_KIND != "byol" ]; then
+    echo "License kind '$XL_LICENSE_KIND' has been configured, not requesting trial license"
+    return
+  fi
+
+
   if [ ! -v XL_NO_UNREGISTERED_LICENSE ]; then
     echo "XL_NO_UNREGISTERED_LICENSE was not set. Requesting unregistered license"
     SERVER_PATH_PART=${XL_LICENSE_ENDPOINT:-https://download.xebialabs.com}
@@ -83,6 +91,7 @@ function generate_node_conf {
           -e "s#\${XL_REPORT_DB_URL}#${XL_REPORT_DB_URL}#g" \
           -e "s#\${XL_REPORT_DB_USERNAME}#${XL_REPORT_DB_USERNAME}#g" \
           -e "s#\${XL_REPORT_DB_PASSWORD}#${XL_REPORT_DB_PASSWORD}#g" \
+          -e "s#\${XL_LICENSE_KIND}#${XL_LICENSE_KIND}#g" \
       ${APP_HOME}/node-conf/xl-release.conf.template > ${APP_HOME}/node-conf/xl-release.conf
     fi
   
@@ -108,11 +117,19 @@ function generate_product_conf {
           -e "s#\${XL_REPORT_DB_URL}#${XL_REPORT_DB_URL}#g" \
           -e "s#\${XL_REPORT_DB_USERNAME}#${XL_REPORT_DB_USERNAME}#g" \
           -e "s#\${XL_REPORT_DB_PASSWORD}#${XL_REPORT_DB_PASSWORD}#g" \
+          -e "s#\${XL_LICENSE_KIND}#${XL_LICENSE_KIND}#g" \
       ${APP_HOME}/default-conf/xl-release.conf.template > ${APP_HOME}/conf/xl-release.conf
     fi
   
 }
 
+function check_force_upgrade {
+   FORCE_UPGRADE_FLAG=""
+   if [[ ${FORCE_UPGRADE,,} == "true" ]] ; then
+     echo "Force upgrade setting has been detected. In case of upgrade it will be performed in non-interactive mode. "
+     FORCE_UPGRADE_FLAG="-force-upgrades"
+   fi
+}
 # Copy default plugins
 if [ -z "$(ls -A ${APP_HOME}/plugins)" ]; then
   echo "Empty ${APP_HOME}/plugins directory detected:"
@@ -184,7 +201,7 @@ if [ ! -f "${APP_HOME}/conf/xl-release-server.conf" ]; then
         echo "REPOSITORY_KEYSTORE provided, without an accompanying passphrase. exiting..."
         exit 1
       fi
-      echo ${REPOSITORY_KEYSTORE} | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
+      echo "${REPOSITORY_KEYSTORE}" | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
     fi
 
     echo "... Generating xl-release-server.conf"
@@ -219,6 +236,7 @@ copy_db_driver
 generate_product_conf
 generate_node_conf
 store_license
+check_force_upgrade
 
 # Start regular startup process
-exec ${APP_HOME}/bin/run.sh "$@"
+exec ${APP_HOME}/bin/run.sh ${FORCE_UPGRADE_FLAG} "$@"

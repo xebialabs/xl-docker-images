@@ -36,12 +36,14 @@ END {
   printf("wrapper.java.additional.%d=-XX:+UnlockExperimentalVMOptions\n", additionals + 1);
   printf("wrapper.java.additional.%d=-XX:+UseCGroupMemoryLimitForHeap\n", additionals + 2);
   printf("wrapper.java.additional.%d=-XX:MaxRAMFraction=2\n", additionals + 3);
+}
+
+# Enable JMX exporter for Prometheus
+END {
   printf("wrapper.java.additional.%d=-Dcom.sun.management.jmxremote\n", additionals + 4);
   printf("wrapper.java.additional.%d=-Dcom.sun.management.jmxremote.authenticate=false\n", additionals + 5);
   printf("wrapper.java.additional.%d=-Dcom.sun.management.jmxremote.ssl=false\n", additionals + 6);
   printf("wrapper.java.additional.%d=-Dcom.sun.management.jmxremote.port=9011\n", additionals + 7);
   printf("wrapper.java.additional.%d=-Dcom.sun.management.jmxremote.rmi.port=9011\n", additionals + 8);
-#  printf("wrapper.java.additional.%d=-Djava.rmi.server.hostname={{ product }}\n", additionals + 9);
-  printf("wrapper.java.additional.%d=-javaagent:lib/jmx_prometheus_javaagent.jar=9100:conf/jmx-exporter.yaml\n", additionals + 10);
-
+  printf("wrapper.java.additional.%d=-javaagent:lib/jmx_prometheus_javaagent.jar=9100:conf/jmx-exporter.yaml\n", additionals + 9);
 }
