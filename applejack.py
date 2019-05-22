@@ -57,11 +57,13 @@ def render(**kwargs):
 @applejack.command(help="Build the Docker images from the generated templates")
 @shared_opts
 @click.option('--push', '-p', is_flag=True, help="Push the Docker images to the hub.")
-@click.option('--download-source', help="Download source: dist (default) or nexus.", default='dist', type=click.Choice(["dist", "nexus"]))
+@click.option('--download-source', help="Download source: dist (default) or nexus.", default='dist', type=click.Choice(["dist", "nexus", "localm2", "zip"]))
 @click.option('--download-username', help="Username to use to download product ZIP.")
 @click.option('--download-password', help="Password to use to download product ZIP.")
 @click.option('--target-os', multiple=True, help="The target container OS to build and/or push.")
 @click.option('--use-cache', is_flag=True, help="Don't download product ZIP if already downloaded, don't pull the base image and use the Docker build cache")
+@click.option('--m2location', help="The location of the .m2 repository for localm2 download sources. Defaults to ~/.m2/repository")
+@click.option('--zipfile', help="The actual zip file to use when --download-source=zip")
 def build(**kwargs):
     for product_conf in (kwargs['product'] or all_product_configs()):
         downloader = XLDevOpsPlatformDownloader(kwargs, product_conf)
