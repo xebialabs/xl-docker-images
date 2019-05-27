@@ -89,6 +89,8 @@ RUN chgrp -R 0 ${APP_ROOT} && \
 
 ENV OS=rhel
 
+
+
 # Set ttl for DNS cache
 RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
 

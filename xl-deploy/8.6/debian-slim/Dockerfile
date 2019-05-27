@@ -7,10 +7,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install XL Deploy
-COPY resources/xl-deploy-8.6.1-server.zip /tmp
+COPY resources/xl-deploy-8.6.2-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-8.6.1-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-8.6.1-server ${APP_HOME}
+    unzip /tmp/xl-deploy-8.6.2-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-8.6.2-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -64,7 +64,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="8.6.1" \
+      version="8.6.2" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -83,6 +83,15 @@ COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 ENV OS=debian
 
+
+    # install Terraform
+ENV TERRAFORM_VERSION=0.11.13
+
+RUN curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip /tmp/terraform.zip -d /usr/local/bin && \
+    rm -f /tmp/terraform.zip
+
+
 # Set ttl for DNS cache
 RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
 
@@ -95,7 +104,7 @@ WORKDIR ${APP_HOME}
 RUN useradd -r -M -u 10001 -g 0 xebialabs
 USER 10001
 
-VOLUME ["${APP_HOME}/conf", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/work"]
+VOLUME ["${APP_HOME}/conf", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/export", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/work"]
 EXPOSE 4516
 
 ENV XL_CLUSTER_MODE=default \

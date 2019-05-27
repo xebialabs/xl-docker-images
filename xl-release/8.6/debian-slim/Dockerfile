@@ -83,6 +83,8 @@ COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 ENV OS=debian
 
+
+
 # Set ttl for DNS cache
 RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
 

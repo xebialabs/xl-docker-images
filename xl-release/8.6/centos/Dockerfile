@@ -76,13 +76,15 @@ ENV APP_HOME=${APP_ROOT}/xl-release-server
 # Install dependencies
 RUN yum update -y && \
     yum install -y epel-release && \
-    yum install -y java-1.8.0-openjdk-headless curl jq && \
+    yum install -y java-1.8.0-openjdk-headless curl jq unzip && \
     yum clean all -q
 
 # Copy installed XL Release
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 ENV OS=centos
+
+
 
 # Set ttl for DNS cache
 RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
