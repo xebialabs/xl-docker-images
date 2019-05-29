@@ -14,7 +14,7 @@ FROM centos:7
 # Install dependencies
 RUN yum update -y && \
     yum install -y epel-release && \
-    yum install -y java-1.8.0-openjdk-headless curl jq unzip && \
+    yum install -y java-1.8.0-openjdk-headless curl jq unzip which && \
     yum clean all -q
 
 # Copy installed {{ product_name }}
