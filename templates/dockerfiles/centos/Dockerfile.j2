@@ -13,7 +13,7 @@ FROM centos:7
 
 # Install dependencies
 RUN yum update -y && \
-    yum install -y java-1.8.0-openjdk-headless && \
+    yum install -y java-1.8.0-openjdk-headless curl jq unzip which && \
     yum clean all -q
 
 # Copy installed {{ product_name }}
