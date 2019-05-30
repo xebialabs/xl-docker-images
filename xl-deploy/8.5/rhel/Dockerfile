@@ -17,7 +17,7 @@ COPY resources/help.md /tmp/
 COPY resources/licenses /licenses
 
 # Install dependencies
-RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname shadow-utils" && \
+RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname shadow-utils which" && \
     microdnf install --enablerepo=rhel-7-server-rpms --enablerepo=rhel-7-server-optional-rpms --nodocs ${INSTALL_PKGS} && \
     microdnf update && \
 ### help file markdown to man conversion
@@ -83,7 +83,7 @@ RUN chgrp -R 0 ${APP_ROOT} && \
 ENV OS=rhel
 
 # Set ttl for DNS cache
-RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
+RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/jre/lib/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
