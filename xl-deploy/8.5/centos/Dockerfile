@@ -7,10 +7,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install XL Deploy
-COPY resources/xl-deploy-8.5.0-server.zip /tmp
+COPY resources/xl-deploy-8.5.5-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-8.5.0-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-8.5.0-server ${APP_HOME}
+    unzip /tmp/xl-deploy-8.5.5-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-8.5.5-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -26,7 +26,6 @@ RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 # Move and augment conf directory of regular install
 RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
     rm ${APP_HOME}/default-conf/xl-deploy.conf && \
-    rm ${APP_HOME}/default-conf/system.conf && \
     mkdir ${APP_HOME}/conf
 COPY resources/default-conf ${APP_HOME}/default-conf
 RUN mv ${APP_HOME}/default-conf/boot.conf.template ${APP_HOME}/default-conf/deployit.conf.template
@@ -61,7 +60,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="8.5.0" \
+      version="8.5.5" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -77,6 +76,11 @@ RUN yum update -y && \
 
 # Copy installed XL Deploy
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
+
+ENV OS=centos
+
+# Set ttl for DNS cache
+RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
@@ -94,9 +98,11 @@ ENV XL_CLUSTER_MODE=default \
     XL_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-deploy \
     XL_DB_USERNAME=sa \
     XL_DB_PASSWORD=123 \
-    XL_METRICS_ENABLED=false
+    XL_METRICS_ENABLED=false \
+    XLD_IN_PROCESS=true \
+    HOSTNAME_SUFFIX=
 
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
-ENTRYPOINT ["/opt/xebialabs/tini", "/opt/xebialabs/xl-deploy-server/bin/run-in-container.sh"]
+ENTRYPOINT ["/opt/xebialabs/tini", "--", "/opt/xebialabs/xl-deploy-server/bin/run-in-container.sh"]
