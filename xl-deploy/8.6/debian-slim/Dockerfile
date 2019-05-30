@@ -75,7 +75,7 @@ ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install dependencies
 RUN apt-get update -y && \
-    apt-get install -y curl jq && \
+    apt-get install -y curl jq unzip && \
     apt-get clean all -q
 
 # Copy installed XL Deploy
@@ -93,7 +93,7 @@ RUN curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TERRAF
 
 
 # Set ttl for DNS cache
-RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
+RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/jre/lib/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
