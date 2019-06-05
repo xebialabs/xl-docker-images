@@ -57,7 +57,7 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
 
-FROM openjdk:8-jdk-slim-stretch
+FROM amazonlinux:2
 
 MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 
@@ -74,14 +74,14 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install dependencies
-RUN apt-get update -y && \
-    apt-get install -y curl jq unzip && \
-    apt-get clean all -q
+RUN yum update -y && \
+    yum install -y java-1.8.0-openjdk-headless curl jq shadow-utils.x86_64 hostname unzip which && \
+    yum clean all -q
 
 # Copy installed XL Release
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
-ENV OS=debian
+ENV OS=amazonlinux
 
 
 
