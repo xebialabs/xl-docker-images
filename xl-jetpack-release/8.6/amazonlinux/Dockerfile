@@ -1,4 +1,4 @@
-FROM xebialabs/xl-release:8.6.2-amazonlinux
+FROM xebialabs/xl-release:8.6.3-amazonlinux
 
 # Don't run as root
 USER xebialabs
