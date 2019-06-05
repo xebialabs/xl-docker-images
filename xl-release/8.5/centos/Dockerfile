@@ -7,10 +7,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install XL Deploy
-COPY resources/xl-release-8.5.2-server.zip /tmp
+COPY resources/xl-release-8.5.5-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-8.5.2-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-8.5.2-server ${APP_HOME}
+    unzip /tmp/xl-release-8.5.5-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-8.5.5-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -60,7 +60,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="8.5.2" \
+      version="8.5.5" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -71,7 +71,7 @@ ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install dependencies
 RUN yum update -y && \
-    yum install -y java-1.8.0-openjdk-headless && \
+    yum install -y java-1.8.0-openjdk-headless curl jq unzip which && \
     yum clean all -q
 
 # Copy installed XL Release
@@ -80,7 +80,7 @@ COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 ENV OS=centos
 
 # Set ttl for DNS cache
-RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f /usr/bin/java | sed 's:/jre/bin/java::')/jre/lib/security/java.security
+RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/jre/lib/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
