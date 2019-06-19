@@ -45,7 +45,7 @@ COPY resources/node-conf ${APP_HOME}/node-conf
 RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
     mkdir ${APP_HOME}/plugins
 
-# Create empty 'repository', 'work', 'export' and 'archive' directory
+# Create empty 'repository', 'work', 'export', 'archive' and 'reports' directory
 RUN mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
 
 # Set permissions
