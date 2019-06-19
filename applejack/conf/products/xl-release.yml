@@ -34,6 +34,7 @@ context:
     - "${APP_HOME}/ext"
     - "${APP_HOME}/plugins"
     - "${APP_HOME}/repository"
+    - "${APP_HOME}/work/reports"
   environment:
   - key: XL_CLUSTER_MODE
     value: default
