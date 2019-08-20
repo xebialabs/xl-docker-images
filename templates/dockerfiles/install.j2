@@ -1,6 +1,6 @@
 {% include 'variables.j2' %}
 
-# Install XL Deploy
+# Install {{ product }}
 COPY resources/{{ product }}-{{ xl_version }}-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
     unzip /tmp/{{ product }}-{{ xl_version }}-server.zip -d ${APP_ROOT} && \
