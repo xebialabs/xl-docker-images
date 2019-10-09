@@ -23,7 +23,7 @@ context:
   product_description: Enterprise-scale Application Release Automation for any environment
   license_file: deployit-license.lic
   boot_conf: deployit.conf
-  wrapper_conf: xld-wrapper-linux.conf
+  wrapper_conf: xld-wrapper.conf.common
   conf_files:
   - xl-deploy.conf
   port: 4516
