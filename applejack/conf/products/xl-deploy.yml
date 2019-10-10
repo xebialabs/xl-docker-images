@@ -49,6 +49,20 @@ context:
     value: "false"
   - key: XLD_IN_PROCESS
     value: "true"
+  - key: XLD_TASK_QUEUE_NAME
+    value: "xld-tasks-queue"
+  - key: XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE
+    value: "100"
+  - key: XLD_TASK_QUEUE_IN_PROCESS_SHUTDOWN_TIMEOUT
+    value: "60000"
+  - key: XLD_TASK_QUEUE_DRIVER_CLASS_NAME
+    value: ""
+  - key: XLD_TASK_QUEUE_URL
+    value: ""
+  - key: XLD_TASK_QUEUE_USERNAME
+    value: ""
+  - key: XLD_TASK_QUEUE_PASSWORD
+    value: ""
   - key: HOSTNAME_SUFFIX
     value: ""
   - key: XL_LICENSE_KIND

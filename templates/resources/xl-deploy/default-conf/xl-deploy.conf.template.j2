@@ -62,5 +62,18 @@ xl {
           retry-delay = 5 seconds
           execution-threads = 32
       }
+      queue {
+          name = ${XLD_TASK_QUEUE_NAME}
+          in-process {
+            maxDiskUsage = ${XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE}
+            shutdownTimeout = ${XLD_TASK_QUEUE_IN_PROCESS_SHUTDOWN_TIMEOUT}
+          }
+          external {
+              jms-driver-classname="${XLD_TASK_QUEUE_DRIVER_CLASS_NAME}"
+              jms-password="${XLD_TASK_QUEUE_PASSWORD}"
+              jms-url="${XLD_TASK_QUEUE_URL}"
+              jms-username="${XLD_TASK_QUEUE_USERNAME}"
+          }
+      }
   }
 }
