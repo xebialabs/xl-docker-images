@@ -17,6 +17,10 @@ curl http://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/${MSSQL_VE
 echo "Downloading MQ drivers to ${APP_ROOT}/mq-libs"
 mkdir ${APP_ROOT}/mq-libs
 
-curl https://repo1.maven.org/maven2/com/rabbitmq/amqp-client/5.7.3/amqp-client-5.7.3.jar -o ${APP_ROOT}/mq-libs/amqp-client-5.7.3.jar -f
-curl https://repo1.maven.org/maven2/com/rabbitmq/jms/rabbitmq-jms/1.13.0/rabbitmq-jms-1.13.0.jar -o ${APP_ROOT}/mq-libs/rabbitmq-jms-1.13.0.jar
-curl https://repo1.maven.org/maven2/org/apache/activemq/activemq-all/5.15.9/activemq-all-5.15.9.jar -o ${APP_ROOT}/mq-libs/activemq-all-5.15.9.jar
+RABBIT_MQ_AMQP_VERSION="5.7.3"
+RABBIT_MQ_JMS_VERSION="1.13.0"
+ACTIVE_MQ_VERSION="5.15.9"
+
+curl https://repo1.maven.org/maven2/com/rabbitmq/amqp-client/${RABBIT_MQ_AMQP_VERSION}/amqp-client-${RABBIT_MQ_AMQP_VERSION}.jar -o ${APP_ROOT}/mq-libs/amqp-client-${RABBIT_MQ_AMQP_VERSION}.jar -f
+curl https://repo1.maven.org/maven2/com/rabbitmq/jms/rabbitmq-jms/${RABBIT_MQ_JMS_VERSION}/rabbitmq-jms-${RABBIT_MQ_JMS_VERSION}.jar -o ${APP_ROOT}/mq-libs/rabbitmq-jms-${RABBIT_MQ_JMS_VERSION}.jar
+curl https://repo1.maven.org/maven2/org/apache/activemq/activemq-all/${ACTIVE_MQ_VERSION}/activemq-all-${ACTIVE_MQ_VERSION}.jar -o ${APP_ROOT}/mq-libs/activemq-all-${ACTIVE_MQ_VERSION}.jar
