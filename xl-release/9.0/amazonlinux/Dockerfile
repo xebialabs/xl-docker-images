@@ -110,7 +110,8 @@ ENV XL_CLUSTER_MODE=default \
     XL_REPORT_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-release-report \
     XL_REPORT_DB_USERNAME=\${xl.database.db-username} \
     XL_REPORT_DB_PASSWORD=\${xl.database.db-password} \
-    XL_LICENSE_KIND=byol
+    XL_LICENSE_KIND=byol \
+    GENERATE_XL_CONFIG=true
 
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
