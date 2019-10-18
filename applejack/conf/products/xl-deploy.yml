@@ -67,3 +67,5 @@ context:
     value: ""
   - key: XL_LICENSE_KIND
     value: byol
+  - key: GENERATE_XL_CONFIG
+    value: "true"
