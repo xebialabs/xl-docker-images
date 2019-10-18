@@ -58,3 +58,5 @@ context:
     value: "\\${xl.database.db-password}"
   - key: XL_LICENSE_KIND
     value: byol
+  - key: GENERATE_XL_CONFIG
+    value: "true"
