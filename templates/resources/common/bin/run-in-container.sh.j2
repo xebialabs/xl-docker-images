@@ -26,7 +26,6 @@ function copy_mq_driver {
       ;;
     *)
       echo "MQ Provider could not be inferred from url '${XLD_TASK_QUEUE_DRIVER_CLASS_NAME}'"
-      exit 1
       ;;
   esac
 }
