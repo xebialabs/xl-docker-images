@@ -1,6 +1,6 @@
 {% include 'variables.j2' %}
 
-# Install {{ product }}
+# Install {{ product }} from zip file
 COPY resources/{{ product }}-{{ xl_version }}-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
     unzip /tmp/{{ product }}-{{ xl_version }}-server.zip -d ${APP_ROOT} && \
@@ -20,7 +20,7 @@ RUN chmod ugo+x /tmp/db-drivers.sh && \
 # Modify bin/run.sh so that java becomes a child process of dumb-init
 RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
-# Move and augment conf directory of regular install
+# Move and augment conf directory of regular install to default-conf so that when no external config is loaded we can use default
 RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
     {%- for file in conf_files %}
     rm ${APP_HOME}/default-conf/{{file}} && \
@@ -41,7 +41,7 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
 RUN mkdir ${APP_HOME}/node-conf
 COPY resources/node-conf ${APP_HOME}/node-conf
 
-# Move plugins directory
+# Move plugins directory to default-plugins, so that when no external plugins are loaded we can use the default
 RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
     mkdir ${APP_HOME}/plugins
 
