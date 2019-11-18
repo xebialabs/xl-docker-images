@@ -8,7 +8,7 @@ The env variables `APP_ROOT` ponts to `/opt/xebialabs` and `APP_HOME` point to  
 
 The following locations can be mounted as volumes to provide either configuration data, and/or persistent storage for application data.
 
-**${APP_HOME}/conf** - This directory contains the configuration files and keystores for XL Deploy. If mounted it is possible to configure (and inject) non-default configuration settings. Some configurations are always overwritten by the container startup script based on env variables set, to avoid that you can set the `GENERATE_XL_CONFIG` env variable to `false`
+**${APP_HOME}/conf** - This directory contains the configuration files and keystores for XL Deploy. If mounted it is possible to configure (and inject) non-default configuration settings. Some configurations in `xl-deploy.conf` file are always overwritten by the container startup script based on env variables set, to avoid that you can set the `GENERATE_XL_CONFIG` env variable to `false`. Once you set this the `xl-deploy.conf` for the product will not be generated and you would have to provide this yourself.
 
 **${APP_HOME}/hotfix/lib** - This directory contains the hotfixes for the libraries used by XL Deploy. When instructed by XebiaLabs support personnel, you should drop any delivered hotfixes in here.
 
@@ -18,7 +18,7 @@ The following locations can be mounted as volumes to provide either configuratio
 
 **${APP_HOME}/plugins** - This directory contains the plugins that are running in XL Deploy. When mounted only plugins present in this directory will be loaded and you need to ensure to provide all required base plugins here. If you mount an empty directory the default bundled plugins will be loaded.
 
-**${APP_HOME}/repository** - This directory contains the embedded repository database for XL Deploy. Using the configuration injected through the ${APP_HOME}/conf volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory based one.
+**${APP_HOME}/repository** - This directory contains the embedded repository database for XL Deploy. Using the configuration injected through the ${APP_HOME}/conf volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory based one. It is highly recommended not to use the embedded DB for production setup.
 
 **${APP_HOME}/export** - This directory holds the exported CIs when using the CI export option in XL Deploy
 
@@ -55,7 +55,7 @@ The env variables `APP_ROOT` ponts to `/opt/xebialabs` and `APP_HOME` point to `
 
 The following locations can be mounted as volumes to provide either configuration data, and/or persistent storage for application data.
 
-**${APP_HOME}/conf** - This directory contains the configuration files and keystores for XL Release. If mounted it is possible to configure (and inject) non-default configuration settings. Some configurations are always overwritten by the container startup script based on env variables set, to avoid that you can set the `GENERATE_XL_CONFIG` env variable to `false`
+**${APP_HOME}/conf** - This directory contains the configuration files and keystores for XL Release. If mounted it is possible to configure (and inject) non-default configuration settings. Some configurations in `xl-release.conf` file are always overwritten by the container startup script based on env variables set, to avoid that you can set the `GENERATE_XL_CONFIG` env variable to `false`. Once you set this the `xl-release.conf` for the product will not be generated and you would have to provide this yourself.
 
 **${APP_HOME}/hotfix** - This directory contains the hotfixes for the libraries & plugins used by XL Release. When instructed by XebiaLabs support personnel, you should drop any delivered hotfixes in here.
 
@@ -63,9 +63,9 @@ The following locations can be mounted as volumes to provide either configuratio
 
 **${APP_HOME}/plugins** - This directory contains the plugins that are running in XL Release. When mounted only plugins present in this directory will be loaded and you need to ensure to provide all required base plugins here. If you mount an empty directory the default bundled plugins will be loaded.
 
-**${APP_HOME}/repository** - This directory contains the embedded repository database for XL Release. Using the configuration injected through the ${APP_HOME}/conf volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory base one.
+**${APP_HOME}/repository** - This directory contains the embedded repository database for XL Release. Using the configuration injected through the ${APP_HOME}/conf volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory base one. It is highly recommended not to use the embedded DB for production setup.
 
-**${APP_HOME}/archive** - This directory contains the embedded archive database for XL Release. Using the configuration injected through the ${APP_HOME}/conf volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory base one.
+**${APP_HOME}/archive** - This directory contains the embedded archive database for XL Release. Using the configuration injected through the ${APP_HOME}/conf volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory base one. It is highly recommended not to use the embedded DB for production setup.
 
 **${APP_HOME}/reports** - The report files generated from XL Release are stored in this folder.
 
