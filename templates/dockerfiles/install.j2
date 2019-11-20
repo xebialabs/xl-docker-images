@@ -31,6 +31,7 @@ COPY resources/jmx-exporter/jmx-exporter.yaml ${APP_HOME}/default-conf/
 RUN mv ${APP_HOME}/default-conf/boot.conf.template ${APP_HOME}/default-conf/{{ boot_conf }}.template
 
 # Modify conf/{{ wrapper_conf }} to add node-conf to the classpath and to add container-specific VM options
+# ${APP_HOME}/node-conf will have first priority in classpath
 COPY resources/modify-wrapper-linux-conf.gawk /tmp
 RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     /tmp/modify-wrapper-linux-conf.gawk ${APP_HOME}/default-conf/{{ wrapper_conf }} > /tmp/{{ wrapper_conf}} && \
@@ -38,6 +39,8 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     rm /tmp/modify-wrapper-linux-conf.gawk
 
 # Create node-specific conf directory and add template for node-specific {{ product }}.conf file
+# The node-specific {{ product }}.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the 
+# ${APP_HOME}/conf/{{ product }}.conf file by the xl-platform
 RUN mkdir ${APP_HOME}/node-conf
 COPY resources/node-conf ${APP_HOME}/node-conf
 

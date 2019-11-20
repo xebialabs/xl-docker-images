@@ -38,17 +38,17 @@ threads.max=150
 threads.min=30
  ```
  - The below configuration files also can be overwritten by providing the same in the mounted volume. A default will be used for any file not provided in the mounted volume.
-   - deployit-security.xml
-   - logback-access.xml
-   - logback.xml
-   - logging.properties
-   - wrapper-daemon.vm
-   - xl-deploy.policy
-   - xld-wrapper-server.conf
-   - xld-wrapper-worker.conf
-   - xld-wrapper.conf.common
-   - xld-wrapper.conf.posix
-   - xld-wrapper.conf.win
+   - `deployit-security.xml`
+   - `logback-access.xml`
+   - `logback.xml`
+   - `logging.properties`
+   - `wrapper-daemon.vm`
+   - `xl-deploy.policy`
+   - `xld-wrapper-server.conf`
+   - `xld-wrapper-worker.conf`
+   - `xld-wrapper.conf.common`
+   - `xld-wrapper.conf.posix`
+   - `xld-wrapper.conf.win`
 
 
 **\${APP_HOME}/hotfix/lib** - This directory contains the hotfixes for the libraries used by XL Deploy. When instructed by XebiaLabs support personnel, you should drop any delivered hotfixes in here.
@@ -57,9 +57,9 @@ threads.min=30
 
 **\${APP_HOME}/ext** - This directory contains the developed (exploded plugins) for XL Deploy. You can customize an existing plugin here, for example you can modify the `synthetic.xml` for a specific plugin here.
 
-**\${APP_HOME}/plugins** - This directory contains the plugins that are running in XL Deploy. When mounted, plugins present in this directory will be loaded instead of bundled ones. If any base plugin is not provided it will be loaded from default plugins. If you mount an empty directory the default bundled plugins will be loaded.
+**\${APP_HOME}/plugins** - This directory contains the plugins that are running in XL Deploy. When mounted, plugins present in this directory will be loaded instead of bundled ones. If any base plugin is not provided it will be loaded from default plugins. If you mount an empty directory the default bundled plugins will be loaded. But it is recommended to use a custom image with required plugins to avoid issues during the upgrade process.
 
-**\${APP_HOME}/repository** - This directory contains the embedded repository database for XL Deploy. Using the configuration injected through the \${APP_HOME}/conf volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory based one. It is highly recommended not to use the embedded DB for production setup.
+**\${APP_HOME}/repository** - This directory contains the embedded repository database for XL Deploy. Using the configuration injected through the `${APP_HOME}/conf` volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory based one. It is highly recommended not to use the embedded DB for production setup.
 
 **\${APP_HOME}/export** - This directory holds the exported CIs when using the CI export option in XL Deploy
 
@@ -124,24 +124,24 @@ threads.max=150
 threads.min=30
  ```
  - The below configuration files also can be overwritten by providing the same in the mounted volume. A default will be used for any file not provided in the mounted volume.
-   - logback-access.xml
-   - logback.xml
-   - logging.properties
-   - wrapper-daemon.vm 
-   - xl-release-security.xml
-   - xl-release.policy
-   - xlr-wrapper-linux.conf
-   - xlr-wrapper-win.conf
+   - `logback-access.xml`
+   - `logback.xml`
+   - `logging.properties`
+   - `wrapper-daemon.vm `
+   - `xl-release-security.xml`
+   - `xl-release.policy`
+   - `xlr-wrapper-linux.conf`
+   - `xlr-wrapper-win.conf`
 
 **\${APP_HOME}/hotfix** - This directory contains the hotfixes for the libraries & plugins used by XL Release. When instructed by XebiaLabs support personnel, you should drop any delivered hotfixes in here.
 
 **\${APP_HOME}/ext** - This directory contains the developed (exploded plugins) for XL Release. You can customize an existing plugin here, for example you can modify the `synthetic.xml` for a specific plugin here.
 
-**\${APP_HOME}/plugins** - This directory contains the plugins that are running in XL Release. When mounted, plugins present in this directory will be loaded instead of bundled ones. If any base plugin is not provided it will be loaded from default plugins. If you mount an empty directory the default bundled plugins will be loaded.
+**\${APP_HOME}/plugins** - This directory contains the plugins that are running in XL Release. When mounted, plugins present in this directory will be loaded instead of bundled ones. If any base plugin is not provided it will be loaded from default plugins. If you mount an empty directory the default bundled plugins will be loaded. But it is recommended to use a custom image with required plugins to avoid issues during the upgrade process.
 
-**\${APP_HOME}/repository** - This directory contains the embedded repository database for XL Release. Using the configuration injected through the \${APP_HOME}/conf volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory base one. It is highly recommended not to use the embedded DB for production setup.
+**\${APP_HOME}/repository** - This directory contains the embedded repository database for XL Release. Using the configuration injected through the `${APP_HOME}/conf` volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory base one. It is highly recommended not to use the embedded DB for production setup.
 
-**\${APP_HOME}/archive** - This directory contains the embedded archive database for XL Release. Using the configuration injected through the \${APP_HOME}/conf volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory base one. It is highly recommended not to use the embedded DB for production setup.
+**\${APP_HOME}/archive** - This directory contains the embedded archive database for XL Release. Using the configuration injected through the `${APP_HOME}/conf` volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory base one. It is highly recommended not to use the embedded DB for production setup.
 
 **\${APP_HOME}/reports** - The report files generated from XL Release are stored in this folder.
 

@@ -1,3 +1,6 @@
+# The ${APP_HOME}/node-conf/{{ product }}.conf file provides node specific properties, which are then merged with the 
+# ${APP_HOME}/conf/{{ product }}.conf file by the xl-platform when the instance is started.
+# The ${APP_HOME}/node-conf takes precedance over ${APP_HOME}/conf/{{ product }}.conf and this is specified in ${APP_HOME}/conf/{{ wrapper_conf }}
 xl {
   server.hostname = ${HOSTNAME}${HOSTNAME_SUFFIX}
   cluster.node {
