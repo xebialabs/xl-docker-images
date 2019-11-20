@@ -1,7 +1,7 @@
 ## ENVIRONMENT VARIABLES
 #### The following environment variables can be set to configure XL Docker image for different scenarios
 
-### Common for all XL Products,
+### Common for all XL Products docker images,
 
 ##### `APP_ROOT   ????`
 - value: "/opt/xebialabs"
@@ -155,14 +155,14 @@ ${APP_HOME}/conf/xl-release-license.lic for XLRelease or ${APP_HOME}/conf/deploy
 ##### If you do not have a license:
 ```
 $ docker run -e "ADMIN_PASSWORD=desired-admin-password" -e "ACCEPT_EULA=Y" -p 4516:4516 --name xld xebialabs/xl-deploy:9.0
-Set ADMIN_PASSWORD to the desired password for the admin user. Note that by running this command, you are accepting the End User License Agreement.
 ```
+Set ADMIN_PASSWORD to the desired password for the admin user. Note that by running this command, you are accepting the End User License Agreement.
 
 ###### If you have a license:
 ```
 $ docker run -e "ADMIN_PASSWORD=desired-admin-password" -e "XL_LICENSE=license-string" -p 4516:4516 --name xld xebialabs/xl-deploy:9.0
-Set ADMIN_PASSWORD to the desired password for the admin user. Set XL_LICENSE to the Base64-encoded license string.
 ```
+Set ADMIN_PASSWORD to the desired password for the admin user. Set XL_LICENSE to the Base64-encoded license string.
 
 #### Example of providing Repository DB details:
 ```
