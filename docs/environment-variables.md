@@ -3,7 +3,7 @@
 
 ### Common for all docker images,
 
-##### APP_ROOT   ??
+##### APP_ROOT   ????
 - value: "/opt/xebialabs"
 - Note: 
     - not valid anymore as APP_ROOT is set to /opt/xebialabs .. however in db-drivers.sh if you set APP_ROOT to different path it will take affect but then scrib will be broken and will fail with below,
@@ -11,7 +11,7 @@ cp: cannot stat '/opt//db-libs/h2*': No such file or directory
 and this will cause docker container to stop as DB libs can not be found.
 
 
-##### APP_HOME  ??
+##### APP_HOME  ????
 - value: "/${APP_ROOT}/xl-deploy-server"
 - Note: 
     - not valid anymore as APP_HOME is set to ${APP_ROOT}/{{ product }}-server .. if we tried to pass it as env docker container start will fail with below,
@@ -45,13 +45,13 @@ keytool -genseckey -alias deployit-passsword-key -keyalg aes -keysize 128 -keypa
 other option is to add license file directly to below path 
 ${APP_HOME}/conf/xl-release-license.lic for XLRelease or ${APP_HOME}/conf/deployit-license.lic for XLDeploy
 
-##### XL_LICENSE_KIND   ??
+##### XL_LICENSE_KIND   ????
 - value: "byol"
 - Bring your owen license .. if set then no request for trial license will be issued.
 - Note: 
     - Something wrong here as even if this is set you still need to accept ACCEPT_EULA .. however as far as i understand it should not ask for trial license.
 
-##### XL_NO_UNREGISTERED_LICENSE  ??
+##### XL_NO_UNREGISTERED_LICENSE  ????
 - value: "yes"
 - If passed then this will request unregistered license in which a call will be done to XebiaLabs license server to get a license and add it to license file. 
 - Note: 
@@ -121,7 +121,7 @@ ${APP_HOME}/conf/xl-release-license.lic for XLRelease or ${APP_HOME}/conf/deploy
 - value: "queue-name"
 - Name for MQ task queue
 
-#####XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE
+##### XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE
 - value: "100"
 - sets value for maximum disk usage for internal worker
 
