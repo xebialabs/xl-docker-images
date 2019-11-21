@@ -6,7 +6,7 @@ If you want to run a single node instance of XL Release or XL Deploy using Docke
 
 You can run the official XLD docker images from XebiaLabs using the `docker run` command as follows
 
-```
+```shell
 docker run -d  \
   -e ADMIN_PASSWORD=admin \
   -e ACCEPT_EULA=Y \
@@ -20,7 +20,7 @@ You can stream the logs from the container using `docker logs -f <container id>`
 
 You can mount volumes if required like below during the `docker run` command. In this sample we are mounting configurations and hotfix from local volumes.
 
-```
+```shell
 docker run -d  \
   -e ADMIN_PASSWORD=admin \
   -e ACCEPT_EULA=Y \
@@ -62,7 +62,7 @@ If you use a different file name, then run `docker-compose -f <filename.yaml> up
 
 You can run the official XLR docker images from XebiaLabs using the `docker run` command as follows
 
-```
+```shell
 docker run -d  \
   -e ADMIN_PASSWORD=admin \
   -e ACCEPT_EULA=Y \
@@ -76,7 +76,7 @@ You can stream the logs from the container using `docker logs -f <container id>`
 
 You can mount volumes if required like below during the `docker run` command. In this sample we are mounting configurations and hotfix from local volumes
 
-```
+```shell
 docker run -d  \
   -e ADMIN_PASSWORD=admin \
   -e ACCEPT_EULA=Y \
