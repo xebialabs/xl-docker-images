@@ -137,5 +137,5 @@ Set ADMIN_PASSWORD to the desired password for the admin user, XL_DB_USERNAME to
 - MQ task queue password
 
 ##### `HOSTNAME_SUFFIX`
-- value: "any-string"
-- Adds suffix to your XLDeploy hostname in which external Workers will use to connect to master when having master-worker setup.
+- value: "string"
+- Adds any string suffix to your XLDeploy hostname in which external Workers will use to connect to master when having master-worker setup.
