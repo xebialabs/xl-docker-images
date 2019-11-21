@@ -28,7 +28,7 @@ keytool -genseckey -alias deployit-passsword-key -keyalg aes -keysize 128 -keypa
 - possible values: "base64-license-string"
 - Sets your XL License by passing base64 string license .. which will be added to license file .. other options to pass it as volume check Volumes docs for more details.
 
-#####Example:
+##### Example:
 ```
 docker run -e "ADMIN_PASSWORD=desired-admin-password" -e "XL_LICENSE=Base64-license-string" -p 4516:4516 --name xld xebialabs/xl-deploy:9.0
 ```
@@ -38,7 +38,7 @@ Set ADMIN_PASSWORD to the desired password for the admin user. Set XL_LICENSE to
 - possible values: "y" or "Y"
 - This is needed "you must accept the End User License Agreement" if you will not provide your own license before container can start.
 
-#####Example:
+##### Example:
 ```
 $ docker run -e "ADMIN_PASSWORD=desired-admin-password" -e "ACCEPT_EULA=Y" -p 4516:4516 --name xld xebialabs/xl-deploy:9.0
 ```
@@ -66,7 +66,7 @@ Set ADMIN_PASSWORD to the desired password for the admin user. Note that by runn
 - possible values: "password-value"
 - Password used to connect to DataBase configured with XL products.
 
-#####Example:
+##### Example:
 ```
 $ docker run -e "ADMIN_PASSWORD=desired-admin-password" -e "ACCEPT_EULA=Y" -e "XL_DB_USERNAME=user" -e "XL_DB_PASSWORD=pass" -e "XL_DB_URL=jdbc:db2:file:/opt/xebialabs/xl-deploy-server/repository/xl-deploy" -p 4516:4516 --name xld xebialabs/xl-deploy:9.0
 ```
@@ -82,7 +82,7 @@ Set ADMIN_PASSWORD to the desired password for the admin user, XL_DB_USERNAME to
 - default value: "true"  
 - Used to generate configuration from environment parameters passed and volumes mounted with custom changes .. if set to false then it default conf will be used ignoring all env variables and volumes added.
 
-###Specific for XLRelease docker images:-
+### Specific for XLRelease docker images:-
 
 ##### `SERVER_URL`
 - possible values: "http://xl-release.company.com"
