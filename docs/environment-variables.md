@@ -3,36 +3,22 @@
 
 ### Common for all XL Products docker images,
 
-##### `APP_ROOT   ????`
-- value: "/opt/xebialabs"
-- Note: 
-    - not valid anymore as APP_ROOT is set to /opt/xebialabs .. however in db-drivers.sh if you set APP_ROOT to different path it will take affect but then scrib will be broken and will fail with below,
-cp: cannot stat '/opt//db-libs/h2*': No such file or directory
-and this will cause docker container to stop as DB libs can not be found.
-
-
-##### `APP_HOME  ????`
-- value: "/${APP_ROOT}/xl-deploy-server"
-- Note: 
-    - not valid anymore as APP_HOME is set to ${APP_ROOT}/{{ product }}-server .. if we tried to pass it as env docker container start will fail with below,
-/opt/xebialabs/xl-deploy-server/bin/run-in-container.sh: line 136: cd: /opt/default-plugins: No such file or directory
-
 ##### `ADMIN_PASSWORD`
 - value: "password-value"
 - Admin user password used in XL Products
 - Note: 
-    - If this value is not passed a random 8 characters password will be generated using "pwgen 8"
+    - If this value is not passed a random 8 characters password will be generated
 
 ##### `REPOSITORY_KEYSTORE_PASSPHRASE`
 value: "passphrase-string" 
 Repository keystore passphrase used in XL Products
-If this value is not passed a random 16 characters password will be generated using "pwgen 8"
+If this value is not passed a random 16 characters password will be generated
 Note: 
     - Keystore password must be at least 6 characters
 
 ##### `REPOSITORY_KEYSTORE`
 - value: "keystore-string"
-- Repository keystore passphrase used in XL Products
+- Repository keystore used in XL Products
 - Note:    
     - If this value is set then it will be converted to base64 value and added to keystore file like below,
 echo "${REPOSITORY_KEYSTORE}" | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
@@ -45,35 +31,23 @@ keytool -genseckey -alias deployit-passsword-key -keyalg aes -keysize 128 -keypa
 other option is to add license file directly to below path 
 ${APP_HOME}/conf/xl-release-license.lic for XLRelease or ${APP_HOME}/conf/deployit-license.lic for XLDeploy
 
-##### `XL_LICENSE_KIND   ????`
-- value: "byol"
-- Bring your owen license .. if set then no request for trial license will be issued.
-- Note: 
-    - Something wrong here as even if this is set you still need to accept ACCEPT_EULA .. however as far as i understand it should not ask for trial license.
-
-##### `XL_NO_UNREGISTERED_LICENSE  ????`
-- value: "yes"
-- If passed then this will request unregistered license in which a call will be done to XebiaLabs license server to get a license and add it to license file. 
-- Note: 
-    - something wrong here as even if this is set you still asked to enter trial license as far as i understand it should not be the case.
-
 ##### `ACCEPT_EULA`
 - value: "y" or "Y"
-- This is needed "you must accept the End User License Agreement" if you didnot provide your own license before container can start and you are going to get Unregistered License.
+- This is needed "you must accept the End User License Agreement" if you will not provide your own license before container can start.
 
 ##### `FORCE_UPGRADE_FLAG`
-- value: "true"
+- value: "true", "false" 
+- default "false" 
 - Force upgrade setting. In case of upgrade it will be performed in non-interactive mode by setting flag to "-force-upgrades"
 
 ##### `XL_CLUSTER_MODE`
 - value: "default", "hot-standby", "full"
+- default: "default"
 - This is to specify if HA setup needed amd speciy which mode.
     
 ##### `XL_DB_URL`
 - value: "jdbc:h2:file:/opt/xldeploy/server/repository/xl-deploy"
-- This is to set DB url that will be used for repository, it also control which driver "XL_DB_DRIVER" will be used based on DB type .. supported db types are 'h2', 'oracle', 'mysql', 'postgresql', 'sqlserver', 'db2'     
-- Note: 
-    - oracle jdbc driver is not provided by default in the classpath, please make sure you provide one and it will be added to ${APP_HOME}/lib
+- This is to set DB url that will be used for repository.
 
 ##### `XL_DB_USERNAME`
 - value: "user-name"
@@ -84,7 +58,8 @@ ${APP_HOME}/conf/xl-release-license.lic for XLRelease or ${APP_HOME}/conf/deploy
 - Password used to connect to DataBase configured with XL products.
     
 ##### `XL_METRICS_ENABLED`
-- value: "false"
+- value: "true","false"
+- default: "false"
 - Flag to exposes internal and system metrics over Java Management Extensions (JMX). so that any monitoring system that can read JMX data can be used to monitor XL Product.
     
 ##### `GENERATE_XL_CONFIG`
@@ -115,7 +90,8 @@ ${APP_HOME}/conf/xl-release-license.lic for XLRelease or ${APP_HOME}/conf/deploy
 
 ##### `XLD_IN_PROCESS`
 - value: "true", "false"
-- Used to control if internal in-process worker will be used or not .. if you need to use external workers then this need  to be set to false
+- default: "true"
+- Used to control if internal in-process worker will be used or not .. if you need to use external workers then this need to be set to false
 
 ##### `XLD_TASK_QUEUE_NAME`
 - value: "queue-name"
