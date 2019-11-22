@@ -42,12 +42,16 @@ ADD --chown=10001:0 files/ext /opt/xebialabs/xl-deploy-server/ext/
 # HOTFIXES                                                               #
 ##########################################################################
 ADD --chown=10001:0 files/lib-hotfix.jar /opt/xebialabs/xl-deploy-server/hotfix/lib/
+ADD --chown=10001:0 files/plugin-hotfix.jar /opt/xebialabs/xl-deploy-server/hotfix/plugin/
+ADD --chown=10001:0 files/sattelite-lib-hotfix.jar /opt/xebialabs/xl-deploy-server/hotfix/sattelite-lib/
 
 ##########################################################################
 # LIBRARIES                                                              #
 ##########################################################################
 ADD --chown=10001:0 files/ojdbc6.jar /opt/xebialabs/xl-deploy-server/lib/
 ```
+
+Please note that there are seperate hotfix directories where you can place hotfix JARs, depending on the type of hotfix. Please consult our support team in case you are uncertain. 
 
 For an overview of how `ADD` and `COPY` works, please refer to [the documentation](https://docs.docker.com/engine/reference/builder/#add)
 
@@ -102,7 +106,7 @@ ADD --chown=10001:0 files/ext /opt/xebialabs/xl-release-server/ext/
 ##########################################################################
 # HOTFIXES                                                               #
 ##########################################################################
-ADD --chown=10001:0 files/lib-hotfix.jar /opt/xebialabs/xl-release-server/hotfix/lib/
+ADD --chown=10001:0 files/hotfix.jar /opt/xebialabs/xl-release-server/hotfix/
 
 ##########################################################################
 # LIBRARIES                                                              #
