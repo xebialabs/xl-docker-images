@@ -4,3 +4,6 @@ __pycache__
 *.zip
 .vscode
 *.iml
+xl-release/**/resources
+xl-deploy/**/resources
+xl-cli/**/resources
