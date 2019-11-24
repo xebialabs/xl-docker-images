@@ -82,7 +82,7 @@
 - This is used for Setting a custom server URL instead of using hostname where XL Products is installed .. this can be useful in email notifications where you need useres to connect directly to url such as reverse proxy.
 - possible values: "url-string-value"
 - default value: `http://localhost:5516/`
-- example "http:// xl-release.company.com"
+- example `http://xl-release.company.com`
  
 ##### `XL_REPORT_DB_URL`
 - sets value for URL used to connect to reporting database.
@@ -136,7 +136,7 @@
 - MQ task queue URL either ip or hostname.
 - possible values: "ip/hostname-value"
 - default value: none
-- example: "xl-deploy.company.com"
+- example: `http://xl-deploy.company.com`
 
 ##### `XLD_TASK_QUEUE_USERNAME`
 - MQ task queue username.
