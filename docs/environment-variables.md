@@ -162,7 +162,7 @@
 ###### If you do not have a license:	
 	
 ```
-$ docker run -e "ADMIN_PASSWORD=admin_password" -e "ACCEPT_EULA=Y" -p 4516:4516 --name xld xebialabs/xl-release:9.0
+docker run -e "ADMIN_PASSWORD=admin_password" -e "ACCEPT_EULA=Y" -p 4516:4516 --name xld xebialabs/xl-release:9.0
 ```
 Set ADMIN_PASSWORD to the desired password for the admin user. Note that by running this command, you are accepting the End User License Agreement.
 
@@ -177,6 +177,6 @@ Set ADMIN_PASSWORD to the desired password for the admin user. Set XL_LICENSE to
 
 ###### providing Repository DB details:	
 ```
-$ docker run -e "ADMIN_PASSWORD=admin_password" -e "ACCEPT_EULA=Y" -e "XL_DB_USERNAME=db_user" -e "XL_DB_PASSWORD=db_pass" -e "XL_DB_URL=jdbc:postgresql://postgresql:5432/xl-deploy-db" -p 4516:4516 --name xld xebialabs/xl-deploy:9.0
+docker run -e "ADMIN_PASSWORD=admin_password" -e "ACCEPT_EULA=Y" -e "XL_DB_USERNAME=db_user" -e "XL_DB_PASSWORD=db_pass" -e "XL_DB_URL=jdbc:postgresql://postgresql:5432/xl-deploy-db" -p 4516:4516 --name xld xebialabs/xl-deploy:9.0
 ```
 Set ADMIN_PASSWORD to the desired password for the admin user, XL_DB_USERNAME to DB username, XL_DB_PASSWORD to  DB Password and XL_DB_URL to url used to connect to DB.
