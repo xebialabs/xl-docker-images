@@ -31,6 +31,8 @@ docker run -d  \
   --name xl-deploy xebialabs/xl-deploy:9.5.0
 ```
 
+Once the containers are started you can find them at http://localhost:4516/, you might want a wait for a minute for the service to be up and running
+
 ## Docker compose
 
 You can also use a docker-compose file to run XLD containers, see the below file for example
@@ -55,6 +57,8 @@ services:
 Save the above content to a file called `docker-compose.yml` in a folder and run `docker-compose up -d` from that folder.
 
 If you use a different file name, then run `docker-compose -f <filename.yaml> up -d`
+
+Once the containers are started you can find them at http://localhost:4516/, you might want a wait for a minute for the service to be up and running
 
 # Single node XL Release deployment
 
@@ -85,6 +89,7 @@ docker run -d  \
   -v ~/XebiaLabs/xl-release-server/hotfix/:/opt/xebialabs/xl-release-server/hotfix/ \
   --name xl-release xebialabs/xl-release:9.5.0
 ```
+Once the containers are started you can find them at http://localhost:5516/, you might want a wait for a minute for the service to be up and running
 
 ## Docker compose
 
@@ -109,6 +114,8 @@ services:
 Save the above content to a file called `docker-compose.yml` in a folder and run `docker-compose up -d` from that folder.
 
 If you use a different file name, then run `docker-compose -f <filename.yaml> up -d`
+
+Once the containers are started you can find them at http://localhost:5516/, you might want a wait for a minute for the service to be up and running
 
 # Single node XL Deploy and XL Release deployment
 
@@ -144,3 +151,16 @@ services:
       - ADMIN_PASSWORD=admin
       - ACCEPT_EULA=Y
 ```
+
+Once the containers are started you can find XL Deploy at http://localhost:4516/ and XL Release at http://localhost:5516/, you might want a wait for a minute for the services to be up and running.
+
+
+When running XLR and XLD with docker, you might want to configure an XLD instance on XLR for deployment tasks. Go to **Settings** > **Shared configuration** > **XL Deploy server** click on the + icon to add a new configuration and fill in the following details and click **test** and then **save**.
+
+**Title**: xl-deploy-docker
+**URL**: http://xl-deploy:4516
+**Username**: admin
+**Password**: admin
+
+You can leave other fields empty. If you used a different admin password then update the same.
+
