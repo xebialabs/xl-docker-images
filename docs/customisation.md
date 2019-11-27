@@ -63,14 +63,14 @@ Always use [semver](https://semver.org/) to version your docker images. This is 
 
 This command will build and tag a docker image for you. If you would like to run this image locally, you can do this now by running
 
-`docker run -it --rm -p 4601:4601 -e ACCEPT_EULA=Y xl-deploy-custom:9.5.0`
+`docker run -it --rm -p 4516:4516 -e "ADMIN_PASSWORD=desired_admin_password" -e ACCEPT_EULA=Y xl-deploy-custom:9.5.0`
 
 If you would like to host this elsewhere, you have two options
 
 1. (Recommended) [Push this image to a docker registry](https://docs.docker.com/engine/reference/commandline/push/) of your choice. You can either [set up your own registry](https://docs.docker.com/registry/), or use an offering from DockerHub, AWS, GCP and many others. The simplest way of achieving this is to simply run
   - `docker tag xl-deploy-custom:9.5.0 yourdockerhuborg/xl-deploy-custom:9.5.0`
   - `docker push yourdockerhuborg/xl-deploy-custom:9.5.0`
-  - (On the node you would like to run the container) `docker run -it --rm -p 4601:4601 -e ACCEPT_EULA=Y yourdockerhuborg/xl-deploy-custom:9.5.0`
+  - (On the node you would like to run the container) `docker run -it --rm -p 4516:4516 -e "ADMIN_PASSWORD=desired_admin_password" -e ACCEPT_EULA=Y yourdockerhuborg/xl-deploy-custom:9.5.0`
 2. By using [`docker export`](https://docs.docker.com/engine/reference/commandline/export/) and [`docker load`](https://docs.docker.com/engine/reference/commandline/load/). This is not a recommended approach as it requires you to move a tar file between different machines. 
 
 
@@ -92,10 +92,10 @@ FROM xebialabs/xl-release:9.5.0
 # Plugins should be placed under ${APP_HOME}/default-plugins/ #
 ###################################################################################
 
-COPY --chown=10001:0 files/xld-liquibase-plugin-5.0.1.xldp /opt/xebialabs/xl-release-server/default-plugins/xlr-official/
+COPY --chown=10001:0 files/xlr-delphix-plugin-9.0.0.jar /opt/xebialabs/xl-release-server/default-plugins/xlr-official/
 
 # Add plugin from url
-ADD --chown=10001:0 https://dist.xebialabs.com/public/community/xl-deploy/command2-plugin/3.9.1-1/command2-plugin-3.9.1-1.jar /opt/xebialabs/xl-release-server/default-plugins/__local__/
+ADD --chown=10001:0 https://github.com/xebialabs-community/xlr-github-plugin/releases/download/v1.5.2/xlr-github-plugin-1.5.2.jar /opt/xebialabs/xl-release-server/default-plugins/__local__/
 
 ##########################################################################
 # EXTENSIONS                                                             #
@@ -126,14 +126,14 @@ Always use [semver](https://semver.org/) to version your docker images. This is 
 
 This command will build and tag a docker image for you. If you would like to run this image locally, you can do this now by running
 
-`docker run -it --rm -p 5601:5601 -e ACCEPT_EULA=Y xl-release-custom:9.5.0`
+`docker run -it --rm -p 5516:5516 -e "ADMIN_PASSWORD=desired_admin_password" -e ACCEPT_EULA=Y xl-release-custom:9.5.0`
 
 If you would like to host this elsewhere, you have two options
 
 1. (Recommended) [Push this image to a docker registry](https://docs.docker.com/engine/reference/commandline/push/) of your choice. You can either [set up your own registry](https://docs.docker.com/registry/), or use an offering from DockerHub, AWS, GCP and many others. The simplest way of achieving this is to simply run
   - `docker tag xl-release-custom:9.5.0 yourdockerhuborg/xl-release-custom:9.5.0`
   - `docker push yourdockerhuborg/xl-release-custom:9.5.0`
-  - (On the node you would like to run the container) `docker run -it --rm -p 5601:5601 -e ACCEPT_EULA=Y yourdockerhuborg/xl-release-custom:9.5.0`
+  - (On the node you would like to run the container) `docker run -it --rm -p 5516:5516 -e "ADMIN_PASSWORD=desired_admin_password" -e ACCEPT_EULA=Y yourdockerhuborg/xl-release-custom:9.5.0`
 2. By using [`docker export`](https://docs.docker.com/engine/reference/commandline/export/) and [`docker load`](https://docs.docker.com/engine/reference/commandline/load/). This is not a recommended approach as it requires you to move a tar file between different machines. 
 
 
