@@ -5,10 +5,10 @@ docker-pycreds==0.3.0
 gitdb2==2.0.4
 GitPython==2.1.11
 idna==2.7
-Jinja2==2.10
+Jinja2>=2.10.1
 MarkupSafe==1.0
 requests==2.20.0
 six==1.11.0
 smmap2==2.0.4
-urllib3==1.23
+urllib3>=1.24.2
 websocket-client==0.48.0
