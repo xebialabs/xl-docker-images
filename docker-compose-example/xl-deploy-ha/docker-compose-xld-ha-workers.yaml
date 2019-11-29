@@ -1,0 +1,30 @@
+version: "3"
+services:
+  xl-deploy-worker:
+    image: xebialabs/xl-deploy:9.5.0
+    networks:
+      - xld-network
+    environment:
+      - ADMIN_PASSWORD=${XLD_ADMIN_PASS}
+      - ACCEPT_EULA=Y
+      - XL_CLUSTER_MODE=default
+      - XLD_IN_PROCESS=false
+      - XLD_TASK_QUEUE_DRIVER_CLASS_NAME=com.rabbitmq.jms.admin.RMQConnectionFactory
+      - XLD_TASK_QUEUE_URL=amqp://rabbitmq:5672
+      - XLD_TASK_QUEUE_USERNAME=rabbitmq
+      - XLD_TASK_QUEUE_PASSWORD=${RABBITMQ_PASS}
+      - XL_DB_URL=jdbc:postgresql://postgresql:5432/xld-db
+      - XL_DB_USERNAME=postgres
+      - XL_DB_PASSWORD=${POSTGRES_PASS}
+    command:
+      - "worker"
+      - "-api"
+      - "http://xl-deploy-lb:8080/"
+      - "-master"
+      - "${XLD_MASTER_1}:8180"
+      - "-master"
+      - "${XLD_MASTER_2}:8180"
+
+networks:
+  xld-network:
+    external: true
