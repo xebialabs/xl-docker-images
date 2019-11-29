@@ -1,0 +1,54 @@
+version: "3"
+services:
+  xl-release-lb:
+    image: eeacms/haproxy
+    container_name: xl-release-lb
+    depends_on:
+      - xl-release-master
+    ports:
+      - "8081:5000"
+      - "1936:1936"
+    networks:
+      - xlr-network
+    environment:
+      BACKENDS: "xl-release-master:5516"
+      HTTPCHK: "GET /ha/health"
+      DNS_ENABLED: "true"
+      LOG_LEVEL: "info"
+      TIMEOUT_CONNECT: 60000
+
+  xl-release-master:
+    image: xebialabs/xl-release:9.5.0
+    depends_on:
+      - postgresql
+    networks:
+      - xlr-network
+    environment:
+      - ADMIN_PASSWORD=${XLR_ADMIN_PASS}
+      - ACCEPT_EULA=Y
+      - XL_CLUSTER_MODE=full
+      - XL_DB_URL=jdbc:postgresql://postgresql:5432/xlr-db
+      - XL_DB_USERNAME=xlr-db
+      - XL_DB_PASSWORD=${POSTGRES_PASS}
+      - XL_REPORT_DB_URL=jdbc:postgresql://postgresql:5432/xlr-report-db
+      - XL_REPORT_DB_USERNAME=xlr-report-db
+      - XL_REPORT_DB_PASSWORD=${POSTGRES_PASS}
+
+  postgresql:
+    image: postgres:10.5
+    container_name: postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES="xlr-db","xlr-report-db"
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+    command: postgres
+    networks:
+      - xlr-network
+    volumes:
+      - $PWD/postgres:/docker-entrypoint-initdb.d
+
+networks:
+  xlr-network:
+    driver: bridge
