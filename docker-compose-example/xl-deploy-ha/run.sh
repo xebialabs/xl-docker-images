@@ -6,7 +6,7 @@ export RABBITMQ_PASS=admin
 export POSTGRES_PASS=admin
 
 echo ">>> Create docker network"
-docker network create xld-network || exit
+docker network create xld-network
 
 echo ">>> Deploy master nodes"
 # deploy master nodes, load balancer, mq and database. You should not change the number of master nodes here, it must be 2

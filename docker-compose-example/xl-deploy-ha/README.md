@@ -49,7 +49,8 @@ docker-compose -f docker-compose-xld-ha.yaml -f docker-compose-xld-ha-workers.ya
 ```
 
 3. You can view the logs of individual containers using the `docker logs <container_name> -f` command.
-4. To shutdown the setup you can run below
+4. You can access XL Deploy UI at http://localhost:8080
+5. To shutdown the setup you can run below
 ```shell
 # Shutdown deployments
 docker-compose -f docker-compose-xld-ha.yaml -f docker-compose-xld-ha-workers.yaml down
