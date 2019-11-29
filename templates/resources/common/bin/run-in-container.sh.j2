@@ -96,6 +96,9 @@ function store_license {
 function generate_node_conf {
   echo "Re-generate node cluster configuration"
   HOSTNAME=$(hostname)
+  if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
+    HOSTNAME=$(hostname -i)
+  fi
   IP_ADDRESS=$(hostname -i)
   {% for file in conf_files %}
     if [ -e ${APP_HOME}/node-conf/{{file}}.template ]; then

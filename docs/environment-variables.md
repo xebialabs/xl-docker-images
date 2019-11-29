@@ -75,6 +75,11 @@
 - Used to generate configuration from environment parameters passed and volumes mounted with custom changes .. if set to false then it default conf will be used ignoring all env variables and volumes added.
 - possible values: "true","false"
 - default value: "true" 
+    
+##### `USE_IP_AS_HOSTNAME`
+- Used to set IP address of the container as the hostname for instance .. if set to true then IP will be used instead of the container ID.
+- possible values: "true","false"
+- default value: "false" 
 
 ### Specific for XLRelease docker images:-
 

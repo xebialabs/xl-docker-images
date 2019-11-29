@@ -60,3 +60,5 @@ context:
     value: byol
   - key: GENERATE_XL_CONFIG
     value: "true"
+  - key: USE_IP_AS_HOSTNAME
+    value: "false"
