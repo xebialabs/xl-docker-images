@@ -72,12 +72,12 @@
 - default value: "false"
     
 ##### `GENERATE_XL_CONFIG`
-- Used to generate configuration from environment parameters passed and volumes mounted with custom changes .. if set to false then it default conf will be used ignoring all env variables and volumes added.
+- Used to generate configuration from environment parameters passed and volumes mounted with custom changes. if set to false then it default conf will be used ignoring all env variables and volumes added.
 - possible values: "true","false"
 - default value: "true" 
     
 ##### `USE_IP_AS_HOSTNAME`
-- Used to set IP address of the container as the hostname for instance .. if set to true then IP will be used instead of the container ID.
+- Used to set IP address of the container as the hostname for the instance. If set to true then IP will be used instead of the container ID. This is useful when deploying XL Deploy as active-active cluster using docker compose as Akka cannot resolve aliases within the docker network.
 - possible values: "true","false"
 - default value: "false" 
 
