@@ -7,7 +7,9 @@ The production setup for XL Deploy as mentioned [here](https://docs.xebialabs.co
 This is a sample, you can follow this approach to setup the database and other infrastructure of your choice.
 
 ### setup
+
 The setup includes
+
 - A load balancer with HaProxy
 - RabbitMQ single node setup
 - PostgreSQL database single node setup
@@ -15,11 +17,13 @@ The setup includes
 - XL Deploy worker nodes
 
 ### Limitations:
+
 - You can have only 2 master nodes
 - The database setup is for demo purposes, use your own setup or use external database
 - The MQ setup is for demo purposes, use your own setup or use external MQ
 
 ### Steps
+
 Follow the below steps to deploy the sample
 
 1. Download the `docker-compose-xld-ha.yaml` and `docker-compose-xld-ha-workers.yaml` files here
@@ -51,6 +55,7 @@ docker-compose -f docker-compose-xld-ha.yaml -f docker-compose-xld-ha-workers.ya
 3. You can view the logs of individual containers using the `docker logs <container_name> -f` command.
 4. You can access XL Deploy UI at http://localhost:8080
 5. To shutdown the setup you can run below
+
 ```shell
 # Shutdown deployments
 docker-compose -f docker-compose-xld-ha.yaml -f docker-compose-xld-ha-workers.yaml down
