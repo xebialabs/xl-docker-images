@@ -22,7 +22,7 @@ The setup includes
 ### Limitations:
 
 - The database setup is for demo purposes, use your own setup or use external database
-- The MQ setup is for demo purposes, use your own setup or use external MQ
+- The HAproxy setup is for demo purposes, use your own setup 
 
 ### Steps
 
