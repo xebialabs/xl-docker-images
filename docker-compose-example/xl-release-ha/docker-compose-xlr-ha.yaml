@@ -1,7 +1,7 @@
 version: "3"
 services:
   xl-release-lb:
-    image: eeacms/haproxy
+    image: xebialabsunsupported/haproxy
     container_name: xl-release-lb
     depends_on:
       - xl-release-master
@@ -16,6 +16,8 @@ services:
       DNS_ENABLED: "true"
       LOG_LEVEL: "info"
       TIMEOUT_CONNECT: 60000
+      COOKIES_ENABLED: "true"
+      COOKIES_PARAMS: "JSESSIONID prefix"
 
   xl-release-master:
     image: xebialabs/xl-release:9.5.0
