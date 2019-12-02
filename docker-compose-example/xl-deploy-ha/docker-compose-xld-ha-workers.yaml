@@ -25,6 +25,9 @@ services:
       - "${XLD_MASTER_1}:8180"
       - "-master"
       - "${XLD_MASTER_2}:8180"
+    volumes:
+      # provide deployit-licence.lic file in the conf folder
+      - $PWD/xl-deploy/conf:/opt/xebialabs/xl-deploy-server/conf
 
 networks:
   xld-network:

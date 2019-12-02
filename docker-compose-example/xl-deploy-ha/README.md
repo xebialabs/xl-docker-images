@@ -6,6 +6,8 @@ The production setup for XL Deploy as mentioned [here](https://docs.xebialabs.co
 
 This is a sample, you can follow this approach to setup the database and other infrastructure of your choice.
 
+**Note 2**: For HA setup to work, you need to mount a licence file or provide an environment variable `XL_LICENSE` with a licence text converted to base64 for the XL Deploy instances
+
 ### setup
 
 The setup includes

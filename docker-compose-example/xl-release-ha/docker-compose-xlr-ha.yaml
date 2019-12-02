@@ -14,10 +14,13 @@ services:
       BACKENDS: "xl-release-master:5516"
       HTTPCHK: "GET /ha/health"
       DNS_ENABLED: "true"
-      LOG_LEVEL: "info"
-      TIMEOUT_CONNECT: 60000
       COOKIES_ENABLED: "true"
       COOKIES_PARAMS: "JSESSIONID prefix"
+      LOG_LEVEL: "info"
+      TIMEOUT_CONNECT: 60000
+    volumes:
+      # provide xl-release-licence.lic file in the conf folder
+      - $PWD/xl-release/conf:/opt/xebialabs/xl-release-server/conf
 
   xl-release-master:
     image: xebialabs/xl-release:9.5.0
