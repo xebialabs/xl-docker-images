@@ -18,9 +18,6 @@ services:
       COOKIES_PARAMS: "JSESSIONID prefix"
       LOG_LEVEL: "info"
       TIMEOUT_CONNECT: 60000
-    volumes:
-      # provide xl-release-licence.lic file in the conf folder
-      - $PWD/xl-release/conf:/opt/xebialabs/xl-release-server/conf
 
   xl-release-master:
     image: xebialabs/xl-release:9.5.0
@@ -39,6 +36,9 @@ services:
       - XL_REPORT_DB_USERNAME=xlr-report-db
       - XL_REPORT_DB_PASSWORD=${POSTGRES_PASS}
       #- XL_LICENSE=YOUR_LICENSE_IN_BASE64_STRING
+    volumes:
+      - $PWD/xl-release/conf:/opt/xebialabs/xl-release-server/conf # provide xl-release-licence.lic file in the conf folder
+
   postgresql:
     image: postgres:10.5
     container_name: postgresql
