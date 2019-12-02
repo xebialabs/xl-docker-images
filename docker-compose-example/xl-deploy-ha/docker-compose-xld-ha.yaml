@@ -1,7 +1,7 @@
 version: "3"
 services:
   xl-deploy-lb:
-    image: eeacms/haproxy
+    image: xebialabsunsupported/haproxy
     container_name: xl-deploy-lb
     depends_on:
       - xl-deploy-master
@@ -16,6 +16,8 @@ services:
       DNS_ENABLED: "true"
       LOG_LEVEL: "info"
       TIMEOUT_CONNECT: 60000
+      COOKIES_ENABLED: "true"
+      COOKIES_PARAMS: "SESSION_XLD prefix"
 
   xl-deploy-master:
     image: xebialabs/xl-deploy:9.5.0
@@ -37,7 +39,7 @@ services:
       - XL_DB_URL=jdbc:postgresql://postgresql:5432/xld-db
       - XL_DB_USERNAME=postgres
       - XL_DB_PASSWORD=${POSTGRES_PASS}
-
+      #- XL_LICENSE=YOUR_LICENSE_IN_BASE64_STRING
   rabbitmq:
     image: "rabbitmq:3.7-management"
     container_name: rabbitmq

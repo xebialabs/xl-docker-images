@@ -35,7 +35,7 @@ services:
       - XL_REPORT_DB_URL=jdbc:postgresql://postgresql:5432/xlr-report-db
       - XL_REPORT_DB_USERNAME=xlr-report-db
       - XL_REPORT_DB_PASSWORD=${POSTGRES_PASS}
-
+      #- XL_LICENSE=YOUR_LICENSE_IN_BASE64_STRING
   postgresql:
     image: postgres:10.5
     container_name: postgresql

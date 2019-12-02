@@ -17,6 +17,7 @@ services:
       - XL_DB_URL=jdbc:postgresql://postgresql:5432/xld-db
       - XL_DB_USERNAME=postgres
       - XL_DB_PASSWORD=${POSTGRES_PASS}
+      #- XL_LICENSE=YOUR_LICENSE_IN_BASE64_STRING
     command:
       - "worker"
       - "-api"
