@@ -7,3 +7,4 @@ __pycache__
 xl-release/**/resources
 xl-deploy/**/resources
 xl-cli/**/resources
+temp/
