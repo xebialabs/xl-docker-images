@@ -40,6 +40,10 @@ services:
       - XL_DB_USERNAME=postgres
       - XL_DB_PASSWORD=${POSTGRES_PASS}
       #- XL_LICENSE=YOUR_LICENSE_IN_BASE64_STRING
+    volumes:
+      # provide deployit-licence.lic file in the conf folder
+      - $PWD/xl-deploy/conf:/opt/xebialabs/xl-deploy-server/conf
+
   rabbitmq:
     image: "rabbitmq:3.7-management"
     container_name: rabbitmq
