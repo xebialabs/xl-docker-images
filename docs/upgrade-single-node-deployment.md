@@ -60,7 +60,7 @@ If you use a different file name, then run `docker-compose -f <filename.yaml> up
 
 Once the containers are started you can find them at http://localhost:4516/, you might want a wait for a minute for the service to be up and running
 
-# Single node XL Release deployment
+# Upgrade Single node XL Release deployment
 
 ## Docker run
 
