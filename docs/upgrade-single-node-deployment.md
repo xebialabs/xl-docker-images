@@ -3,7 +3,7 @@ If you want to upgrade a single node instance of XL Release or XL Deploy using D
 1. Make sure to read our docs for upgrade and release notes for each version you want to upgrade to.
 2. Stop current running docker container which have old version ythat need to be upgraded.
 3. Start new docker container with new tag which represent version you want to upgrade to, taking in consideration below
-    * include all volumes already being used with old docker images, make sure also to update any configurations required by new version "check release notes" before mounting it to new version.
+    * include all volumes already being used with old docker images. In case of "conf" volume make sure also to update any configurations required by new version "check release notes" before mounting it to new version of the container.
     * specify your DB connection details to point to old DB for example using env variables such as `XL_DB_URL`
     * make sure to use `FORCE_UPGRADE_FLAG` to be true in order to force upgrade by using flag `-force-upgrades`
 
