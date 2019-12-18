@@ -5,7 +5,7 @@ If you want to upgrade a single node instance of XL Release or XL Deploy using D
 3. Start new docker container with new tag which represent version you want to upgrade to, taking in consideration below
     * include all volumes already being used with old docker images. In case of "conf" volume make sure also to update any configurations required by new version "check release notes" before mounting it to new version of the container.
     * specify your DB connection details to point to old DB for example using env variables such as `XL_DB_URL`
-    * make sure to use `FORCE_UPGRADE_FLAG` to be true in order to force upgrade by using flag `-force-upgrades`
+    * make sure to use `FORCE_UPGRADE` to be true in order to force upgrade by using flag `-force-upgrades`
 
 # Upgrade Single node XL Deploy deployment
 
@@ -15,7 +15,7 @@ After stopping old XL Deploy docker container You can start upgrade using new ve
 
 ```shell
 docker run -d  \
-  -e FORCE_UPGRADE_FLAG=true \
+  -e FORCE_UPGRADE=true \
   -p 4516:4516 \
   -e XL_DB_URL="jdbc:postgresql://PsqlDbHost:5432/repo" \
   -e XL_DB_USERNAME=postgres \
@@ -48,7 +48,7 @@ services:
       - ~/XebiaLabs/xl-deploy-server/hotfix/lib:/opt/xebialabs/xl-deploy-server/hotfix/lib
       - ~/XebiaLabs/xl-deploy-server/hotfix/plugins:/opt/xebialabs/xl-deploy-server/hotfix/plugins
     environment:
-      - FORCE_UPGRADE_FLAG=true \
+      - FORCE_UPGRADE=true \
       - XL_DB_URL="jdbc:postgresql://PsqlDbHost:5432/xl-deploy" \
       - XL_DB_USERNAME=postgres \
       - XL_DB_PASSWORD="password" \
@@ -68,7 +68,7 @@ After stopping old XL Release docker container You can start upgrade using new v
 
 ```shell
 docker run -d  \
-  -e FORCE_UPGRADE_FLAG=true \
+  -e FORCE_UPGRADE=true \
   -p 5516:5516 \
   -e XL_DB_URL="jdbc:postgresql://PsqlDbHost:5432/repo" \
   -e XL_DB_USERNAME=postgres \
@@ -104,7 +104,7 @@ services:
       - ~/XebiaLabs/xl-release-server/hotfix/lib:/opt/xebialabs/xl-release-server/hotfix/lib
       - ~/XebiaLabs/xl-release-server/hotfix/plugins:/opt/xebialabs/xl-release-server/hotfix/plugins
     environment:
-      - FORCE_UPGRADE_FLAG=true \
+      - FORCE_UPGRADE=true \
       - XL_DB_URL="jdbc:postgresql://PsqlDbHost:5432/xl-release" \
       - XL_DB_USERNAME=postgres \
       - XL_DB_PASSWORD="password" \

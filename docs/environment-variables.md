@@ -37,8 +37,8 @@
 - possible values: "y" or "Y"
 - default value: none
 
-##### `FORCE_UPGRADE_FLAG`
-- Force upgrade setting. In case of upgrade it will be performed in non-interactive mode by setting flag to "-force-upgrades"
+##### `FORCE_UPGRADE`
+- Force upgrade setting. In case of upgrade it will be performed in non-interactive mode by passing flag `-force-upgrades` during service starting.
 - possible values: "true", "false" 
 - default value: "false" 
 
