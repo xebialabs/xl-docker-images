@@ -33,8 +33,7 @@ export XLD_ADMIN_PASS=admin
 export RABBITMQ_PASS=admin
 export POSTGRES_PASS=admin
 
-# upgrade master nodes only. 
-You should not change the number of master nodes here, it must be 2
+# upgrade master nodes only. You should not change the number of master nodes here, it must be 2
 docker-compose -f docker-compose-xld-ha.yaml up --scale xl-deploy-master=2 -d
 
 # get the IP of master nodes, change the container names if you are not inside a folder named "xl-deploy-ha"
