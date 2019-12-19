@@ -51,3 +51,5 @@ docker-compose -f docker-compose-xlr-ha.yaml ps
 # Shutdown deployments
 docker-compose -f docker-compose-xlr-ha.yaml down
 ```
+
+#### For Upgrade procedures please check this [upgrade multi node deployment](upgrade-multi-node-deployment.md)
