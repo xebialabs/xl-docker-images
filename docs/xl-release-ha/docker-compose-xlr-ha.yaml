@@ -20,7 +20,7 @@ services:
       TIMEOUT_CONNECT: 60000
 
   xl-release-master:
-    image: xebialabs/xl-release:9.5.0
+    image: xebialabs/xl-release:9.5.2
     depends_on:
       - postgresql
     networks:
@@ -35,6 +35,7 @@ services:
       - XL_REPORT_DB_URL=jdbc:postgresql://postgresql:5432/xlr-report-db
       - XL_REPORT_DB_USERNAME=xlr-report-db
       - XL_REPORT_DB_PASSWORD=${POSTGRES_PASS}
+      - FORCE_UPGRADE=true
       #- XL_LICENSE=YOUR_LICENSE_IN_BASE64_STRING
     volumes:
       - $PWD/xl-release/conf:/opt/xebialabs/xl-release-server/conf # provide xl-release-licence.lic file in the conf folder

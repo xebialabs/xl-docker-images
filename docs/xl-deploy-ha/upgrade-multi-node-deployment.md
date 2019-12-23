@@ -20,7 +20,7 @@ Follow the below steps to Upgrade XL Deploy active-active cluster setup,
   ```
   * specify your DB connection details to point to old DB for both master and worker for example using env variables such as `XL_DB_URL`
   * include all volumes already being used with old docker images for both master and worker. In case of "conf" volume make sure also to update any configurations required by new version "check release notes" before mounting it to new version of the container.
-  * Update environment variables to include `FORCE_UPGRADE` for both master and worker see below,
+  * Update environment variables to include `FORCE_UPGRADE` for  master nodes,  see below,
   ```shell
    environment:
          - FORCE_UPGRADE=true
