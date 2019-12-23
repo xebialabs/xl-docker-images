@@ -20,7 +20,7 @@ services:
       TIMEOUT_CONNECT: 60000
 
   xl-deploy-master:
-    image: xebialabs/xl-deploy:9.5.0
+    image: xebialabs/xl-deploy:9.5.1
     depends_on:
       - rabbitmq
       - postgresql
@@ -39,6 +39,7 @@ services:
       - XL_DB_URL=jdbc:postgresql://postgresql:5432/xld-db
       - XL_DB_USERNAME=postgres
       - XL_DB_PASSWORD=${POSTGRES_PASS}
+      - FORCE_UPGRADE=true
       #- XL_LICENSE=YOUR_LICENSE_IN_BASE64_STRING
     volumes:
       - $PWD/xl-deploy-master/conf:/opt/xebialabs/xl-deploy-server/conf # provide deployit-licence.lic file in the conf folder

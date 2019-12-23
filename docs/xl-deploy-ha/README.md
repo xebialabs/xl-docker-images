@@ -67,3 +67,5 @@ docker-compose -f docker-compose-xld-ha.yaml -f docker-compose-xld-ha-workers.ya
 # Remove network
 docker network rm xld-network
 ```
+
+#### For Upgrade procedures please check this [upgrade multi node deployment](upgrade-multi-node-deployment.md)
