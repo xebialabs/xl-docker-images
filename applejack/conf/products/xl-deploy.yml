@@ -71,3 +71,5 @@ context:
     value: "true"
   - key: USE_IP_AS_HOSTNAME
     value: "false"
+  - key: ENABLE_SATELLITE
+    value: no

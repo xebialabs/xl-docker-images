@@ -1,0 +1,18 @@
+
+# copy default configurations
+echo "... Copying default configuration from ${APP_HOME}/default-conf"
+
+cd ${APP_HOME}/default-conf
+for f in *; do
+  if [[ $f == *.template ]]; then
+    continue
+  fi
+  if [ -f ${APP_HOME}/conf/$f ]; then
+    echo "... Not copying $f because it already exists in the conf directory"
+  else
+    echo "... Copying $f to the conf directory"
+    cp -R $f ${APP_HOME}/conf/
+  fi
+done
+cd ${APP_HOME}
+echo "Done copying configurations"
