@@ -137,6 +137,16 @@ function check_force_upgrade {
      FORCE_UPGRADE_FLAG="-force-upgrades"
    fi
 }
+
+function override_terraform_version {
+  if [-z "$TERRAFORM_VERSION"]{
+    echo "Upgrading terraform to version ${TERRAFORM_VERSION}"
+    curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip /tmp/terraform.zip -d /usr/local/bin && \
+    rm -f /tmp/terraform.zip
+    echo "Upgrading terraform to version ${TERRAFORM_VERSION} complete"
+  }
+}
 {% include 'includes/' + product + '-run-script.j2' %}
 
 check_eula
