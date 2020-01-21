@@ -270,6 +270,26 @@ pipeline {
                         }
                     }
                 }
+
+                stage('Test XLUP with New Docker Images for debian-slim') {
+                    when {
+                         expression { params.Linux == true }
+                    }
+                    agent {
+                            label 'docker_minikube'
+                    }
+                    steps {
+                        // Clean old workspace
+                        step([$class: 'WsCleanup'])
+                        checkout scm
+
+                        script {
+
+                            runXlUpOnMiniKube()
+
+                        }
+                    }
+                }
             }
         }
     }
@@ -323,3 +343,46 @@ def getLatestVersion() {
     return xl_LatestVersion
 }
 
+def runXlUpOnMiniKube() {
+
+    sh "git clone git@github.com:xebialabs/xl-up-blueprint.git"
+
+    sh """
+        cat  /root/.minikube/client.crt > xlup/k8sClientCert-minikube-tmp.crt
+        tr ' ' '\\n' < xlup/k8sClientCert-minikube-tmp.crt > xlup/k8sClientCert-minikube-tmp2.crt
+        tr '%' ' ' < xlup/k8sClientCert-minikube-tmp2.crt > xlup/k8sClientCert-minikube.crt
+        rm -f xlup/k8sClientCert-minikube-tmp.crt | rm -f xlup/k8sClientCert-minikube-tmp2.crt
+    """
+
+    sh """
+        cat  /root/.minikube/client.key > xlup/k8sClientCert-minikube-tmp.key
+        tr ' ' '\\n' < xlup/k8sClientCert-minikube-tmp.key > xlup/k8sClientCert-minikube-tmp2.key
+        tr '%' ' ' < xlup/k8sClientCert-minikube-tmp2.key > xlup/k8sClientCert-minikube.key
+        rm -f xlup/k8sClientCert-minikube-tmp.key | rm -f xlup/k8sClientCert-minikube-tmp2.key
+    """"
+
+    def minikube_host = sh(script: 'hostnae -f', returnStdout: true).trim()
+
+    sh "sed -ie 's@k8s.com@${minikube_host}@g' xlup/${params.XLProduct}_generated_answers.yaml"
+    sh "sed -ie 's@K8sClientCertFile: cert-temp-file@K8sClientCertFile: xlup/k8sClientCert-minikube.crt@g' xlup/${params.XLProduct}_generated_answers.yaml"
+    sh "sed -ie 's@K8sClientKeyFile: key-temp-file@K8sClientKeyFile: xlup/k8sClientCert-minikube.key@g' xlup/${params.XLProduct}_generated_answers.yaml"
+    sh "sed -ie 's@XlKeyStore: repository-keystore-temp@XlKeyStore: xlup/repository-keystore.jceks@g' xlup/${params.XLProduct}_generated_answers.yaml"
+
+    if (params.XLProduct == 'xl-release') {
+
+        sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/xl-release-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-release.lic"
+        sh "sed -ie 's@XlrLic: xlrelease-temp-license@XlrLic: xlup/xl-release.lic@g' xlup/${params.XLProduct}_generated_answers.yaml"
+        sh "sed -ie 's@XlrVersion: xl-release:version-temp@XlrVersion: xl-release:${xl_LatestVersion}@g' xlup/${params.XLProduct}_generated_answers.yaml"
+
+    } else if (params.XLProduct == 'xl-deploy') {
+
+        sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/deployit-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-deploy.lic"
+        sh "sed -ie 's@XldLic: xldeploy-temp-license@XldLic: xlup/xl-deploy.lic@g' xlup/${params.XLProduct}_generated_answers.yaml"
+        sh "sed -ie 's@XldVersion: xl-deploy:version-temp@XldVersion: xl-deploy:${xl_LatestVersion}@g' xlup/${params.XLProduct}_generated_answers.yaml"
+
+    }
+
+    sh "/opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
+    sh "/opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --skip-prompts"
+    sh "/opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
+}

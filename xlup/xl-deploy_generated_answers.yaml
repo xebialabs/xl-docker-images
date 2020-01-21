@@ -1,0 +1,28 @@
+K8sSetup: MinikubeK8s
+UseKubeconfig: true
+K8sApiServerURL: https://k8s.com:8443
+K8sClientCert: cert-temp-file
+K8sClientKey: key-temp-file
+UseCustomRegistry: true
+InstallXLD: true
+InstallXLR: false
+XlrVersion:
+XldVersion: xl-deploy:version-temp
+DockerUser:
+DockerPass:
+RegistryURL: xl-docker.xebialabs.com
+ExternalDatabase: false
+XldAdminPass: admin
+XldLic: xldeploy-temp-license
+XldDbName: xl-deploy
+XldDbUser: sa
+XldDbPass: admin
+XlKeyStore: repository-keystore-temp
+XlKeyStorePass: admin123
+MonitoringInstall: false
+PostgresqlDataPvcSize: 50Gi
+PostgresMaxConn: 512
+PostgresSharedBuff: 512MB
+PostgresEffectCacheSize: 1GB
+PostgresSyncCommit: off
+PostgresMaxWallSize: 256MB
