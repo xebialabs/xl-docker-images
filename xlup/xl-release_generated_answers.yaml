@@ -8,8 +8,8 @@ InstallXLD: false
 InstallXLR: true
 XlrVersion: xl-release:version-temp
 XldVersion:
-DockerUser:
-DockerPass:
+DockerUser: " "
+DockerPass: " "
 RegistryURL: xl-docker.xebialabs.com
 ExternalDatabase: false
 XlrAdminPass: 2cnR8dKDbmLidLgW
