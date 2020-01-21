@@ -174,7 +174,7 @@ pipeline {
 
         stage('Test Docker Images for XLProducts') {
             parallel {
-                stage('Test Docker Images for debian-slim centos amazonlinux') {
+                stage('Test Docker Images for debian-slim') {
                     when {
                          expression { params.Linux == true }
                     }
@@ -348,20 +348,20 @@ def runXlUpOnMiniKube() {
     sh "git clone git@github.com:xebialabs/xl-up-blueprint.git"
 
     sh """
-        cat  /root/.minikube/client.crt > xlup/k8sClientCert-minikube-tmp.crt
-        tr ' ' '\\n' < xlup/k8sClientCert-minikube-tmp.crt > xlup/k8sClientCert-minikube-tmp2.crt
-        tr '%' ' ' < xlup/k8sClientCert-minikube-tmp2.crt > xlup/k8sClientCert-minikube.crt
-        rm -f xlup/k8sClientCert-minikube-tmp.crt | rm -f xlup/k8sClientCert-minikube-tmp2.crt
+        sudo cat  /root/.minikube/client.crt > xlup/k8sClientCert-minikube-tmp.crt
+        sudo tr ' ' '\\n' < xlup/k8sClientCert-minikube-tmp.crt > xlup/k8sClientCert-minikube-tmp2.crt
+        sudo tr '%' ' ' < xlup/k8sClientCert-minikube-tmp2.crt > xlup/k8sClientCert-minikube.crt
+        sudo rm -f xlup/k8sClientCert-minikube-tmp.crt | rm -f xlup/k8sClientCert-minikube-tmp2.crt
     """
 
     sh """
-        cat  /root/.minikube/client.key > xlup/k8sClientCert-minikube-tmp.key
-        tr ' ' '\\n' < xlup/k8sClientCert-minikube-tmp.key > xlup/k8sClientCert-minikube-tmp2.key
-        tr '%' ' ' < xlup/k8sClientCert-minikube-tmp2.key > xlup/k8sClientCert-minikube.key
-        rm -f xlup/k8sClientCert-minikube-tmp.key | rm -f xlup/k8sClientCert-minikube-tmp2.key
+        sudo cat  /root/.minikube/client.key > xlup/k8sClientCert-minikube-tmp.key
+        sudo tr ' ' '\\n' < xlup/k8sClientCert-minikube-tmp.key > xlup/k8sClientCert-minikube-tmp2.key
+        sudo tr '%' ' ' < xlup/k8sClientCert-minikube-tmp2.key > xlup/k8sClientCert-minikube.key
+        sudo rm -f xlup/k8sClientCert-minikube-tmp.key | rm -f xlup/k8sClientCert-minikube-tmp2.key
     """
 
-    def minikube_host = sh(script: 'hostnae -f', returnStdout: true).trim()
+    def minikube_host = sh(script: 'hostname -f', returnStdout: true).trim()
 
     sh "sed -ie 's@k8s.com@${minikube_host}@g' xlup/${params.XLProduct}_generated_answers.yaml"
     sh "sed -ie 's@K8sClientCertFile: cert-temp-file@K8sClientCertFile: xlup/k8sClientCert-minikube.crt@g' xlup/${params.XLProduct}_generated_answers.yaml"
@@ -382,7 +382,7 @@ def runXlUpOnMiniKube() {
 
     }
 
-    sh "/opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
-    sh "/opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --skip-prompts"
-    sh "/opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
+    sh "sudo /opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
+    sh "sudo /opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --skip-prompts"
+    sh "sudo /opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
 }
