@@ -38,6 +38,7 @@ pipeline {
     environment {
         xlrelease_RHEL_registry = 'p762626407e78baea07bf3901fb89bdaf24e2db505'
         xldeploy_RHEL_registry = 'p213351287537b1081d854572a246c48cdf8f9d5585'
+        DIST_SERVER_CRED = credentials('distserver')
     }
 
     stages {
