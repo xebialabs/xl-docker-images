@@ -359,7 +359,7 @@ def runXlUpOnMiniKube() {
         tr ' ' '\\n' < xlup/k8sClientCert-minikube-tmp.key > xlup/k8sClientCert-minikube-tmp2.key
         tr '%' ' ' < xlup/k8sClientCert-minikube-tmp2.key > xlup/k8sClientCert-minikube.key
         rm -f xlup/k8sClientCert-minikube-tmp.key | rm -f xlup/k8sClientCert-minikube-tmp2.key
-    """"
+    """
 
     def minikube_host = sh(script: 'hostnae -f', returnStdout: true).trim()
 
