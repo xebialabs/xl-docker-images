@@ -286,25 +286,23 @@ pipeline {
 
 def getLatestVersion() {
     if (params.Version == '') {
-        withCredentials([usernamePassword(credentialsId: 'nexus_credentials', passwordVariable: 'nexus_pass', usernameVariable: 'nexus_user')]) {
-            // Get latest version
-            script {
-                if (params.XLProduct == 'xl-release') {
+        // Get latest version
+        script {
+            if (params.XLProduct == 'xl-release') {
 
-                    def xl_Version = sh(script: 'curl -su ${nexus_user}:${nexus_pass} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/xlrelease/xl-release/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
+                def xl_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/xlrelease/xl-release/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
 
-                    writeFile (file: "${env.WORKSPACE}/${params.XLProduct}-latest", text: "${xl_Version}")
-                    xl_LatestVersion = readFile "${env.WORKSPACE}/${params.XLProduct}-latest"
+                writeFile (file: "${env.WORKSPACE}/${params.XLProduct}-latest", text: "${xl_Version}")
+                xl_LatestVersion = readFile "${env.WORKSPACE}/${params.XLProduct}-latest"
 
 
-                } else if (params.XLProduct == 'xl-deploy') {
+            } else if (params.XLProduct == 'xl-deploy') {
 
-                    def xl_Version = sh(script: 'curl -su ${nexus_user}:${nexus_pass} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
+                def xl_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
 
-                    writeFile (file: "${env.WORKSPACE}/${params.XLProduct}-latest", text: "${xl_Version}")
-                    xl_LatestVersion = readFile "${env.WORKSPACE}/${params.XLProduct}-latest"
+                writeFile (file: "${env.WORKSPACE}/${params.XLProduct}-latest", text: "${xl_Version}")
+                xl_LatestVersion = readFile "${env.WORKSPACE}/${params.XLProduct}-latest"
 
-                }
             }
         }
     } else {
