@@ -338,6 +338,8 @@ def runXlUpOnMiniKube() {
     sh "sed -ie 's@K8sClientCertFile: cert-temp-file@K8sClientCertFile: xlup/k8sClientCert-minikube.crt@g' xlup/xl_generated_answers.yaml"
     sh "sed -ie 's@K8sClientKeyFile: key-temp-file@K8sClientKeyFile: xlup/k8sClientCert-minikube.key@g' xlup/xl_generated_answers.yaml"
     sh "sed -ie 's@XlKeyStore: repository-keystore-temp@XlKeyStore: xlup/repository-keystore.jceks@g' xlup/xl_generated_answers.yaml"
+    // create empty files for lic as answer file always validate it.
+    sh "touch xlrelease-temp-license  xldeploy-temp-license"
 
     if (params.XLProduct == 'xl-release') {
 
