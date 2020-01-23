@@ -334,26 +334,28 @@ def runXlUpOnMiniKube() {
 
     def minikube_host = sh(script: 'hostname -f', returnStdout: true).trim()
 
-    sh "sed -ie 's@k8s.com@${minikube_host}@g' xlup/${params.XLProduct}_generated_answers.yaml"
-    sh "sed -ie 's@K8sClientCertFile: cert-temp-file@K8sClientCertFile: xlup/k8sClientCert-minikube.crt@g' xlup/${params.XLProduct}_generated_answers.yaml"
-    sh "sed -ie 's@K8sClientKeyFile: key-temp-file@K8sClientKeyFile: xlup/k8sClientCert-minikube.key@g' xlup/${params.XLProduct}_generated_answers.yaml"
-    sh "sed -ie 's@XlKeyStore: repository-keystore-temp@XlKeyStore: xlup/repository-keystore.jceks@g' xlup/${params.XLProduct}_generated_answers.yaml"
+    sh "sed -ie 's@k8s.com@${minikube_host}@g' xlup/xl_generated_answers.yaml"
+    sh "sed -ie 's@K8sClientCertFile: cert-temp-file@K8sClientCertFile: xlup/k8sClientCert-minikube.crt@g' xlup/xl_generated_answers.yaml"
+    sh "sed -ie 's@K8sClientKeyFile: key-temp-file@K8sClientKeyFile: xlup/k8sClientCert-minikube.key@g' xlup/xl_generated_answers.yaml"
+    sh "sed -ie 's@XlKeyStore: repository-keystore-temp@XlKeyStore: xlup/repository-keystore.jceks@g' xlup/xl_generated_answers.yaml"
 
     if (params.XLProduct == 'xl-release') {
 
         sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/xl-release-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-release.lic"
-        sh "sed -ie 's@XlrLic: xlrelease-temp-license@XlrLic: xlup/xl-release.lic@g' xlup/${params.XLProduct}_generated_answers.yaml"
-        sh "sed -ie 's@XlrVersion: xl-release:version-temp@XlrVersion: xl-release:${xl_LatestVersion}@g' xlup/${params.XLProduct}_generated_answers.yaml"
+        sh "sed -ie 's@InstallXLR: false@InstallXLR: true@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XlrLic: xlrelease-temp-license@XlrLic: xlup/xl-release.lic@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XlrVersion: xl-release:version-temp@XlrVersion: xl-release:${xl_LatestVersion}@g' xlup/xl_generated_answers.yaml"
 
     } else if (params.XLProduct == 'xl-deploy') {
 
         sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/deployit-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-deploy.lic"
-        sh "sed -ie 's@XldLic: xldeploy-temp-license@XldLic: xlup/xl-deploy.lic@g' xlup/${params.XLProduct}_generated_answers.yaml"
-        sh "sed -ie 's@XldVersion: xl-deploy:version-temp@XldVersion: xl-deploy:${xl_LatestVersion}@g' xlup/${params.XLProduct}_generated_answers.yaml"
+        sh "sed -ie 's@InstallXLD: false@InstallXLD: true@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XldLic: xldeploy-temp-license@XldLic: xlup/xl-deploy.lic@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XldVersion: xl-deploy:version-temp@XldVersion: xl-deploy:${xl_LatestVersion}@g' xlup/xl_generated_answers.yaml"
 
     }
 
-    sh "sudo /opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
-    sh "sudo /opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --skip-prompts"
-    sh "sudo /opt/xl up -a xlup/${params.XLProduct}_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
+    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
+    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --skip-prompts"
+    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
 }

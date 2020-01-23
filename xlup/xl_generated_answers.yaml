@@ -5,15 +5,20 @@ K8sClientCert: cert-temp-file
 K8sClientKey: key-temp-file
 UseCustomRegistry: true
 InstallXLD: false
-InstallXLR: true
+InstallXLR: false
 XlrVersion: xl-release:version-temp
-XldVersion:
+XldVersion: xl-deploy:version-temp
 DockerUser: " "
 DockerPass: " "
 RegistryURL: xl-docker.xebialabs.com
 ExternalDatabase: false
+XldAdminPass: admin
 XlrAdminPass: admin
+XldLic: xldeploy-temp-license
 XlrLic: xlrelease-temp-license
+XldDbName: xl-deploy
+XldDbUser: sa
+XldDbPass: admin
 XlrDbName: xl-release
 XlrReportDbName: xl-release-report
 XlrDbUser: xl-release
