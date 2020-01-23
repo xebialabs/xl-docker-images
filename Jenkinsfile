@@ -36,15 +36,19 @@ pipeline {
     }
 
     environment {
-        xlrelease_RHEL_registry = 'p762626407e78baea07bf3901fb89bdaf24e2db505'
-        xldeploy_RHEL_registry = 'p213351287537b1081d854572a246c48cdf8f9d5585'
+        xlrelease_RHEL_registry_url = 'p762626407e78baea07bf3901fb89bdaf24e2db505'
+        xldeploy_RHEL_registry_url = 'p213351287537b1081d854572a246c48cdf8f9d5585'
         DIST_SERVER_CRED = credentials('distserver')
+        NEXUS_CRED = credentials('nexus-ci')
+        XLR_RHEL_TOKEN = credentials('xlr-rhel-token')
+        XLD_RHEL_TOKEN = credentials('xld-rhel-token')
     }
 
     stages {
-        stage('Rendering Docker Images for XLProducts') {
+
+        stage('Rendering and Build Docker Images for XLProducts') {
             parallel {
-                stage('Rendering Docker Images for debian-slim centos amazonlinux') {
+                stage('Rendering and Build Docker Images for debian-slim centos amazonlinux') {
                     when {
                          expression { params.Linux == true }
                     }
@@ -75,10 +79,13 @@ pipeline {
                                 sh "pipenv run ./applejack.py render --xl-version ${xl_LatestVersion} --product ${params.XLProduct} --registry ${params.Registry} --commit"
                             }
                         }
-                    }
+                        // Building Docker Image and push it
+                        // Build Docker Image and push it
+                        sh "pipenv run ./applejack.py build --xl-version ${xl_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product ${params.XLProduct}  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
+                        }
                 }
 
-                stage('Rendering Docker Images for rhel') {
+                stage('Rendering and Build Docker Images for rhel') {
                     when {
                          expression { params.RHEL == true }
                     }
@@ -109,62 +116,28 @@ pipeline {
                                 sh "pipenv run ./applejack.py render --xl-version ${xl_LatestVersion} --product ${params.XLProduct} --commit"
                             }
                         }
-                    }
-                }
-            }
-        }
+                        // Build Docker Image and push it
+                        script {
+                            // build docker images and push it to internal docker registry
+                            sh "pipenv run ./applejack.py build --xl-version ${xl_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product ${params.XLProduct}  --target-os rhel --push --registry xl-docker.xebialabs.com"
 
-        stage('Build Docker Images for XLProducts') {
-            parallel {
-                stage('Build Docker Images for debian-slim centos amazonlinux') {
-                    when {
-                         expression { params.Linux == true }
-                    }
-                    agent {
-                            label 'docker_linux'
-                    }
-                    steps {
-                        withCredentials([usernamePassword(credentialsId: 'nexus_credentials', passwordVariable: 'nexus_pass', usernameVariable: 'nexus_user')]) {
-                            // Build Docker Image and push it
-                            sh "pipenv run ./applejack.py build --xl-version ${xl_LatestVersion} --download-source nexus --download-username ${nexus_user} --download-password ${nexus_pass}  --product ${params.XLProduct}  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
-                        }
-                    }
-                }
+                            if (!(xl_LatestVersion.toString().contains("alpha"))) {
+                                // push to redhat resgistry
+                                def imageid = sh(script: "docker images | grep ${params.XLProduct} | grep ${xl_LatestVersion} | awk -e '{print \$3}'", returnStdout: true).trim()
 
-                stage('Build Docker Images for rhel') {
-                    when {
-                         expression { params.RHEL == true }
-                    }
-                    agent {
-                            label 'docker_rhel'
-                    }
-                    steps {
-                        withCredentials([usernamePassword(credentialsId: 'nexus_credentials', passwordVariable: 'nexus_pass', usernameVariable: 'nexus_user'),
-                        string(credentialsId: 'xlr-rhel-token', variable: 'xlrelease_rhel_token'),
-                        string(credentialsId: 'xld-rhel-token', variable: 'xldeploy_rhel_token')]) {
-                            // Build Docker Image and push it
-                            script {
-                                // build docker images and push it to internal docker registry
-                                sh "pipenv run ./applejack.py build --xl-version ${xl_LatestVersion} --download-source nexus --download-username ${nexus_user} --download-password ${nexus_pass}  --product ${params.XLProduct}  --target-os rhel --push --registry xl-docker.xebialabs.com"
+                                if (params.XLProduct == 'xl-release') {
+                                    // Login to rhel Docker
+                                    sh "docker login -u unused -e none scan.connect.redhat.com -p ${XLR_RHEL_TOKEN}"
+                                    // tag and push
+                                    sh "docker tag ${imageid} scan.connect.redhat.com/${env.xlrelease_RHEL_registry_url}/${params.XLProduct}:${xl_LatestVersion}-rhel"
+                                    sh "docker push scan.connect.redhat.com/${env.xlrelease_RHEL_registry_url}/${params.XLProduct}:${xl_LatestVersion}-rhel"
 
-                                if (!(xl_LatestVersion.toString().contains("alpha"))) {
-                                    // push to redhat resgistry
-                                    def imageid = sh(script: "docker images | grep ${params.XLProduct} | grep ${xl_LatestVersion} | awk -e '{print \$3}'", returnStdout: true).trim()
-
-                                    if (params.XLProduct == 'xl-release') {
-                                        // Login to rhel Docker
-                                        sh "docker login -u unused -e none scan.connect.redhat.com -p xlrelease_rhel_token"
-                                        // tag and push
-                                        sh "docker tag ${imageid} scan.connect.redhat.com/${env.xlrelease_rhel_registry}/${params.XLProduct}:${xl_LatestVersion}-rhel"
-                                        sh "docker push scan.connect.redhat.com/${env.xlrelease_rhel_registry}/${params.XLProduct}:${xl_LatestVersion}-rhel"
-
-                                    } else if (params.XLProduct == 'xl-deploy') {
-                                        // Login to rhel Docker
-                                        sh "docker login -u unused -e none scan.connect.redhat.com -p xldeploy_rhel_token"
-                                        // tag and push
-                                        sh "docker tag ${imageid} scan.connect.redhat.com/${env.xldeploy_RHEL_registry}/${params.XLProduct}:${xl_LatestVersion}-rhel"
-                                        sh "docker push scan.connect.redhat.com/${env.xldeploy_RHEL_registry}/${params.XLProduct}:${xl_LatestVersion}-rhel"
-                                    }
+                                } else if (params.XLProduct == 'xl-deploy') {
+                                    // Login to rhel Docker
+                                    sh "docker login -u unused -e none scan.connect.redhat.com -p ${XLD_RHEL_TOKEN}"
+                                    // tag and push
+                                    sh "docker tag ${imageid} scan.connect.redhat.com/${env.xldeploy_RHEL_registry_url}/${params.XLProduct}:${xl_LatestVersion}-rhel"
+                                    sh "docker push scan.connect.redhat.com/${env.xldeploy_RHEL_registry_url}/${params.XLProduct}:${xl_LatestVersion}-rhel"
                                 }
                             }
                         }

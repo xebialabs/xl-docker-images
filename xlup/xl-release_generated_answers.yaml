@@ -12,7 +12,7 @@ DockerUser: " "
 DockerPass: " "
 RegistryURL: xl-docker.xebialabs.com
 ExternalDatabase: false
-XlrAdminPass: 2cnR8dKDbmLidLgW
+XlrAdminPass: admin
 XlrLic: xlrelease-temp-license
 XlrDbName: xl-release
 XlrReportDbName: xl-release-report
