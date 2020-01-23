@@ -78,11 +78,12 @@ pipeline {
                             } else {
                                 sh "pipenv run ./applejack.py render --xl-version ${xl_LatestVersion} --product ${params.XLProduct} --registry ${params.Registry} --commit"
                             }
+
+                            // Build Docker Image and push it
+                            sh "pipenv run ./applejack.py build --xl-version ${xl_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product ${params.XLProduct}  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
                         }
-                        // Building Docker Image and push it
-                        // Build Docker Image and push it
-                        sh "pipenv run ./applejack.py build --xl-version ${xl_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product ${params.XLProduct}  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
-                        }
+
+                    }
                 }
 
                 stage('Rendering and Build Docker Images for rhel') {
@@ -115,9 +116,7 @@ pipeline {
                             } else {
                                 sh "pipenv run ./applejack.py render --xl-version ${xl_LatestVersion} --product ${params.XLProduct} --commit"
                             }
-                        }
-                        // Build Docker Image and push it
-                        script {
+
                             // build docker images and push it to internal docker registry
                             sh "pipenv run ./applejack.py build --xl-version ${xl_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product ${params.XLProduct}  --target-os rhel --push --registry xl-docker.xebialabs.com"
 
