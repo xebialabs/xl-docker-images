@@ -346,14 +346,14 @@ def runXlUpOnMiniKube() {
         sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/xl-release-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-release.lic"
         sh "sed -ie 's@InstallXLR: false@InstallXLR: true@g' xlup/xl_generated_answers.yaml"
         sh "sed -ie 's@XlrLic: xlrelease-temp-license@XlrLic: xlup/xl-release.lic@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XlrVersion: xl-release:version-temp@XlrVersion: xl-release:${xl_LatestVersion}@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XlrVersion: xl-release:0.0.0@XlrVersion: xl-release:${xl_LatestVersion}@g' xlup/xl_generated_answers.yaml"
 
     } else if (params.XLProduct == 'xl-deploy') {
 
         sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/deployit-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-deploy.lic"
         sh "sed -ie 's@InstallXLD: false@InstallXLD: true@g' xlup/xl_generated_answers.yaml"
         sh "sed -ie 's@XldLic: xldeploy-temp-license@XldLic: xlup/xl-deploy.lic@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XldVersion: xl-deploy:version-temp@XldVersion: xl-deploy:${xl_LatestVersion}@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XldVersion: xl-deploy:0.0.0@XldVersion: xl-deploy:${xl_LatestVersion}@g' xlup/xl_generated_answers.yaml"
 
     }
 

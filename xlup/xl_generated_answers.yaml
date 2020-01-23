@@ -6,8 +6,8 @@ K8sClientKey: key-temp-file
 UseCustomRegistry: true
 InstallXLD: false
 InstallXLR: false
-XlrVersion: xl-release:version-temp
-XldVersion: xl-deploy:version-temp
+XlrVersion: xl-release:0.0.0
+XldVersion: xl-deploy:0.0.0
 DockerUser: " "
 DockerPass: " "
 RegistryURL: xl-docker.xebialabs.com
