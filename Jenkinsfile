@@ -8,19 +8,19 @@ pipeline {
 
     parameters {
         booleanParam(
-            name: 'xl-release',
+            name: 'xl_release',
             defaultValue: true,
             description: 'Specifies if you want to generate Docker Image for XLRelease')
         string(
-            name: 'xlr-version',
+            name: 'xlr_version',
             defaultValue: '',
             description: "Version of XL Release you want to create Docker Images for")
         booleanParam(
-            name: 'xl-deploy',
+            name: 'xl_deploy',
             defaultValue: true,
             description: 'Specifies if you want to generate Docker Image for XLDeploy')
         string(
-            name: 'xld-version',
+            name: 'xld_version',
             defaultValue: '',
             description: "Version of XL Deploy you want to create Docker Images for")
         booleanParam(
@@ -82,9 +82,9 @@ pipeline {
                         // Rendering and Committing changes
                         script {
 
-                            if (params.xl-release == true) {
+                            if (params.xl_release == true) {
 
-                                xlr_LatestVersion = getLatestVersion(xl-release)
+                                xlr_LatestVersion = getLatestVersion(xl_release)
 
                                 if ((xlr_LatestVersion.toString().contains("alpha") || xlr_LatestVersion.toString().contains("rc") ) && (params.Registry != "xebialabs")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --registry ${params.Registry}"
@@ -96,9 +96,9 @@ pipeline {
                                 sh "pipenv run ./applejack.py build --xl-version ${xlr_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-release  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
                             }
 
-                            if (params.xl-deploy == true) {
+                            if (params.xl_deploy == true) {
 
-                                xld_LatestVersion = getLatestVersion(xl-deploy)
+                                xld_LatestVersion = getLatestVersion(xl_deploy)
 
                                 if ((xld_LatestVersion.toString().contains("alpha") || xld_LatestVersion.toString().contains("rc") ) && (params.Registry != "xebialabs")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --registry ${params.Registry}"
@@ -138,9 +138,9 @@ pipeline {
                         // Rendering and Committing changes
                         script {
 
-                            if (params.xl-release == true) {
+                            if (params.xl_release == true) {
 
-                                xlr_LatestVersion = getLatestVersion(xl-release)
+                                xlr_LatestVersion = getLatestVersion(xl_release)
 
                                 if (xlr_LatestVersion.toString().contains("alpha") || xlr_LatestVersion.toString().contains("rc")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release"
@@ -162,9 +162,9 @@ pipeline {
                                 }
                             }
 
-                            if (params.xl-deploy == true) {
+                            if (params.xl_deploy == true) {
 
-                                xld_LatestVersion = getLatestVersion(xl-deploy)
+                                xld_LatestVersion = getLatestVersion(xl_deploy)
 
                                 if (xld_LatestVersion.toString().contains("alpha") || xld_LatestVersion.toString().contains("rc")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-release"
@@ -202,7 +202,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            if (params.xl-release == true) {
+                            if (params.xl_release == true) {
                                 // Run Docker
                                 def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name xl-release ${params.Registry}/xl-release:${xlr_LatestVersion}", returnStatus: true)
                                 // Result
@@ -219,7 +219,7 @@ pipeline {
                                     error('Docker Image Start FAILED')
                                 }
 
-                            } else if (params.xl-deploy == true) {
+                            } else if (params.xl_deploy == true) {
                                 // Run Docker
                                 def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy ${params.Registry}/xl-deploy:${xld_LatestVersion}", returnStatus: true)
                                 // Result
@@ -251,7 +251,7 @@ pipeline {
                         withCredentials([string(credentialsId: 'xlr-rhel-token', variable: 'xlr_rhel_token'),
                         string(credentialsId: 'xld-rhel-token', variable: 'xld_rhel_token')]) {
                         script {
-                                if (params.xl-release == true) {
+                                if (params.xl_release == true) {
                                     // Run Docker
                                     def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name xl-release xl-docker.xebialabs.com/xl-release:${xlr_LatestVersion}-rhel", returnStatus: true)
                                     // Check Result
@@ -270,7 +270,7 @@ pipeline {
 
                                 }
 
-                                if (params.xl-deploy == true) {
+                                if (params.xl_deploy == true) {
                                     // Run Docker
                                     def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy xl-docker.xebialabs.com/xl-deploy:${xld_LatestVersion}-rhel", returnStatus: true)
                                     // Check Result
@@ -334,8 +334,8 @@ pipeline {
 
 def getLatestVersion(xl_product) {
     script {
-        if (xl_product == 'xl-release') {
-            if (params.xlr-version == '') {
+        if (xl_product == 'xl_release') {
+            if (params.xlr_version == '') {
 
                 def xlr_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/xlrelease/xl-release/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
 
@@ -344,7 +344,7 @@ def getLatestVersion(xl_product) {
 
             } else {
 
-                writeFile (file: "${env.WORKSPACE}/xl-release-latest", text: "${params.xlr-version}")
+                writeFile (file: "${env.WORKSPACE}/xl-release-latest", text: "${params.xlr_version}")
                 xlr_LatestVersion = readFile "${env.WORKSPACE}/xl-release-latest"
 
             }
@@ -352,8 +352,8 @@ def getLatestVersion(xl_product) {
 
         }
 
-        if (xl_product == 'xl-deploy') {
-            if (params.xld-version == '') {
+        if (xl_product == 'xl_deploy') {
+            if (params.xld_version == '') {
 
                 def xld_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
 
@@ -362,7 +362,7 @@ def getLatestVersion(xl_product) {
 
             } else {
 
-                writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${params.xld-version}")
+                writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${params.xld_version}")
                 xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
 
             }
@@ -398,7 +398,7 @@ def runXlUpOnMiniKube() {
     // create empty files for lic as answer file always validate it.
     sh "touch xlrelease-temp-license  xldeploy-temp-license"
 
-    if ((params.xl-release == true) && (!params.xl-deploy == false)) {
+    if ((params.xl_release == true) && (params.xl_deploy == false)) {
 
         sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/xl-release-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-release.lic"
         sh "sed -ie 's@InstallXLR: false@InstallXLR: true@g' xlup/xl_generated_answers.yaml"
@@ -407,7 +407,7 @@ def runXlUpOnMiniKube() {
 
     }
 
-    if ((!params.xl-release == false) && (params.xl-deploy == true)) {
+    if ((params.xl_release == false) && (params.xl_deploy == true)) {
 
         sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/deployit-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-deploy.lic"
         sh "sed -ie 's@InstallXLD: false@InstallXLD: true@g' xlup/xl_generated_answers.yaml"
@@ -416,7 +416,7 @@ def runXlUpOnMiniKube() {
 
     }
 
-    if ((params.xl-release == true) && (params.xl-deploy == true)){
+    if ((params.xl_release == true) && (params.xl_deploy == true)){
 
         sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/xl-release-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-release.lic"
         sh "sed -ie 's@InstallXLR: false@InstallXLR: true@g' xlup/xl_generated_answers.yaml"
