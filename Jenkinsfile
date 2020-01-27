@@ -84,7 +84,7 @@ pipeline {
 
                             if (params.xl_release == true) {
 
-                                xlr_LatestVersion = getLatestVersion(xl_release)
+                                xlr_LatestVersion = getLatestVersion("xl_release")
 
                                 if ((xlr_LatestVersion.toString().contains("alpha") || xlr_LatestVersion.toString().contains("rc") ) && (params.Registry != "xebialabs")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --registry ${params.Registry}"
@@ -98,7 +98,7 @@ pipeline {
 
                             if (params.xl_deploy == true) {
 
-                                xld_LatestVersion = getLatestVersion(xl_deploy)
+                                xld_LatestVersion = getLatestVersion("xl_deploy")
 
                                 if ((xld_LatestVersion.toString().contains("alpha") || xld_LatestVersion.toString().contains("rc") ) && (params.Registry != "xebialabs")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --registry ${params.Registry}"
@@ -140,7 +140,7 @@ pipeline {
 
                             if (params.xl_release == true) {
 
-                                xlr_LatestVersion = getLatestVersion(xl_release)
+                                xlr_LatestVersion = getLatestVersion("xl_release")
 
                                 if (xlr_LatestVersion.toString().contains("alpha") || xlr_LatestVersion.toString().contains("rc")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release"
@@ -164,7 +164,7 @@ pipeline {
 
                             if (params.xl_deploy == true) {
 
-                                xld_LatestVersion = getLatestVersion(xl_deploy)
+                                xld_LatestVersion = getLatestVersion("xl_deploy")
 
                                 if (xld_LatestVersion.toString().contains("alpha") || xld_LatestVersion.toString().contains("rc")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-release"
