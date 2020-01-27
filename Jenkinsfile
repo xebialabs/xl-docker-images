@@ -1,19 +1,28 @@
 #!groovy
 
-def xl_LatestVersion = ""
+def xlr_LatestVersion = ""
+def xld_LatestVersion = ""
 
 pipeline {
     agent none
 
     parameters {
-        choice(
-            name: 'XLProduct',
-            choices: ['xl-release', 'xl-deploy'],
-            description: "Which XL Product you want to generate Docker Image for")
+        booleanParam(
+            name: 'xl-release',
+            defaultValue: true,
+            description: 'Specifies if you want to generate Docker Image for XLRelease')
         string(
-            name: 'Version',
+            name: 'xlr-version',
             defaultValue: '',
-            description: "Version of XL Product you want to create Docker Images for")
+            description: "Version of XL Release you want to create Docker Images for")
+        booleanParam(
+            name: 'xl-deploy',
+            defaultValue: true,
+            description: 'Specifies if you want to generate Docker Image for XLDeploy')
+        string(
+            name: 'xld-version',
+            defaultValue: '',
+            description: "Version of XL Deploy you want to create Docker Images for")
         booleanParam(
             name: 'Linux',
             defaultValue: true,
@@ -72,17 +81,35 @@ pipeline {
 
                         // Rendering and Committing changes
                         script {
-                            xl_LatestVersion = getLatestVersion()
-                            if ((xl_LatestVersion.toString().contains("alpha") || xl_LatestVersion.toString().contains("rc") ) && (params.Registry != "xebialabs")) {
-                                sh "pipenv run ./applejack.py render --xl-version ${xl_LatestVersion} --product ${params.XLProduct} --registry ${params.Registry}"
-                            } else {
-                                sh "pipenv run ./applejack.py render --xl-version ${xl_LatestVersion} --product ${params.XLProduct} --registry ${params.Registry} --commit"
+
+                            if (params.xl-release == true) {
+
+                                xlr_LatestVersion = getLatestVersion(xl-release)
+
+                                if ((xlr_LatestVersion.toString().contains("alpha") || xlr_LatestVersion.toString().contains("rc") ) && (params.Registry != "xebialabs")) {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --registry ${params.Registry}"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --registry ${params.Registry} --commit"
+                                }
+
+                                // Build Docker Image and push it
+                                sh "pipenv run ./applejack.py build --xl-version ${xlr_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-release  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
                             }
 
-                            // Build Docker Image and push it
-                            sh "pipenv run ./applejack.py build --xl-version ${xl_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product ${params.XLProduct}  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
-                        }
+                            if (params.xl-deploy == true) {
 
+                                xld_LatestVersion = getLatestVersion(xl-deploy)
+
+                                if ((xld_LatestVersion.toString().contains("alpha") || xld_LatestVersion.toString().contains("rc") ) && (params.Registry != "xebialabs")) {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --registry ${params.Registry}"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --registry ${params.Registry} --commit"
+                                }
+
+                                // Build Docker Image and push it
+                                sh "pipenv run ./applejack.py build --xl-version ${xld_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-deploy  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
+                            }
+                        }
                     }
                 }
 
@@ -110,33 +137,52 @@ pipeline {
 
                         // Rendering and Committing changes
                         script {
-                            xl_LatestVersion = getLatestVersion()
-                            if (xl_LatestVersion.toString().contains("alpha") || xl_LatestVersion.toString().contains("rc")) {
-                                sh "pipenv run ./applejack.py render --xl-version ${xl_LatestVersion} --product ${params.XLProduct}"
-                            } else {
-                                sh "pipenv run ./applejack.py render --xl-version ${xl_LatestVersion} --product ${params.XLProduct} --commit"
-                            }
 
-                            // build docker images and push it to internal docker registry
-                            sh "pipenv run ./applejack.py build --xl-version ${xl_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product ${params.XLProduct}  --target-os rhel --push --registry xl-docker.xebialabs.com"
+                            if (params.xl-release == true) {
 
-                            if (!(xl_LatestVersion.toString().contains("alpha"))) {
-                                // push to redhat resgistry
-                                def imageid = sh(script: "docker images | grep ${params.XLProduct} | grep ${xl_LatestVersion} | awk -e '{print \$3}'", returnStdout: true).trim()
+                                xlr_LatestVersion = getLatestVersion(xl-release)
 
-                                if (params.XLProduct == 'xl-release') {
+                                if (xlr_LatestVersion.toString().contains("alpha") || xlr_LatestVersion.toString().contains("rc")) {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --commit"
+                                }
+
+                                // build docker images and push it to internal docker registry
+                                sh "pipenv run ./applejack.py build --xl-version ${xlr_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-release  --target-os rhel --push --registry xl-docker.xebialabs.com"
+
+                                if (!(xlr_LatestVersion.toString().contains("alpha"))) {
+                                    // push to redhat resgistry
+                                    def imageid = sh(script: "docker images | grep xl-release | grep ${xlr_LatestVersion} | awk -e '{print \$3}'", returnStdout: true).trim()
                                     // Login to rhel Docker
                                     sh "docker login -u unused -e none scan.connect.redhat.com -p ${XLR_RHEL_TOKEN}"
                                     // tag and push
-                                    sh "docker tag ${imageid} scan.connect.redhat.com/${env.xlrelease_RHEL_registry_url}/${params.XLProduct}:${xl_LatestVersion}-rhel"
-                                    sh "docker push scan.connect.redhat.com/${env.xlrelease_RHEL_registry_url}/${params.XLProduct}:${xl_LatestVersion}-rhel"
+                                    sh "docker tag ${imageid} scan.connect.redhat.com/${env.xlrelease_RHEL_registry_url}/xl-release:${xlr_LatestVersion}-rhel"
+                                    sh "docker push scan.connect.redhat.com/${env.xlrelease_RHEL_registry_url}/xl-release:${xlr_LatestVersion}-rhel"
+                                }
+                            }
 
-                                } else if (params.XLProduct == 'xl-deploy') {
+                            if (params.xl-deploy == true) {
+
+                                xld_LatestVersion = getLatestVersion(xl-deploy)
+
+                                if (xld_LatestVersion.toString().contains("alpha") || xld_LatestVersion.toString().contains("rc")) {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-release"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-release --commit"
+                                }
+
+                                // build docker images and push it to internal docker registry
+                                sh "pipenv run ./applejack.py build --xl-version ${xld_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-deploy  --target-os rhel --push --registry xl-docker.xebialabs.com"
+
+                                if (!(xld_LatestVersion.toString().contains("alpha"))) {
+                                    // push to redhat resgistry
+                                    def imageid = sh(script: "docker images | grep xl-deploy | grep ${xld_LatestVersion} | awk -e '{print \$3}'", returnStdout: true).trim()
                                     // Login to rhel Docker
                                     sh "docker login -u unused -e none scan.connect.redhat.com -p ${XLD_RHEL_TOKEN}"
                                     // tag and push
-                                    sh "docker tag ${imageid} scan.connect.redhat.com/${env.xldeploy_RHEL_registry_url}/${params.XLProduct}:${xl_LatestVersion}-rhel"
-                                    sh "docker push scan.connect.redhat.com/${env.xldeploy_RHEL_registry_url}/${params.XLProduct}:${xl_LatestVersion}-rhel"
+                                    sh "docker tag ${imageid} scan.connect.redhat.com/${env.xldeploy_RHEL_registry_url}/xl-deploy:${xld_LatestVersion}-rhel"
+                                    sh "docker push scan.connect.redhat.com/${env.xldeploy_RHEL_registry_url}/xl-deploy:${xld_LatestVersion}-rhel"
                                 }
                             }
                         }
@@ -156,9 +202,9 @@ pipeline {
                     }
                     steps {
                         script {
-                            if (params.XLProduct == 'xl-release') {
+                            if (params.xl-release == true) {
                                 // Run Docker
-                                def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name ${params.XLProduct} ${params.Registry}/${params.XLProduct}:${xl_LatestVersion}", returnStatus: true)
+                                def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name xl-release ${params.Registry}/xl-release:${xlr_LatestVersion}", returnStatus: true)
                                 // Result
                                 if (status != 0) {
                                     currentBuild.result = 'FAILURE'
@@ -173,9 +219,9 @@ pipeline {
                                     error('Docker Image Start FAILED')
                                 }
 
-                            } else if (params.XLProduct == 'xl-deploy') {
+                            } else if (params.xl-deploy == true) {
                                 // Run Docker
-                                def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name ${params.XLProduct} ${params.Registry}/${params.XLProduct}:${xl_LatestVersion}", returnStatus: true)
+                                def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy ${params.Registry}/xl-deploy:${xld_LatestVersion}", returnStatus: true)
                                 // Result
                                 if (status != 0) {
                                     currentBuild.result = 'FAILURE'
@@ -205,9 +251,9 @@ pipeline {
                         withCredentials([string(credentialsId: 'xlr-rhel-token', variable: 'xlr_rhel_token'),
                         string(credentialsId: 'xld-rhel-token', variable: 'xld_rhel_token')]) {
                         script {
-                                if (params.XLProduct == 'xl-release') {
+                                if (params.xl-release == true) {
                                     // Run Docker
-                                    def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name ${params.XLProduct} xl-docker.xebialabs.com/${params.XLProduct}:${xl_LatestVersion}-rhel", returnStatus: true)
+                                    def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name xl-release xl-docker.xebialabs.com/xl-release:${xlr_LatestVersion}-rhel", returnStatus: true)
                                     // Check Result
                                     if (status != 0) {
                                         currentBuild.result = 'FAILURE'
@@ -222,9 +268,11 @@ pipeline {
                                         error('Docker Image Start FAILED')
                                     }
 
-                                } else if (params.XLProduct == 'xl-deploy') {
+                                }
+
+                                if (params.xl-deploy == true) {
                                     // Run Docker
-                                    def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name ${params.XLProduct} xl-docker.xebialabs.com/${params.XLProduct}:${xl_LatestVersion}-rhel", returnStatus: true)
+                                    def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy xl-docker.xebialabs.com/xl-deploy:${xld_LatestVersion}-rhel", returnStatus: true)
                                     // Check Result
                                     if (status != 0) {
                                         currentBuild.result = 'FAILURE'
@@ -284,34 +332,43 @@ pipeline {
     }
 }
 
-def getLatestVersion() {
-    if (params.Version == '') {
-        // Get latest version
-        script {
-            if (params.XLProduct == 'xl-release') {
+def getLatestVersion(xl_product) {
+    script {
+        if (xl_product == 'xl-release') {
+            if (params.xlr-version == '') {
 
-                def xl_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/xlrelease/xl-release/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
+                def xlr_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/xlrelease/xl-release/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
 
-                writeFile (file: "${env.WORKSPACE}/${params.XLProduct}-latest", text: "${xl_Version}")
-                xl_LatestVersion = readFile "${env.WORKSPACE}/${params.XLProduct}-latest"
+                writeFile (file: "${env.WORKSPACE}/xl-release-latest", text: "${xlr_Version}")
+                xlr_LatestVersion = readFile "${env.WORKSPACE}/xl-release-latest"
 
+            } else {
 
-            } else if (params.XLProduct == 'xl-deploy') {
-
-                def xl_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
-
-                writeFile (file: "${env.WORKSPACE}/${params.XLProduct}-latest", text: "${xl_Version}")
-                xl_LatestVersion = readFile "${env.WORKSPACE}/${params.XLProduct}-latest"
+                writeFile (file: "${env.WORKSPACE}/xl-release-latest", text: "${params.xlr-version}")
+                xlr_LatestVersion = readFile "${env.WORKSPACE}/xl-release-latest"
 
             }
+            return xlr_LatestVersion
+
         }
-    } else {
 
-        writeFile (file: "${env.WORKSPACE}/${params.XLProduct}-latest", text: "${params.Version}")
-        xl_LatestVersion = readFile "${env.WORKSPACE}/${params.XLProduct}-latest"
+        if (xl_product == 'xl-deploy') {
+            if (params.xld-version == '') {
+
+                def xld_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
+
+                writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${xld_Version}")
+                xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
+
+            } else {
+
+                writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${params.xld-version}")
+                xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
+
+            }
+            return xld_LatestVersion
+        }
     }
-
-    return xl_LatestVersion
 }
 
 def runXlUpOnMiniKube() {
@@ -341,19 +398,35 @@ def runXlUpOnMiniKube() {
     // create empty files for lic as answer file always validate it.
     sh "touch xlrelease-temp-license  xldeploy-temp-license"
 
-    if (params.XLProduct == 'xl-release') {
+    if ((params.xl-release == true) && (!params.xl-deploy == false)) {
 
         sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/xl-release-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-release.lic"
         sh "sed -ie 's@InstallXLR: false@InstallXLR: true@g' xlup/xl_generated_answers.yaml"
         sh "sed -ie 's@XlrLic: xlrelease-temp-license@XlrLic: xlup/xl-release.lic@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XlrVersion: xl-release:0.0.0@XlrVersion: xl-release:${xl_LatestVersion}@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XlrVersion: xl-release:0.0.0@XlrVersion: xl-release:${xlr_LatestVersion}@g' xlup/xl_generated_answers.yaml"
 
-    } else if (params.XLProduct == 'xl-deploy') {
+    }
+
+    if ((!params.xl-release == false) && (params.xl-deploy == true)) {
 
         sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/deployit-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-deploy.lic"
         sh "sed -ie 's@InstallXLD: false@InstallXLD: true@g' xlup/xl_generated_answers.yaml"
         sh "sed -ie 's@XldLic: xldeploy-temp-license@XldLic: xlup/xl-deploy.lic@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XldVersion: xl-deploy:0.0.0@XldVersion: xl-deploy:${xl_LatestVersion}@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XldVersion: xl-deploy:0.0.0@XldVersion: xl-deploy:${xld_LatestVersion}@g' xlup/xl_generated_answers.yaml"
+
+    }
+
+    if ((params.xl-release == true) && (params.xl-deploy == true)){
+
+        sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/xl-release-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-release.lic"
+        sh "sed -ie 's@InstallXLR: false@InstallXLR: true@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XlrLic: xlrelease-temp-license@XlrLic: xlup/xl-release.lic@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XlrVersion: xl-release:0.0.0@XlrVersion: xl-release:${xlr_LatestVersion}@g' xlup/xl_generated_answers.yaml"
+
+        sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/deployit-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-deploy.lic"
+        sh "sed -ie 's@InstallXLD: false@InstallXLD: true@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XldLic: xldeploy-temp-license@XldLic: xlup/xl-deploy.lic@g' xlup/xl_generated_answers.yaml"
+        sh "sed -ie 's@XldVersion: xl-deploy:0.0.0@XldVersion: xl-deploy:${xld_LatestVersion}@g' xlup/xl_generated_answers.yaml"
 
     }
 
