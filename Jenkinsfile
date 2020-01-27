@@ -167,9 +167,9 @@ pipeline {
                                 xld_LatestVersion = getLatestVersion("xl_deploy")
 
                                 if (xld_LatestVersion.toString().contains("alpha") || xld_LatestVersion.toString().contains("rc")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-release"
+                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy"
                                 } else {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-release --commit"
+                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --commit"
                                 }
 
                                 // build docker images and push it to internal docker registry
