@@ -33,7 +33,7 @@
 - example: "LS0tIExpY2Vuc2UgLS0tCkxpY2Vuc2UgdmVyc2lvbjogMwpQcm9kdWN0OiOiBUcmlhbAotLS0gU2lnbmF0dXJlIChTSEExd2l0aERTQSkgLS0tCjMwMmMwMjE0MTY5YjUyNGFkYWYwYWRhYmNlZDcyMGM0YmZkMGmVhNTZhNGFiMzk4YTgzNGUyZjJiOWQ1CjI2MzNhHVyZSAtLS0K%"
 
 ##### `ACCEPT_EULA`
--"You must accept the End User License Agreement" if are unable to provide your own license before container can start.
+-"You must accept the End User License Agreement" if you are unable to provide your own license before the container can start.
 - possible values: "y" or "Y"
 - default value: none
 
