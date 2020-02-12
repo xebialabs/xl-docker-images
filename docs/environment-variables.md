@@ -67,7 +67,7 @@
 - example: "xl_P@ssw0rd01"
 
 ##### `XL_METRICS_ENABLED`
-- Flag to expose internal and system metrics over Java Management Extensions (JMX). This is to enable the use of a monitoring systems that can read JMX data, with XL Products.
+- Flag to expose internal and system metrics over Java Management Extensions (JMX). This is to enable the use of monitoring systems that can read JMX data, with XL Products.
 - possible values: "true","false"
 - default value: "false"
 
