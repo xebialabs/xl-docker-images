@@ -27,7 +27,7 @@
 `echo "${REPOSITORY_KEYSTORE}" | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks`
 
 ##### `XL_LICENSE`
-- Sets your XL License by passing a base64 string license, which will then be added to license file. For more details on other options to pass the license as a volume, see [Volumes](##).
+- Sets your XL License by passing a base64 string license, which will then be added to the license file. For more details on other options to pass the license in a volume, see [Volumes](##).
 - possible values: "license-base64-value"
 - default value: unregistered license valid for 7 days but you must use `ACCEPT_EULA`.
 - example: "LS0tIExpY2Vuc2UgLS0tCkxpY2Vuc2UgdmVyc2lvbjogMwpQcm9kdWN0OiOiBUcmlhbAotLS0gU2lnbmF0dXJlIChTSEExd2l0aERTQSkgLS0tCjMwMmMwMjE0MTY5YjUyNGFkYWYwYWRhYmNlZDcyMGM0YmZkMGmVhNTZhNGFiMzk4YTgzNGUyZjJiOWQ1CjI2MzNhHVyZSAtLS0K%"
