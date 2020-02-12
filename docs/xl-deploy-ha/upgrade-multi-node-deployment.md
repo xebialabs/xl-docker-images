@@ -2,30 +2,30 @@
 
 ### Steps
 
-Follow the below steps to Upgrade XL Deploy active-active cluster setup,
+Follow these steps to Upgrade XL Deploy active-active cluster setup,
 
 1. Make sure to read our docs for upgrade and release notes for each version you want to upgrade to.
 
-2. Stop current running XL Deploy docker containers which have old version that need to be upgraded .. no need to stop load balancer, mq and database containers .. check below example,
+2. Stop the current running instances of XL Deploy docker containers which have old version that need to be upgraded. You do not need to stop the load balancer, mq and database containers. See the example below:
   ```shell
    # Shutdown deployments
    docker-compose  -f docker-compose-xld-ha.yaml -f docker-compose-xld-ha-workers.yaml stop xl-deploy-master xl-deploy-worker
   ```
-3. Update both files `docker-compose-xld-ha.yaml` and `docker-compose-xld-ha-workers.yaml` like below,
- 
-  * Update image with new tag which represent version you want to upgrade to for both master and worker, for example,
+3. Update both files `docker-compose-xld-ha.yaml` and `docker-compose-xld-ha-workers.yaml`
+
+  * Update the image with the new tag which represents the version you want to upgrade to, for both master and worker, for example:
   ```shell
    xl-deploy-master:
      image: xebialabs/xl-deploy:9.5.1
   ```
-  * specify your DB connection details to point to old DB for both master and worker for example using env variables such as `XL_DB_URL`
-  * include all volumes already being used with old docker images for both master and worker. In case of "conf" volume make sure also to update any configurations required by new version "check release notes" before mounting it to new version of the container.
-  * Update environment variables to include `FORCE_UPGRADE` for  master nodes,  see below,
+  * Specify your DB connection details, to point to an old DB for both master and worker for example using environment variables such as `XL_DB_URL`
+  * Include all volumes already being used with old docker images for both master and worker. In case of "conf" volume, make sure to also update any configurations required by new version "check release notes", before mounting it to new version of the container.
+  * Update the environment variables to include `FORCE_UPGRADE` for  master nodes,  see below,
   ```shell
    environment:
          - FORCE_UPGRADE=true
-  ``` 
-4. You can use the provided `run.sh` to bring up the setup or do it manually with below steps, update the passwords to represent Passwords used in previous version.
+  ```
+4. You can use the provided `run.sh` to bring up the setup or do it manually by following the steps mentioned below. Update the passwords to represent Passwords used in previous version.
 
 ```shell
 # Set passwords

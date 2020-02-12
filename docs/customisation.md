@@ -1,25 +1,26 @@
-# Dockerfile Customisation
+# Dockerfile customization
 
-A custom Docker file might be required in certain circumstances. These include (but aren't limited to)
+It is likely, that you might need to customize your Docker file for certain purposes which include but aren't limited to:
 
-- Connecting to a properietary database (DB2, Oracle, etc.)
+- Connecting to a proprietary database (DB2, Oracle, etc.)
 - Adding a hotfix as instructed by our support team
 - Adding a custom plugin
-- etc.
 
-The process to customise a docker image for your needs is described below
+
+You can customize a docker image for your needs as described in the process below.
 
 ## XL Deploy
 
-When creating a Dockerfile with custom resources added, always remember that the owning user:group combination _must_ be `10001:0`, or else XL Deploy will not be able to read the files. 
+**Important:** When you create a Dockerfile with custom resources added, always remember that the owning user:group combination _must_ be `10001:0`, or else, XL Deploy will not be able to read the files.
 
-To start off with, create a `Dockerfile` that resembles the following. 
+**Note:** Certain JARS should be placed in specific paths only. You shouldn't add a Oracle JAR to the `ext/` folder, for example. If you are unsure where a JAR should be added, please get in touch with our support team.
 
-Please note that certain JARS will go into certain paths. You shouldn't add a Oracle JAR to the `ext/` folder, for example. If you are unsure where a JAR should be added, please get in touch with our support team. 
+**Note:** `${APP_HOME}` points to the path `/opt/xebialabs/xl-deploy-server` by default
 
-NOTE: `${APP_HOME}` points to the path `/opt/xebialabs/xl-deploy-server` by default
+To begin, create a `Dockerfile` that resembles the following configuration:
 
-```docker
+```
+docker
 FROM xebialabs/xl-deploy:9.5.0
 
 ###################################################################################
@@ -51,40 +52,45 @@ ADD --chown=10001:0 files/sattelite-lib-hotfix.jar /opt/xebialabs/xl-deploy-serv
 ADD --chown=10001:0 files/ojdbc6.jar /opt/xebialabs/xl-deploy-server/lib/
 ```
 
-Please note that there are seperate hotfix directories where you can place hotfix JARs, depending on the type of hotfix. Please consult our support team in case you are uncertain. 
+**Note:** There are separate hotfix directories for placing different types of hotfix JARS. If you are unsure where a hotfix JAR should be placed, please get in touch with our support team.
 
-For an overview of how `ADD` and `COPY` works, please refer to [the documentation](https://docs.docker.com/engine/reference/builder/#add)
+For an overview of how `ADD` and `COPY` works, see [the documentation](https://docs.docker.com/engine/reference/builder/#add)
 
-Once you are satisfied with your Dockerfile, run the following command in the same directory
+Once you are satisfied with your Dockerfile, run the following command in the same directory:
 
 `docker build -t xl-deploy-custom:9.5.0 .`
 
-Always use [semver](https://semver.org/) to version your docker images. This is to ensure future compatability with one of our other tools, `xl up`.
+This command will build and tag a docker image for you.
 
-This command will build and tag a docker image for you. If you would like to run this image locally, you can do this now by running
+**Important:** Always use [semver](https://semver.org/) to version your docker images. Doing so, ensures future compatibility with one of our other tools, `xl up`.
+
+To run the image locally, use the following command:
 
 `docker run -it --rm -p 4516:4516 -e "ADMIN_PASSWORD=desired_admin_password" -e ACCEPT_EULA=Y xl-deploy-custom:9.5.0`
 
-If you would like to host this elsewhere, you have two options
-
-1. (Recommended) [Push this image to a docker registry](https://docs.docker.com/engine/reference/commandline/push/) of your choice. You can either [set up your own registry](https://docs.docker.com/registry/), or use an offering from DockerHub, AWS, GCP and many others. The simplest way of achieving this is to simply run
+If you would like to host the docker image elsewhere, you have two options:
+**Recommended:**
+1. [Push this image to a docker registry](https://docs.docker.com/engine/reference/commandline/push/) of your choice. You can either [set up your own registry](https://docs.docker.com/registry/), or use an offering from DockerHub, AWS, GCP and many others. The simplest way of achieving this is to simply run
   - `docker tag xl-deploy-custom:9.5.0 yourdockerhuborg/xl-deploy-custom:9.5.0`
   - `docker push yourdockerhuborg/xl-deploy-custom:9.5.0`
   - (On the node you would like to run the container) `docker run -it --rm -p 4516:4516 -e "ADMIN_PASSWORD=desired_admin_password" -e ACCEPT_EULA=Y yourdockerhuborg/xl-deploy-custom:9.5.0`
-2. By using [`docker export`](https://docs.docker.com/engine/reference/commandline/export/) and [`docker load`](https://docs.docker.com/engine/reference/commandline/load/). This is not a recommended approach as it requires you to move a tar file between different machines. 
+
+**Not recommended:**
+2. By using [`docker export`](https://docs.docker.com/engine/reference/commandline/export/) and [`docker load`](https://docs.docker.com/engine/reference/commandline/load/). This is approach is not recommended, as it requires you to move a tar file between different machines.
 
 
 ## XL Release
 
-As with XL Deploy, always remember that the owning user:group combination _must_ be `10001:0` for any files you add.
+**Important:** When you create a Dockerfile with custom resources added, always remember that the owning user:group combination _must_ be `10001:0`.
 
-To start off with, create a `Dockerfile` that resembles the following. 
+**Note:** Certain JARS should be placed in specific paths only. You shouldn't add a Oracle JAR to the `ext/` folder, for example. If you are unsure where a JAR should be added, please get in touch with our support team.
 
-Please note that certain JARS will go into certain paths. You shouldn't add a Oracle JAR to the `ext/` folder, for example. If you are unsure where a JAR should be added, please get in touch with our support team. 
+**Note:** `${APP_HOME}` points to the path `/opt/xebialabs/xl-deploy-server` by default
 
-NOTE: `${APP_HOME}` points to the path `/opt/xebialabs/xl-deploy-server` by default
+To begin, create a `Dockerfile` that resembles the following configuration:
 
-```docker
+```
+docker
 FROM xebialabs/xl-release:9.5.0
 
 ###################################################################################
@@ -114,26 +120,28 @@ ADD --chown=10001:0 files/hotfix.jar /opt/xebialabs/xl-release-server/hotfix/
 ADD --chown=10001:0 files/ojdbc6.jar /opt/xebialabs/xl-release-server/lib/
 ```
 
-NOTE: For XL Release plugins, official plugins should go to the `default-plugins/xlr-official/` folder, while custom or community plugins should go under `default-plugins/__local__/`
+**Note:** All official XL Release plugins must be placed under `default-plugins/xlr-official/` folder, while custom or community plugins must be placed under `default-plugins/__local__/`
 
-For an overview of how `ADD` and `COPY` works, please refer to [the documentation](https://docs.docker.com/engine/reference/builder/#add)
+For an overview of how `ADD` and `COPY` works, see [the documentation](https://docs.docker.com/engine/reference/builder/#add)
 
 Once you are satisfied with your Dockerfile, run the following command in the same directory
 
 `docker build -t xl-release-custom:9.5.0 .`
 
-Always use [semver](https://semver.org/) to version your docker images. This is to ensure future compatability with one of our other tools, `xl up`.
+This command will build and tag a docker image for you.
+**Important:** Always use [semver](https://semver.org/) to version your docker images. This is to ensure future compatibility with one of our other tools, `xl up`.
 
-This command will build and tag a docker image for you. If you would like to run this image locally, you can do this now by running
+To run this image locally, use the following command:
 
 `docker run -it --rm -p 5516:5516 -e "ADMIN_PASSWORD=desired_admin_password" -e ACCEPT_EULA=Y xl-release-custom:9.5.0`
 
-If you would like to host this elsewhere, you have two options
+If you would like to host the docker image elsewhere, you have two options:
 
-1. (Recommended) [Push this image to a docker registry](https://docs.docker.com/engine/reference/commandline/push/) of your choice. You can either [set up your own registry](https://docs.docker.com/registry/), or use an offering from DockerHub, AWS, GCP and many others. The simplest way of achieving this is to simply run
+**Recommended:**
+1. [Push this image to a docker registry](https://docs.docker.com/engine/reference/commandline/push/) of your choice. You can either [set up your own registry](https://docs.docker.com/registry/), or use an offering from DockerHub, AWS, GCP and many others. The simplest way of achieving this is to simply run
   - `docker tag xl-release-custom:9.5.0 yourdockerhuborg/xl-release-custom:9.5.0`
   - `docker push yourdockerhuborg/xl-release-custom:9.5.0`
   - (On the node you would like to run the container) `docker run -it --rm -p 5516:5516 -e "ADMIN_PASSWORD=desired_admin_password" -e ACCEPT_EULA=Y yourdockerhuborg/xl-release-custom:9.5.0`
-2. By using [`docker export`](https://docs.docker.com/engine/reference/commandline/export/) and [`docker load`](https://docs.docker.com/engine/reference/commandline/load/). This is not a recommended approach as it requires you to move a tar file between different machines. 
 
-
+**Not recommended:**
+2. By using [`docker export`](https://docs.docker.com/engine/reference/commandline/export/) and [`docker load`](https://docs.docker.com/engine/reference/commandline/load/). This approach is not recommended, as it requires you to move a tar file between different machines.
