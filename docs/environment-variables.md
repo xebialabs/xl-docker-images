@@ -43,7 +43,7 @@
 - default value: "false"
 
 ##### `XL_CLUSTER_MODE`
-- This is to specify if HA setup is needed and specify modes of setup.
+- This is to specify if the HA setup is needed and to specify the HA mode.
 - possible values: "default", "hot-standby", "full"
 - default value: "default"
 
