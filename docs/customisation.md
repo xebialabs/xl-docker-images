@@ -85,7 +85,7 @@ If you would like to host the docker image elsewhere, you have two options:
 
 **Note:** Certain JARS should be placed in specific paths only. You shouldn't add a Oracle JAR to the `ext/` folder, for example. If you are unsure where a JAR should be added, please get in touch with our support team.
 
-**Note:** `${APP_HOME}` points to the path `/opt/xebialabs/xl-deploy-server` by default
+**Note:** `${APP_HOME}` points to the path `/opt/xebialabs/xl-release-server` by default
 
 To begin, create a `Dockerfile` that resembles the following configuration:
 
