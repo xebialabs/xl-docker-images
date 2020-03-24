@@ -60,7 +60,7 @@ def major_minor(image_version):
 
 def docker_tag_version(image_version):
     """Replace + used in semver as docker tag still donot support it"""
-    return image_version.replace(“+”, “-”)
+    return image_version.replace('+', '-')
 
 
 def all_tags(target_os, image_version, default_os=None):
