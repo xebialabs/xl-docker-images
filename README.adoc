@@ -150,3 +150,7 @@ Example : Adding db2 jdbc driver in classpath of xl-release container
 [source,shell,subs="verbatim,attributes"]
 FROM xebialabs/xl-release:8.5
 ADD db2jcc4-10.1.jar /opt/xebialabs/xl-release-server/lib
+
+=== Test New Docker Images with xl-up
+
+To test New Docker Images locally in our CI/CD setups you need to make a PR and add label `test-xl-up-pr` in your github PR, then this pr will run xlup using XL new docker images againing Minikube cluster.

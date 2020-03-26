@@ -294,7 +294,10 @@ pipeline {
 
                 stage('Test XLUP with New Docker Images for debian-slim') {
                     when {
-                         expression { params.Linux == true }
+                         expression {
+                            params.Linux == true &&
+                                githubLabelsPresent(this, ['test-xl-up-pr'])
+                            }
                     }
                     agent {
                             label 'docker_minikube'
