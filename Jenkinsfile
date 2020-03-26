@@ -321,14 +321,14 @@ pipeline {
         success {
             script {
                 if (env.BRANCH_NAME == 'master') {
-                    slackSend color: "good", tokenCredentialId: "slack-token", message: "XL Official Docker Images build *SUCCESS* - <${env.BUILD_URL}|click to open>", channel: 'team-kube-love'
+                    slackSend color: "good", tokenCredentialId: "slack-token", message: "XL Official Docker Images build *SUCCESS* - <${env.BUILD_URL}|click to open>", channel: 'docker-images-release'
                 }
             }
         }
         failure {
             script {
                 if (env.BRANCH_NAME == 'master') {
-                    slackSend color: "danger", tokenCredentialId: "slack-token", message: "XL Official Docker Images build *FAILED* - <${env.BUILD_URL}|click to open>", channel: 'team-kube-love'
+                    slackSend color: "danger", tokenCredentialId: "slack-token", message: "XL Official Docker Images build *FAILED* - <${env.BUILD_URL}|click to open>", channel: 'docker-images-release'
                 }
             }
         }
