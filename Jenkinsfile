@@ -36,6 +36,10 @@ pipeline {
             defaultValue: false,
             description: 'Specifies if Target OS is "RHEL" which defines what tags will be generated')
         choice(
+            name: 'ReleaseType',
+            choices: ['nightly', 'final'],
+            description: "Type of Release if it is nightly or final")
+        choice(
             name: 'Registry',
             choices: ['xl-docker.xebialabs.com', 'xebialabs', 'xebialabsunsupported', 'xebialabsearlyaccess'],
             description: "Docker Registry you want to push non RHEL Docker Images to")
@@ -91,10 +95,10 @@ pipeline {
 
                                 xlr_LatestVersion = getLatestVersion("xl_release")
 
-                                if ((xlr_LatestVersion.toString().contains("alpha") || xlr_LatestVersion.toString().contains("rc") ) && (params.Registry != "xebialabs")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --registry ${params.Registry}"
-                                } else {
+                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --registry ${params.Registry} --commit"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --registry ${params.Registry}"
                                 }
 
                                 // Build Docker Image and push it
@@ -105,10 +109,10 @@ pipeline {
 
                                 xld_LatestVersion = getLatestVersion("xl_deploy")
 
-                                if ((xld_LatestVersion.toString().contains("alpha") || xld_LatestVersion.toString().contains("rc") ) && (params.Registry != "xebialabs")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --registry ${params.Registry}"
-                                } else {
+                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --registry ${params.Registry} --commit"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --registry ${params.Registry}"
                                 }
 
                                 // Build Docker Image and push it
@@ -147,16 +151,16 @@ pipeline {
 
                                 xlr_LatestVersion = getLatestVersion("xl_release")
 
-                                if (xlr_LatestVersion.toString().contains("alpha") || xlr_LatestVersion.toString().contains("rc")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release"
-                                } else {
+                                if (params.ReleaseType == "final") {
                                     sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --commit"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release"
                                 }
 
                                 // build docker images and push it to internal docker registry
                                 sh "pipenv run ./applejack.py build --xl-version ${xlr_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-release  --target-os rhel --push --registry xl-docker.xebialabs.com"
 
-                                if (!(xlr_LatestVersion.toString().contains("alpha"))) {
+                                if (params.ReleaseType == "final") {
                                     // push to redhat resgistry
                                     def imageid = sh(script: "docker images | grep xl-release | grep ${xlr_LatestVersion} | awk -e '{print \$3}'", returnStdout: true).trim()
                                     // Login to rhel Docker
@@ -171,16 +175,16 @@ pipeline {
 
                                 xld_LatestVersion = getLatestVersion("xl_deploy")
 
-                                if (xld_LatestVersion.toString().contains("alpha") || xld_LatestVersion.toString().contains("rc")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy"
-                                } else {
+                                if (params.ReleaseType == "final") {
                                     sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --commit"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy"
                                 }
 
                                 // build docker images and push it to internal docker registry
                                 sh "pipenv run ./applejack.py build --xl-version ${xld_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-deploy  --target-os rhel --push --registry xl-docker.xebialabs.com"
 
-                                if (!(xld_LatestVersion.toString().contains("alpha"))) {
+                                if (params.ReleaseType == "final") {
                                     // push to redhat resgistry
                                     def imageid = sh(script: "docker images | grep xl-deploy | grep ${xld_LatestVersion} | awk -e '{print \$3}'", returnStdout: true).trim()
                                     // Login to rhel Docker
