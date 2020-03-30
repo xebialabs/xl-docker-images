@@ -55,6 +55,7 @@ pipeline {
         NEXUS_CRED = credentials('nexus-ci')
         XLR_RHEL_TOKEN = credentials('xlr-rhel-token')
         XLD_RHEL_TOKEN = credentials('xld-rhel-token')
+        SEED_VERSION = '9.6.1-alpha.4'
     }
 
     stages {
@@ -298,10 +299,7 @@ pipeline {
 
                 stage('Test XLUP with New Docker Images for debian-slim') {
                     when {
-                         expression {
-                            params.Linux == true &&
-                                githubLabelsPresent(this, ['test-xl-up-pr'])
-                            }
+                         expression { params.Linux == true }
                     }
                     agent {
                             label 'docker_minikube'
@@ -344,7 +342,7 @@ def getLatestVersion(xl_product) {
         if (xl_product == 'xl_release') {
             if (params.xlr_version == '') {
 
-                def xlr_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/xlrelease/xl-release/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
+                def xlr_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlrelease/xl-release/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
 
                 writeFile (file: "${env.WORKSPACE}/xl-release-latest", text: "${xlr_Version}")
                 xlr_LatestVersion = readFile "${env.WORKSPACE}/xl-release-latest"
@@ -362,7 +360,7 @@ def getLatestVersion(xl_product) {
         if (xl_product == 'xl_deploy') {
             if (params.xld_version == '') {
 
-                def xld_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
+                def xld_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
 
                 writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${xld_Version}")
                 xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
@@ -437,7 +435,7 @@ def runXlUpOnMiniKube() {
 
     }
 
-    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
-    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --skip-prompts"
-    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version 9.6.0-alpha.2 --undeploy --skip-prompts"
+    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version ${SEED_VERSION} --undeploy --skip-prompts"
+    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version ${SEED_VERSION} --skip-prompts"
+    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version ${SEED_VERSION} --undeploy --skip-prompts"
 }
