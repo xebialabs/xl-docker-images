@@ -8,6 +8,13 @@ InstallXLD: false
 InstallXLR: false
 XlrVersion: xl-release:0.0.0
 XldVersion: xl-deploy:0.0.0
+UseInternalLoadBalancer: false
+UseExistingStorageClasses: false
+UseExternalIngress: false
+UseCustomNamespace: false
+Namespace: xebialabs
+IsHybridCluster: false
+UseCustomRegistryForAllImages: false
 DockerUser: " "
 DockerPass: " "
 RegistryURL: xl-docker.xebialabs.com
