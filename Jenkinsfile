@@ -1,5 +1,9 @@
 #!groovy
 
+@Library('jenkins-pipeline-libs@master')
+import com.xebialabs.pipeline.utils.Branches
+import groovy.transform.Field
+
 def xlr_LatestVersion = ""
 def xld_LatestVersion = ""
 
