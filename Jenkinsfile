@@ -23,6 +23,10 @@ pipeline {
             name: 'xl_deploy',
             defaultValue: true,
             description: 'Specifies if you want to generate Docker Image for XLDeploy')
+        booleanParam(
+            name: 'xl_stallite',
+            defaultValue: true,
+            description: 'Specifies if you want to generate Docker Image for XLSatellite')
         string(
             name: 'xld_version',
             defaultValue: '',
