@@ -5,7 +5,7 @@ The production setup for XL Release as mentioned [here](https://docs.xebialabs.c
 
 This is a sample, you can follow this approach to setup the database and other infrastructure of your choice.
 
-**Note 1**: For production deployments it is advised to use Kubernetes to orchestrate the deployment of the applications. Docker compose is not ideal for production setup. Proceed at your own risk. Use the `xl up` command from the official XebiaLabs CLI to install XebiaLabs products using Kubernetes. **//TODO: Link to XL UP docs**
+**Note 1**: For production deployments it is advised that you use Kubernetes to orchestrate the deployment of the applications. Docker compose is not ideal for production setup. Proceed at your own risk. Use the `xl up` command from the official XebiaLabs CLI to install XebiaLabs products using Kubernetes, for more details see [Manage Deployments with XL Up](https://docs.xebialabs.com/v.9.5/xl-deploy/concept/xl-up-manage-deployments)
 
 **Note 2**: For HA setup to work, you need to mount a licence file or provide an environment variable `XL_LICENSE` with a licence text converted to base64 for the XL Release instances
 
@@ -22,7 +22,7 @@ The setup includes
 ### Limitations:
 
 - The database setup is for demo purposes, use your own setup or use external database
-- The HAproxy setup is for demo purposes, use your own setup 
+- The HAproxy setup is for demo purposes, use your own setup
 
 ### Steps
 

@@ -2,11 +2,11 @@
 
 The production setup for XL Deploy as mentioned [here](https://docs.xebialabs.com/v.9.0/xl-deploy/how-to/set-up-xl-deploy-in-production/) can be done using Docker compose as below.
 
-This is a sample, you can follow this approach to setup the database and other infrastructure of your choice.
+This article provides a sample approach you can follow to setup the database and other infrastructure of your choice.
 
-**Note 1**: For production deployments it is advised to use Kubernetes to orchestrate the deployment of the applications. Docker compose is not ideal for production setup. Proceed at your own risk. Use the `xl up` command from the official XebiaLabs CLI to install XebiaLabs products using Kubernetes. **//TODO: Link to XL UP docs**
+**Note 1**: For production deployments it is advised that you use Kubernetes to orchestrate the deployment of the applications. Docker compose is not ideal for production setup. Proceed at your own risk. Use the `xl up` command from the official XebiaLabs CLI to install XebiaLabs products using Kubernetes, for more details see [Manage Deployments with XL Up](https://docs.xebialabs.com/v.9.5/xl-deploy/concept/xl-up-manage-deployments)
 
-**Note 2**: For HA setup to work, you need to mount a licence file or provide an environment variable `XL_LICENSE` with a licence text converted to base64 for the XL Deploy instances
+**Note 2**: For HA setup to work, you need to mount a license file or provide an environment variable `XL_LICENSE` with a license text converted to base64 for the XL Deploy instances
 
 **Note 3**: The folders you mount needs to be owned by user 10001, for example, you can run `sudo chown -R 10001 xl-deploy-master` if you are going to mount directories under `$PWD/xl-deploy-master` folder.
 
@@ -25,7 +25,7 @@ The setup includes
 - You can have only 2 master nodes
 - The database setup is for demo purposes, use your own setup or use external database
 - The MQ setup is for demo purposes, use your own setup or use external MQ
-- The HAproxy setup is for demo purposes, use your own setup 
+- The HAproxy setup is for demo purposes, use your own setup
 
 ### Steps
 
