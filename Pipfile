@@ -22,11 +22,12 @@ pyyaml = "==5.1"
 click = "*"
 
 [dev-packages]
-"autopep8" = "*"
-pylint = "*"
-"flake8" = "*"
-"pep8" = "*"
-rope = "*"
+"setuptools" = "<=45.0.0"
+"autopep8" = "==1.4.4"
+pylint = "==2.4.4"
+"flake8" = "==3.7.9"
+"pep8" = "==1.7.1"
+rope = "==0.14.0"
 
 [requires]
 python_version = "3.7"
