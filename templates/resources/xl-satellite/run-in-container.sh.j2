@@ -1,0 +1,11 @@
+#!/bin/bash
+
+
+sed \
+{% for env in environment %}
+  {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
+{% endfor -%}
+  ${APP_HOME}/conf/satellite.conf.template > ${APP_HOME}/conf/satellite.conf
+
+# Start regular startup process
+exec ${APP_HOME}/bin/run.sh "$@"

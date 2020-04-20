@@ -1,0 +1,32 @@
+name: xl-satellite
+dockerfiles:
+  default: 'centos'
+  os:
+    centos: xl-satellite/Dockerfile.j2
+repositories:
+  nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xl-platform/satellite/xl-satellite-server/{version}/{product}-server-{version}.zip'
+  dist: 'https://dist.xebialabs.com/customer/xl-deploy/xl-satellite/{version}/{product}-server-{version}.zip'
+resources:
+  target_name: '{product}-server-{version}.zip'
+  dirs:
+    - all
+    - common/jmx-exporter
+    - xl-satellite
+context:
+  license_server: https://download.xebialabs.com
+  product: xl-satellite
+  product_name: XL Satellite
+  product_description: Enterprise-scale Application Release Automation for any environment
+  wrapper_conf: xl-satellite-wrapper-linux.conf
+  conf_files:
+    - satellite.conf
+  port: 8380 8480
+  volumes:
+    - "${APP_HOME}/conf"
+    - "${APP_HOME}/hotfix/lib"
+    - "${APP_HOME}/hotfix/plugins"
+    - "${APP_HOME}/recovery"
+    - "${APP_HOME}/workdir"
+  environment:
+    - key: INBOUND_ADDRESS
+      value: ""
