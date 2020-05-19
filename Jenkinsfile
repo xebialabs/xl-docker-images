@@ -43,6 +43,10 @@ pipeline {
             name: 'Registry',
             choices: ['xl-docker.xebialabs.com', 'xebialabs', 'xebialabsunsupported', 'xebialabsearlyaccess'],
             description: "Docker Registry you want to push non RHEL Docker Images to")
+        booleanParam(
+            name: 'TestXLUP',
+            defaultValue: false,
+            description: 'Specifies if We need to test new docker images with xlup or not')
     }
 
     options {
@@ -303,7 +307,9 @@ pipeline {
 
                 stage('Test XLUP with New Docker Images for debian-slim') {
                     when {
-                         expression { params.Linux == true }
+                         expression {
+                            params.Linux == true && params.TestXLUP == true
+                         }
                     }
                     agent {
                             label 'docker_minikube'
