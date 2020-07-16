@@ -1,0 +1,10 @@
+---
+##                                                                                    ##
+##           JMX to Prometheus exporter configuration                                 ##
+## This is a collector that can configurably scrape and expose mBeans of a JMX target ##
+##                                                                                    ##
+
+# The host and port to connect to via remote JMX
+hostPort: localhost:9011
+rules:
+- pattern: ".*"
