@@ -1,4 +1,4 @@
-FROM alpine:3.7 as installer
+FROM alpine:3.12 as installer
 
 # Install dependencies
 RUN apk add --no-cache gawk unzip curl
@@ -68,7 +68,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="9.7.1" \
+      version="9.7.1-1" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
