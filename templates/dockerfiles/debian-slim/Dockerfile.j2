@@ -1,11 +1,11 @@
-FROM alpine:3.7 as installer
+FROM alpine:3.12 as installer
 
 # Install dependencies
 RUN apk add --no-cache gawk unzip curl
 
 {% include 'install.j2' %}
 
-FROM openjdk:8-jdk-slim-stretch
+FROM openjdk:8-jdk-slim-buster
 
 {% include 'metadata.j2' %}
 
