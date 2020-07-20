@@ -1,4 +1,4 @@
-FROM alpine:3.7 as installer
+FROM alpine:3.12 as installer
 
 # Install dependencies
 RUN apk add --no-cache gawk unzip curl

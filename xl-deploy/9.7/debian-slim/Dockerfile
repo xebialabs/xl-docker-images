@@ -1,4 +1,4 @@
-FROM alpine:3.7 as installer
+FROM alpine:3.12 as installer
 
 # Install dependencies
 RUN apk add --no-cache gawk unzip curl
@@ -61,7 +61,7 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
 
-FROM openjdk:8-jdk-slim-stretch
+FROM openjdk:8-jdk-slim-buster
 
 MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 
