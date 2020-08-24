@@ -21,7 +21,7 @@ services:
     command:
       - "worker"
       - "-api"
-      - "http://xl-deploy-lb:8080/"
+      - "http://${XLD_LB}:5000/"
       - "-master"
       - "${XLD_MASTER_1}:8180"
       - "-master"
