@@ -69,6 +69,6 @@ context:
   - key: XLR_TASK_QUEUE_NAME
     value: "xlr-tasks-queue"
   - key: XLR_TASK_QUEUE_URL
-    value: "amqp://localhost:5672"
+    value: "amqp://localhost:61616"
   - key: XLR_TASK_QUEUE_USERNAME
     value: "mqadmin"
