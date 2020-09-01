@@ -37,7 +37,7 @@ ssl=false
 threads.max=150
 threads.min=30
  ```
- - The configuration files mentioned below can also be overwritten by providing the relevant attribute values, in the mounted volume. A default will be used for any file not provided in the mounted volume or by setting `FORCECOPY_DEFAULT_CONFIGS` environment variable to `true`.
+ - The configuration files mentioned below can also be overwritten by providing the relevant attribute values, in the mounted volume. A default will be used for any file not provided in the mounted volume or by setting `FORCECOPY_DEFAULT_CONFIG` environment variable to `true`.
    - `deployit-security.xml`
    - `logback-access.xml`
    - `logback.xml`
