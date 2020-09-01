@@ -2,8 +2,8 @@
 
 
 display_help() {
-	echo "   Example: ./docker.sh -d <destination_registry> -p <xlr|xld> -s <source_registry> -v <version>"
-	echo "   -d, --destination       destination registry"
+    echo "   Example: ./docker.sh -d <destination_registry> -p <xlr|xld> -s <source_registry> -v <version>"
+    echo "   -d, --destination       destination registry"
     echo "   -h, --help              Script Usage"  
     echo "   -p, --product           xlr or xld"
     echo "   -s, --source            source registry"
@@ -30,20 +30,19 @@ pull_push(){
 [ $# -lt 4 ] && display_help
 while getopts ":hd:v:p:s:" arg; do
   case $arg in
-  	d)
+    d)
       destination=${OPTARG}
       ;;
     v)
-	  version=${OPTARG}
-	  ;;
+      version=${OPTARG}
+      ;;
     p) 
       product=${OPTARG}
       ;;
-    s) # 
+    s) 
       source=${OPTARG}
       ;;
-
-    h | *) # Display help.
+    h | *) 
       display_help
       exit 0
       ;;
