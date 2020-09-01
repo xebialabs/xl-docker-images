@@ -14,7 +14,7 @@ display_help() {
 pull_push(){
 
     
-    version=$1
+        version=$1
 
 	docker pull $source/$product:$version
 
