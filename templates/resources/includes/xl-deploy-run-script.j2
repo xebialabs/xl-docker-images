@@ -27,7 +27,7 @@ for f in *; do
   if [[ $f == *.template ]]; then
     continue
   fi
-  if [ -f ${APP_HOME}/conf/$f ]; then
+  if [ -f ${APP_HOME}/conf/$f ] && [ "${FORCECOPY_DEFAULT_CONFIGS}" = "false" ]; then
     echo "... Not copying $f because it already exists in the conf directory"
   else
     echo "... Copying $f to the conf directory"

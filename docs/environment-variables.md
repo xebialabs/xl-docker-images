@@ -76,6 +76,11 @@
 - possible values: "true","false"
 - default value: "true"
 
+##### `FORCECOPY_DEFAULT_CONFIGS`
+- Copy file from `${APP_HOME}/default-conf` to `${APP_HOME}/conf` when it already exists in the latter.
+- possible values: "true","false"
+- default value: "false"
+
 ##### `USE_IP_AS_HOSTNAME`
 - Used to set IP address of the container as the hostname for the instance. If set to true then IP will be used instead of the container ID. This is useful when deploying XL Deploy as active-active cluster using docker compose as Akka cannot resolve aliases within the docker network.
 - possible values: "true","false"
