@@ -76,7 +76,7 @@
 - possible values: "true","false"
 - default value: "true"
 
-##### `FORCECOPY_DEFAULT_CONFIGS`
+##### `FORCECOPY_DEFAULT_CONFIG`
 - Copy file from `${APP_HOME}/default-conf` to `${APP_HOME}/conf` when it already exists in the latter.
 - possible values: "true","false"
 - default value: "false"

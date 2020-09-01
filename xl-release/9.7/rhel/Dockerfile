@@ -122,7 +122,7 @@ ENV XL_CLUSTER_MODE=default \
     XL_REPORT_DB_PASSWORD=\${xl.database.db-password} \
     XL_LICENSE_KIND=byol \
     GENERATE_XL_CONFIG=true \
-    FORCECOPY_DEFAULT_CONFIGS=false \
+    FORCECOPY_DEFAULT_CONFIG=false \
     USE_IP_AS_HOSTNAME=false
 
 
