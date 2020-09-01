@@ -2,7 +2,7 @@
 
 
 display_help() {
-    echo "   Example: ./docker.sh -d <destination_registry> -p <xlr|xld> -s <source_registry> -v <version>"
+    echo "   Example: ./copy_docker_images.sh -d <destination_registry> -p <xlr|xld> -s <source_registry> -v <version>"
     echo "   -d, --destination       destination registry"
     echo "   -h, --help              Script Usage"  
     echo "   -p, --product           xlr or xld"
@@ -13,8 +13,7 @@ display_help() {
 
 pull_push(){
 
-    
-        version=$1
+  version=$1
 
 	docker pull $source/$product:$version
 
