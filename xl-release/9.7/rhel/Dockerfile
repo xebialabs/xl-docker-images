@@ -5,7 +5,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="9.7.2" \
+      version="9.7.3" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -38,10 +38,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-9.7.2-server.zip /tmp
+COPY resources/xl-release-9.7.3-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-9.7.2-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-9.7.2-server ${APP_HOME}
+    unzip /tmp/xl-release-9.7.3-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-9.7.3-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -122,7 +122,12 @@ ENV XL_CLUSTER_MODE=default \
     XL_REPORT_DB_PASSWORD=\${xl.database.db-password} \
     XL_LICENSE_KIND=byol \
     GENERATE_XL_CONFIG=true \
-    USE_IP_AS_HOSTNAME=false
+    USE_IP_AS_HOSTNAME=false \
+    ENABLE_EMBEDDED_QUEUE=true \
+    XLR_TASK_QUEUE_PASSWORD=mqadmin \
+    XLR_TASK_QUEUE_NAME=xlr-tasks-queue \
+    XLR_TASK_QUEUE_URL=amqp://localhost:61616 \
+    XLR_TASK_QUEUE_USERNAME=mqadmin
 
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
