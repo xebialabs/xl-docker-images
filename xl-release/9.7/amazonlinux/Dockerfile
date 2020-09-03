@@ -117,7 +117,12 @@ ENV XL_CLUSTER_MODE=default \
     XL_REPORT_DB_PASSWORD=\${xl.database.db-password} \
     XL_LICENSE_KIND=byol \
     GENERATE_XL_CONFIG=true \
-    USE_IP_AS_HOSTNAME=false
+    USE_IP_AS_HOSTNAME=false \
+    ENABLE_EMBEDDED_QUEUE=true \
+    XLR_TASK_QUEUE_PASSWORD=mqadmin \
+    XLR_TASK_QUEUE_NAME=xlr-tasks-queue \
+    XLR_TASK_QUEUE_URL=amqp://localhost:61616 \
+    XLR_TASK_QUEUE_USERNAME=mqadmin
 
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are

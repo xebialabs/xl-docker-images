@@ -34,7 +34,17 @@ xl {
     db-username=${XL_REPORT_DB_USERNAME}
   }
 
+  # Task queue
+  queue {
+    embedded=${ENABLE_EMBEDDED_QUEUE}
+    password="${XLR_TASK_QUEUE_PASSWORD}"
+    queueName="${XLR_TASK_QUEUE_NAME}"
+    url="${XLR_TASK_QUEUE_URL}"
+    username="${XLR_TASK_QUEUE_USERNAME}"
+  }
+
   metrics {
     enabled = ${XL_METRICS_ENABLED}
   }
+
 }
