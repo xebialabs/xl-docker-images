@@ -16,7 +16,7 @@ def load_product_config(product):
     p = Path("applejack/conf/products") / ("%s.yml" % product)
     if not p.exists():
         raise Exception("Could not find configuration for product %s in %s" % (product, p))
-    return yaml.load(p.read_text())
+    return yaml.load(p.read_text(), yaml.FullLoader)
 
 
 def all_products():
