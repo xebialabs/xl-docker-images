@@ -109,7 +109,7 @@
 
 ##### `ENABLE_EMBEDDED_QUEUE`
 - Flag to expose external messaging queue. If set to true, a default embedded-queue will be used and all environment variables will be ignored.
-- possible values: "true", “false”
+- possible values: "true", "false"
 - default value: "true"
 
 ##### `XLR_TASK_QUEUE_NAME`
