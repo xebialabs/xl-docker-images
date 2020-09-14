@@ -107,6 +107,35 @@
 - default value: none
 - example: "rep_P@ssw0rd01"
 
+##### `ENABLE_EMBEDDED_QUEUE`
+- Flag to expose external messaging queue. If set to true, a default embedded-queue will be used and all environment variables will be ignored.
+- possible values: "true", "false"
+- default value: "true"
+
+##### `XLR_TASK_QUEUE_NAME`
+- Name for MQ task queue.
+- possible values: "name-string-value"
+- default value: "xlr-tasks-queue"
+- example: "xlrelease-tasks_q"
+
+##### `XLR_TASK_QUEUE_URL`
+- MQ task queue URL to specify either the IP or the hostname.
+- possible values: "ip-address/hostname"
+- default value: none
+- example: http://xl-release.company.com
+
+##### `XLR_TASK_QUEUE_USERNAME`
+- MQ task queue username.
+- possible values: "user-string-value"
+- default value: none
+- example: "xlr_user"
+
+##### `XLR_TASK_QUEUE_PASSWORD`
+- MQ task queue password.
+- possible values: "password-value"
+- default value: none
+- example: "MQ_P@ssw0rd01"
+
 ### Specific for XLDeploy docker images:-
 
 ##### `XLD_IN_PROCESS`
