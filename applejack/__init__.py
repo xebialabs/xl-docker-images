@@ -60,7 +60,7 @@ def major_minor(image_version):
 
 def all_tags(target_os, image_version, default_os=None):
     """Create a generator that yields all the version tags for a specific target_os and image_version."""
-    major_version = '.'.join([major_minor(image_version),'0'])
+    major_version = major_minor(image_version)
     if target_os:
         yield ("%s-%s" % (image_version, target_os), False)
         yield ("%s-%s" % (major_version, target_os), True)
