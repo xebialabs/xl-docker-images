@@ -8,10 +8,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-9.8.0-server.zip /tmp
+COPY resources/xl-deploy-9.8-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-9.8.0-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-9.8.0-server ${APP_HOME}
+    unzip /tmp/xl-deploy-9.8-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-9.8-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -68,7 +68,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="9.8.0" \
+      version="9.8" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
