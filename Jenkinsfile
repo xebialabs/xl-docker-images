@@ -344,6 +344,9 @@ pipeline {
                 }
             }
         }
+        always {
+            cleanWs()
+        }
     }
 }
 
