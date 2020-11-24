@@ -344,7 +344,7 @@ pipeline {
                 }
             }
         }
-        always {
+        cleanup {
             cleanWs()
         }
     }
