@@ -344,8 +344,8 @@ pipeline {
                 }
             }
         }
-        cleanup {
-            cleanWs()
+        always {
+            deleteDir()
         }
     }
 }
