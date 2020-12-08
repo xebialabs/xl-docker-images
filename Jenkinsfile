@@ -123,6 +123,9 @@ pipeline {
                                 sh "pipenv run ./applejack.py build --xl-version ${xld_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-deploy  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
                             }
                         }
+                        script {
+                            cleanWs()
+                        }
                     }
                 }
 
@@ -199,6 +202,9 @@ pipeline {
                                 }
                             }
                         }
+                        script {
+                            cleanWs()
+                        }
                     }
                 }
             }
@@ -249,6 +255,9 @@ pipeline {
                                     error('Docker Image Start FAILED')
                                 }
                             }
+                        }
+                        script {
+                            cleanWs()
                         }
                     }
                 }
@@ -301,6 +310,9 @@ pipeline {
                                     }
                                 }
                             }
+                            script{
+                                cleanWs()
+                            }
                         }
                     }
                 }
@@ -323,6 +335,9 @@ pipeline {
 
                             runXlUpOnMiniKube()
 
+                        }
+                        script {
+                            cleanWs()
                         }
                     }
                 }
