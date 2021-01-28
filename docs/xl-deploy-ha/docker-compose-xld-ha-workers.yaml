@@ -1,7 +1,7 @@
 version: "3"
 services:
   xl-deploy-worker:
-    image: xebialabs/xl-deploy:9.7
+    image: xebialabs/xl-deploy:10.0
     networks:
       - xld-network
     environment:

@@ -20,7 +20,7 @@ services:
       TIMEOUT_CONNECT: 60000
 
   xl-release-master:
-    image: xebialabs/xl-release:9.5.2
+    image: xebialabs/xl-release:10.0
     depends_on:
       - postgresql
     networks:

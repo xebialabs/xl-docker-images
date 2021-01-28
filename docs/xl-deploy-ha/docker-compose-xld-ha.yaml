@@ -20,7 +20,7 @@ services:
       TIMEOUT_CONNECT: 60000
 
   xl-deploy-master:
-    image: xebialabs/xl-deploy:9.7
+    image: xebialabs/xl-deploy:10.0
     depends_on:
       - rabbitmq
       - postgresql
