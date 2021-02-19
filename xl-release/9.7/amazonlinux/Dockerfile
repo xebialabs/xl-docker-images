@@ -8,10 +8,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-9.7.7-server.zip /tmp
+COPY resources/xl-release-9.7.8-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-9.7.7-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-9.7.7-server ${APP_HOME}
+    unzip /tmp/xl-release-9.7.8-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-9.7.8-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -68,7 +68,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="9.7.7" \
+      version="9.7.8" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -80,7 +80,7 @@ ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install dependencies
 RUN yum update -y && \
-    yum install -y java-1.8.0-openjdk-headless curl jq shadow-utils.x86_64 hostname unzip which && \
+    yum install -y java-11-amazon-corretto curl jq shadow-utils.x86_64 hostname unzip which && \
     yum clean all -q
 
 # Copy installed XL Release
@@ -91,7 +91,7 @@ ENV OS=amazonlinux
 
 
 # Set ttl for DNS cache
-RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/jre/lib/security/java.security
+RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/lib/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
