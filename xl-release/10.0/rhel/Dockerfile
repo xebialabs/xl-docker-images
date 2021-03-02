@@ -24,7 +24,7 @@ RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname shadow-utils wh
     go-md2man -in /tmp/help.md -out /help.1 && \
     microdnf clean all
 
-RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
+RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-11-openjdk-devel && \
 ### Set the Java random source
     echo "securerandom.source=file:/dev/urandom" >> /usr/lib/jvm/java/jre/lib/security/java.security && \
     microdnf clean all
@@ -96,7 +96,7 @@ ENV OS=rhel
 
 
 # Set ttl for DNS cache
-RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/jre/lib/security/java.security
+RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/lib/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
