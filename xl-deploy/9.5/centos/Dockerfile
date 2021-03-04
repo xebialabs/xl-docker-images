@@ -1,4 +1,4 @@
-FROM alpine:3.12 as installer
+FROM alpine:3.7 as installer
 
 # Install dependencies
 RUN apk add --no-cache gawk unzip curl
@@ -8,10 +8,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-9.5.5-server.zip /tmp
+COPY resources/xl-deploy-9.5.6-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-9.5.5-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-9.5.5-server ${APP_HOME}
+    unzip /tmp/xl-deploy-9.5.6-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-9.5.6-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -68,7 +68,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="9.5.5" \
+      version="9.5.6" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -116,7 +116,7 @@ EXPOSE 4516
 ENV XL_CLUSTER_MODE=default \
     XL_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-deploy \
     XL_DB_USERNAME=sa \
-    XL_DB_PASSWORD=123 \
+    XL_DB_PASSWORD=123 \d
     XL_METRICS_ENABLED=false \
     XLD_IN_PROCESS=true \
     XLD_TASK_QUEUE_NAME=xld-tasks-queue \
@@ -129,8 +129,7 @@ ENV XL_CLUSTER_MODE=default \
     HOSTNAME_SUFFIX= \
     XL_LICENSE_KIND=byol \
     GENERATE_XL_CONFIG=true \
-    USE_IP_AS_HOSTNAME=false \
-    ENABLE_SATELLITE=False
+    USE_IP_AS_HOSTNAME=false
 
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
