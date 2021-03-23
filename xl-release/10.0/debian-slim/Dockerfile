@@ -1,4 +1,4 @@
-FROM alpine:3.12 as installer
+FROM alpine:3.13.0 as installer
 
 # Install dependencies
 RUN apk add --no-cache gawk unzip curl
@@ -8,10 +8,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-10.0.0-server.zip /tmp
+COPY resources/xl-release-10.0.1-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-10.0.0-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-10.0.0-server ${APP_HOME}
+    unzip /tmp/xl-release-10.0.1-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-10.0.1-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -61,14 +61,14 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
 
-FROM openjdk:8-jdk-slim-buster
+FROM openjdk:11-jdk-slim-buster
 
 MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="10.0.0" \
+      version="10.0.1" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -80,7 +80,7 @@ ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install dependencies
 RUN apt-get update -y && \
-    apt-get install -y curl jq unzip && \
+    apt-get install -y curl jq unzip apt-utils&& \
     apt-get clean all -q
 
 # Copy installed XL Release
@@ -91,7 +91,7 @@ ENV OS=debian
 
 
 # Set ttl for DNS cache
-RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/jre/lib/security/java.security
+RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/lib/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
