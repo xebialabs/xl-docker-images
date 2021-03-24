@@ -78,4 +78,24 @@ xl {
   satellite {
       enabled="${ENABLE_SATELLITE}"
   }
+
+  security {
+      auth {
+          providers {
+              oidc {
+                  clientId = "${CLIENT_ID}"
+                  clientSecret = "${CLIENT_SECRET}"
+                  rolesClaimName = "${ROLES_CLAIM_NAME}"
+                  userNameClaimName = "${USERNAME_CLAIM_NAME}"
+                  issuer = "${ISSUER}"
+                  logoutUri = "${LOGOUT_URI}"
+                  userAuthorizationUri = "${USER_AUTHORIZATION_URI}"
+                  postLogoutRedirectUri = "${POST_LOGOUT_REDIRECT_URI}"
+                  redirectUri = "${REDIRECT_URI}"
+                  accessTokenUri = "${ACCESS_TOKEN_URI}"
+                  keyRetrievalUri = "${KEY_RETRIEVAL_URI}"
+              }
+          }
+      }
+  }
 }

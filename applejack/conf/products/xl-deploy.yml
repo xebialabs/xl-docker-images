@@ -73,3 +73,25 @@ context:
     value: "false"
   - key: ENABLE_SATELLITE
     value: "false"
+  - key: CLIENT_ID
+    value: ""
+  - key: CLIENT_SECRET
+    value: ""
+  - key: ROLES_CLAIM_NAME
+    value: ""
+  - key: USERNAME_CLAIM_NAME
+    value: ""
+  - key: ISSUER
+    value: ""
+  - key: LOGOUT_URI
+    value: ""
+  - key: USER_AUTHORIZATION_URI
+    value: ""
+  - key: POST_LOGOUT_REDIRECT_URI
+    value: ""
+  - key: REDIRECT_URI
+    value: ""
+  - key: ACCESS_TOKEN_URI
+    value: ""
+  - key: KEY_RETRIEVAL_URI
+    value: ""
