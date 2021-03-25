@@ -11,9 +11,10 @@ FROM openjdk:11-jdk-slim-buster
 
 {% include 'variables.j2' %}
 
-# Install dependencies
+# Install dependenciesxl
 RUN apt-get update -y && \
     apt-get install -y curl jq unzip apt-utils&& \
+    apt-get install -y fontconfig libfreetype6 && \
     apt-get clean all -q
 
 # Copy installed {{ product_name }}
