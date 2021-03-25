@@ -44,7 +44,7 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     rm /tmp/modify-wrapper-linux-conf.gawk
 
 # Create node-specific conf directory and add template for node-specific xl-deploy.conf file
-# The node-specific xl-deploy.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the 
+# The node-specific xl-deploy.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the
 # ${APP_HOME}/conf/xl-deploy.conf file by the xl-platform
 RUN mkdir ${APP_HOME}/node-conf
 COPY resources/node-conf ${APP_HOME}/node-conf
@@ -81,6 +81,7 @@ ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 # Install dependencies
 RUN apt-get update -y && \
     apt-get install -y curl jq unzip && \
+    apt-get install -y fontconfig libfreetype6 && \
     apt-get clean all -q
 
 # Copy installed XL Deploy
