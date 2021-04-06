@@ -101,6 +101,7 @@ pipeline {
                         // install pipenv and needed dependencies
                         sh '''
                             pip3 install pipenv --user
+                            python3 -m pipenv
                             pipenv install
                             pipenv shell
                         '''
