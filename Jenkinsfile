@@ -6,6 +6,7 @@ import groovy.transform.Field
 
 def xlr_LatestVersion = ""
 def xld_LatestVersion = ""
+def xlclient_LatestVersion = ""
 
 pipeline {
     agent none
@@ -25,6 +26,14 @@ pipeline {
             description: 'Specifies if you want to generate Docker Image for XLDeploy')
         string(
             name: 'xld_version',
+            defaultValue: '',
+            description: "Version of XL Deploy you want to create Docker Images for")
+         booleanParam(
+            name: 'xl_client',
+            defaultValue: true,
+            description: 'Specifies if you want to generate Docker Image for xl_client')
+        string(
+            name: 'xlclient_version',
             defaultValue: '',
             description: "Version of XL Deploy you want to create Docker Images for")
         booleanParam(
@@ -75,7 +84,7 @@ pipeline {
                          expression { params.Linux == true }
                     }
                     agent {
-                            label 'docker_linux'
+                            label 'xl-client'
                     }
                     steps {
                         // Clean old workspace
@@ -121,7 +130,21 @@ pipeline {
 
                                 // Build Docker Image and push it
                                 sh "pipenv run ./applejack.py build --xl-version ${xld_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-deploy  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
+                            }                        
+                            if (params.xl_client == true) {
+
+                                xlclient_LatestVersion = getLatestVersion("xl_client")
+
+                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabsearlyaccess")) {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry} --commit"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry}"
+                                }
+
+                                // Build Docker Image and push it
+                                sh "pipenv run ./applejack.py build --xl-version ${xlclient_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-client  --target-os alpine --push --registry ${params.Registry}"
                             }
+
                         }
                         script {
                             cleanWs()
@@ -134,7 +157,7 @@ pipeline {
                          expression { params.RHEL == true }
                     }
                     agent {
-                            label 'docker_rhel'
+                            label 'xl-client'
                     }
                     steps {
                         // Clean old workspace
@@ -217,7 +240,7 @@ pipeline {
                          expression { params.Linux == true }
                     }
                     agent {
-                            label 'docker_linux'
+                            label 'xl-client'
                     }
                     steps {
                         script {
@@ -397,6 +420,23 @@ def getLatestVersion(xl_product) {
 
             }
             return xld_LatestVersion
+        }
+        
+        if (xl_product == 'xl_client') {
+            if (params.xl_client == '') {
+
+                def xlclient_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlclient/xl-client/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
+
+                writeFile (file: "${env.WORKSPACE}/xl-client-latest", text: "${xl_client}")
+                xlclient_LatestVersion = readFile "${env.WORKSPACE}/xl-client-latest"
+
+            } else {
+
+                writeFile (file: "${env.WORKSPACE}/xl-client-latest", text: "${params.xl_client}")
+                xlclient_LatestVersion = readFile "${env.WORKSPACE}/xl-client-latest"
+
+            }
+            return xlclient_LatestVersion
         }
     }
 }
