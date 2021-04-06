@@ -100,7 +100,6 @@ pipeline {
 
                         // install pipenv and needed dependencies
                         sh '''
-                            yum install python-pip
                             pip3 install pipenv --user
                             pipenv install
                             pipenv shell
