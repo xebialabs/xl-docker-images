@@ -102,7 +102,6 @@ pipeline {
                         /*sh 'pipenv install'*/
                         sh yum install python-pip
                         sh pip3 install pipenv --user
-                        sh export PATH=$PATH:/root/.local/bin
                         sh pipenv install
                         sh pipenv shell
 
