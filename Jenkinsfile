@@ -99,7 +99,7 @@ pipeline {
                         '''
 
                         // install pipenv and needed dependencies
-                        /*sh 'pipenv install'*/
+                        sh 'pipenv install'
             
 
                         // Rendering and Committing changes
