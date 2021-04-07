@@ -31,7 +31,7 @@ pipeline {
          booleanParam(
             name: 'xl_client',
             defaultValue: true,
-            description: 'Specifies if you want to generate Docker Image for xl_client')
+            description: 'Specifies if you want to generate Docker Image for XLClient')
         string(
             name: 'xlclient_version',
             defaultValue: '',
@@ -84,7 +84,7 @@ pipeline {
                          expression { params.Linux == true }
                     }
                     agent {
-                            label 'xl-client'
+                            label 'docker_linux'
                     }
                     steps {
                         // Clean old workspace
