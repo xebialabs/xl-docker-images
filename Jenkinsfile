@@ -99,11 +99,7 @@ pipeline {
                         '''
 
                         // install pipenv and needed dependencies
-                        sh '''
-                            pip3 install pipenv --user
-                            pipenv install -e
-                            pipenv shell
-                        '''
+                        sh 'pipenv install'
             
 
                         // Rendering and Committing changes
