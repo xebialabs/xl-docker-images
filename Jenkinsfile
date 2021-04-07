@@ -428,12 +428,12 @@ def getLatestVersion(xl_product) {
 
                 def xlclient_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlclient/xl-client/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
 
-                writeFile (file: "${env.WORKSPACE}/xl-client-latest", text: "${xl_client}")
+                writeFile (file: "${env.WORKSPACE}/xl-client-latest", text: "${xlclient_Version}")
                 xlclient_LatestVersion = readFile "${env.WORKSPACE}/xl-client-latest"
 
             } else {
 
-                writeFile (file: "${env.WORKSPACE}/xl-client-latest", text: "${params.xl_client}")
+                writeFile (file: "${env.WORKSPACE}/xl-client-latest", text: "${params.xlclient_Version}")
                 xlclient_LatestVersion = readFile "${env.WORKSPACE}/xl-client-latest"
 
             }
