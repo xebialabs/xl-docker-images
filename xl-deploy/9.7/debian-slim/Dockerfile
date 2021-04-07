@@ -8,10 +8,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-9.7.11-server.zip /tmp
+COPY resources/xl-deploy-9.7.12-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-9.7.11-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-9.7.11-server ${APP_HOME}
+    unzip /tmp/xl-deploy-9.7.12-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-9.7.12-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -44,7 +44,7 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     rm /tmp/modify-wrapper-linux-conf.gawk
 
 # Create node-specific conf directory and add template for node-specific xl-deploy.conf file
-# The node-specific xl-deploy.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the
+# The node-specific xl-deploy.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the 
 # ${APP_HOME}/conf/xl-deploy.conf file by the xl-platform
 RUN mkdir ${APP_HOME}/node-conf
 COPY resources/node-conf ${APP_HOME}/node-conf
@@ -68,7 +68,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="9.7.11" \
+      version="9.7.12" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -81,7 +81,6 @@ ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 # Install dependencies
 RUN apt-get update -y && \
     apt-get install -y curl jq unzip && \
-    apt-get install -y fontconfig libfreetype6 && \
     apt-get clean all -q
 
 # Copy installed XL Deploy
