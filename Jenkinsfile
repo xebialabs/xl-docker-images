@@ -30,7 +30,7 @@ pipeline {
             description: "Version of XL Deploy you want to create Docker Images for")
          booleanParam(
             name: 'xl_client',
-            defaultValue: 10.1.0-407.113,
+            defaultValue: '10.1.0-407.113',
             description: 'Specifies if you want to generate Docker Image for XLClient')
         string(
             name: 'xlclient_version',
