@@ -429,13 +429,13 @@ def getLatestVersion(xl_product) {
 
                 writeFile (file: "${env.WORKSPACE}/xl-client-latest", text: "${xlclient_Version}")
                 xlclient_LatestVersion = readFile "${env.WORKSPACE}/xl-client-latest"
-                println xlclient_LatestVersion
+                println('xlclient_LatestVersion1',xlclient_LatestVersion)
 
             } else {
 
                 writeFile (file: "${env.WORKSPACE}/xl-client-latest", text: "${params.xlclient_Version}")
                 xlclient_LatestVersion = readFile "${env.WORKSPACE}/xl-client-latest"
-                println xlclient_LatestVersion
+                println('xlclient_LatestVersion2',xlclient_LatestVersion)
 
             }
             return xlclient_LatestVersion
