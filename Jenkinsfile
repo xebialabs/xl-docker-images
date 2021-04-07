@@ -424,7 +424,7 @@ def getLatestVersion(xl_product) {
         }
         
         if (xl_product == 'xl_client') {
-            if (params.xl_client == '') {
+            if (params.xlclient_Version == '') {
 
                 def xlclient_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlclient/xl-client/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
 
