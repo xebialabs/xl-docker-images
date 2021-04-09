@@ -79,7 +79,7 @@ pipeline {
 
         stage('Rendering and Build Docker Images for XLProducts') {
             parallel {
-                stage('Rendering and Build Docker Images for debian-slim centos amazonlinux') {
+                stage('Rendering and Build Docker Images for debian-slim alpine centos amazonlinux') {
                     when {
                          expression { params.Linux == true }
                     }
