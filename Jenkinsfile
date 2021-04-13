@@ -123,7 +123,7 @@ pipeline {
 
                                 xld_LatestVersion = getLatestVersion("xl_deploy")
 
-                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabsunsupported")) {
+                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --registry ${params.Registry} --commit"
                                 } else {
                                     sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --registry ${params.Registry}"
