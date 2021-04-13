@@ -137,9 +137,9 @@ pipeline {
                                 xlclient_LatestVersion = getLatestVersion("xl_client")
 
                                 if ((params.ReleaseType == "final") && (params.Registry == "xebialabsunsupported")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry}"
+                                    sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry}  --commit"
                                 } else {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry} --commit"
+                                    sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry}"
                                 }
 
                                 // Build Docker Image and push it
