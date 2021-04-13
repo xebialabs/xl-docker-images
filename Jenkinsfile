@@ -143,7 +143,7 @@ pipeline {
                                 }
 
                                 // Build Docker Image and push it
-                                sh "pipenv run ./applejack.py build --xl-version ${xlclient_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-client  --target-os alpine --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
+                                sh "pipenv run ./applejack.py build --xl-version ${xlclient_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-client  --target-os alpine --push --registry ${params.Registry}"
                                 
                             }
 
