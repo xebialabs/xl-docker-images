@@ -159,7 +159,7 @@ pipeline {
                          expression { params.RHEL == true }
                     }
                     agent {
-                            label 'xl-client'
+                            label 'docker_rhel'
                     }
                     steps {
                         // Clean old workspace
@@ -242,7 +242,7 @@ pipeline {
                          expression { params.Linux == true }
                     }
                     agent {
-                            label 'xl-client'
+                            label 'docker_linux'
                     }
                     steps {
                         script {
