@@ -139,7 +139,7 @@ pipeline {
                                 if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry}"
                                 } else {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry}  --commit"
+                                    sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry}"
                                 }
 
                                 // Build Docker Image and push it
