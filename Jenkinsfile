@@ -136,7 +136,7 @@ pipeline {
 
                                 xlclient_LatestVersion = getLatestVersion("xl_client")
 
-                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabsunsupported")) {
+                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry}"
                                 } else {
                                     sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry}"
