@@ -1,0 +1,5 @@
+{% set central_configuration_enabled %}
+{%- if product == "xl-deploy" %}
+{%- if xl_version|float() >= 10.2 %}true{%- endif %}
+{%- endif %}
+{%- endset %}
