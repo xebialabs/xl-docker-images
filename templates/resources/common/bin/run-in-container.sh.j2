@@ -1,5 +1,9 @@
 #!/bin/bash
 
+{%- set xl_version_splitted = xl_version.split(".") %}
+{%- set xl_version_major_minor = xl_version_splitted[0] + "." + xl_version_splitted[1] %}
+{%- set central_configuration_enabled = product == "xl-deploy" and xl_version_major_minor|float() >= 10.2 %}
+
 function pwgen {
   tr -cd '[:alnum:]' < /dev/urandom | fold -w$1 | head -n1
 }
@@ -90,44 +94,72 @@ function store_license {
 }
 
 # Generate node-specific {{ product }}.conf file
-# The ${APP_HOME}/node-conf/{{ product }}.conf file provides node specific properties, which are then merged with the 
+# The ${APP_HOME}/node-conf/{{ product }}.conf file provides node specific properties, which are then merged with the
 # ${APP_HOME}/conf/{{ product }}.conf file by the xl-platform when the instance is started.
 # The ${APP_HOME}/node-conf takes precedance over ${APP_HOME}/conf/{{ product }}.conf and this is specified in ${APP_HOME}/conf/{{ wrapper_conf }}
 function generate_node_conf {
-  echo "Re-generate node cluster configuration"
-  HOSTNAME=$(hostname)
-  if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
-    HOSTNAME=$(hostname -i)
-  fi
-  IP_ADDRESS=$(hostname -i)
-  {% for file in conf_files %}
-    if [ -e ${APP_HOME}/node-conf/{{file}}.template ]; then
-      sed -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
-          -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
-          -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
-        ${APP_HOME}/node-conf/{{ file }}.template > ${APP_HOME}/node-conf/{{ file }}
+  {% if central_configuration_enabled != "true" %}
+    echo "Re-generate node cluster configuration"
+    HOSTNAME=$(hostname)
+    if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
+      HOSTNAME=$(hostname -i)
     fi
-  {% endfor %}
+    IP_ADDRESS=$(hostname -i)
+    {% for file in conf_files %}
+      if [ -e ${APP_HOME}/node-conf/{{file}}.template ]; then
+        sed -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
+            -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
+            -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
+          ${APP_HOME}/node-conf/{{ file }}.template > ${APP_HOME}/node-conf/{{ file }}
+      fi
+    {% endfor %}
+  {% endif %}
 }
 
 function generate_product_conf {
-  if [ -z "$XL_DB_URL" ]; then
-    echo "... Using default conf/{{ product }}.conf"
-    return
-  fi
-
-  {% for file in conf_files %}
-    if [[ ${GENERATE_XL_CONFIG,,} != "true" ]]; then
-      echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
-    elif [ -e ${APP_HOME}/default-conf/{{file}}.template ]; then
-      echo "Generate configuration file {{ file }} from environment parameters"
-      sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
-      {% for env in environment %}
-          {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
-      {% endfor -%}
-          ${APP_HOME}/default-conf/{{ file }}.template > ${APP_HOME}/conf/{{ file }}
+  {% if central_configuration_enabled %}
+    if [ -z "$XL_DB_URL" ]; then
+      echo "... Using default centralConfiguration/deploy-repository.yaml"
+      return
     fi
-  {% endfor %}
+    HOSTNAME=$(hostname)
+    if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
+      HOSTNAME=$(hostname -i)
+    fi
+    IP_ADDRESS=$(hostname -i)
+    {% for file in central_config_files %}
+      if [[ ${GENERATE_XL_CONFIG,,} != "true" ]]; then
+        echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
+      elif [ -e ${APP_HOME}/central-conf/{{file}}.template ]; then
+        echo "Generate configuration file {{ file }} from environment parameters"
+        sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+            -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
+            -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
+        {% for env in environment %}
+            {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
+        {% endfor -%}
+            ${APP_HOME}/central-conf/{{ file }}.template > ${APP_HOME}/centralConfiguration/{{ file }}
+      fi
+    {% endfor %}
+  {% else %}
+    if [ -z "$XL_DB_URL" ]; then
+      echo "... Using default conf/{{ product }}.conf"
+      return
+    fi
+
+    {% for file in conf_files %}
+      if [[ ${GENERATE_XL_CONFIG,,} != "true" ]]; then
+        echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
+      elif [ -e ${APP_HOME}/default-conf/{{file}}.template ]; then
+        echo "Generate configuration file {{ file }} from environment parameters"
+        sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
+        {% for env in environment %}
+            {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
+        {% endfor -%}
+            ${APP_HOME}/default-conf/{{ file }}.template > ${APP_HOME}/conf/{{ file }}
+      fi
+    {% endfor %}
+  {% endif %}
 }
 
 function check_force_upgrade {

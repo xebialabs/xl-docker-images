@@ -1,3 +1,5 @@
+{% import 'commons.j2' as commons with context %}
+
 {% include 'variables.j2' %}
 
 # Install {{ product }} from zip file
@@ -20,6 +22,21 @@ RUN chmod ugo+x /tmp/db-drivers.sh && \
 # Modify bin/run.sh so that java becomes a child process of dumb-init
 RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
+{% if commons.central_configuration_enabled %}
+
+# Move and augment conf directory of regular install to default-conf so that when no external config is loaded we can use default
+RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
+    mkdir ${APP_HOME}/conf
+COPY resources/default-conf ${APP_HOME}/default-conf
+COPY resources/jmx-exporter/jmx-exporter.yaml ${APP_HOME}/default-conf/
+RUN mv ${APP_HOME}/default-conf/boot.conf.template ${APP_HOME}/default-conf/{{ boot_conf }}.template
+
+# Copy central configuration files
+RUN mkdir -p ${APP_HOME}/centralConfiguration
+COPY resources/central-conf ${APP_HOME}/central-conf
+
+{% else %}
+
 # Move and augment conf directory of regular install to default-conf so that when no external config is loaded we can use default
 RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
     {%- for file in conf_files %}
@@ -30,6 +47,8 @@ COPY resources/default-conf ${APP_HOME}/default-conf
 COPY resources/jmx-exporter/jmx-exporter.yaml ${APP_HOME}/default-conf/
 RUN mv ${APP_HOME}/default-conf/boot.conf.template ${APP_HOME}/default-conf/{{ boot_conf }}.template
 
+{% endif %}
+
 # Modify conf/{{ wrapper_conf }} to add node-conf to the classpath and to add container-specific VM options
 # ${APP_HOME}/node-conf will have first priority in classpath
 COPY resources/modify-wrapper-linux-conf.gawk /tmp
@@ -39,7 +58,7 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     rm /tmp/modify-wrapper-linux-conf.gawk
 
 # Create node-specific conf directory and add template for node-specific {{ product }}.conf file
-# The node-specific {{ product }}.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the 
+# The node-specific {{ product }}.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the
 # ${APP_HOME}/conf/{{ product }}.conf file by the xl-platform
 RUN mkdir ${APP_HOME}/node-conf
 COPY resources/node-conf ${APP_HOME}/node-conf
