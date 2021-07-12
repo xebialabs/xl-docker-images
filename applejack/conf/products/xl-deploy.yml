@@ -25,7 +25,14 @@ context:
   boot_conf: deployit.conf
   wrapper_conf: xld-wrapper.conf.common
   conf_files:
-  - xl-deploy.conf
+    - xl-deploy.conf
+  central_config_files:
+    - deploy-cluster.yaml
+    - deploy-metrics.yaml
+    - deploy-repository.yaml
+    - deploy-satellite.yaml
+    - deploy-server.yaml
+    - deploy-task.yaml
   port: 4516
   volumes:
     - "${APP_HOME}/conf"
