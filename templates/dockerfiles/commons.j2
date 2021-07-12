@@ -1,5 +1,3 @@
-{% set central_configuration_enabled %}
-{%- if product == "xl-deploy" %}
-{%- if xl_version|float() >= 10.2 %}true{%- endif %}
-{%- endif %}
-{%- endset %}
+{%- set xl_version_splitted = xl_version.split(".") %}
+{%- set xl_version_major_minor = xl_version_splitted[0] + "." + xl_version_splitted[1] %}
+{%- set central_configuration_enabled = product == "xl-deploy" and xl_version_major_minor|float() >= 10.2 %}
