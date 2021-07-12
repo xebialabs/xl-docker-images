@@ -22,6 +22,22 @@ RUN chmod ugo+x /tmp/db-drivers.sh && \
 # Modify bin/run.sh so that java becomes a child process of dumb-init
 RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
+{% if commons.central_configuration_enabled %}
+
+# Move and augment conf directory of regular install to default-conf so that when no external config is loaded we can use default
+RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
+    mkdir ${APP_HOME}/conf
+COPY resources/default-conf ${APP_HOME}/default-conf
+COPY resources/jmx-exporter/jmx-exporter.yaml ${APP_HOME}/default-conf/
+RUN mv ${APP_HOME}/default-conf/boot.conf.template ${APP_HOME}/default-conf/{{ boot_conf }}.template
+
+# Copy central configuration files
+RUN mkdir ${APP_HOME}/centralConfiguration && \
+    mv resources/central-conf/*.yaml ${APP_HOME}/centralConfiguration
+COPY resources/central-conf ${APP_HOME}/central-conf
+
+{% else %}
+
 # Move and augment conf directory of regular install to default-conf so that when no external config is loaded we can use default
 RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
     {%- for file in conf_files %}
@@ -32,11 +48,6 @@ COPY resources/default-conf ${APP_HOME}/default-conf
 COPY resources/jmx-exporter/jmx-exporter.yaml ${APP_HOME}/default-conf/
 RUN mv ${APP_HOME}/default-conf/boot.conf.template ${APP_HOME}/default-conf/{{ boot_conf }}.template
 
-{% if commons.central_configuration_enabled %}
-# Copy central configuration files
-RUN mkdir ${APP_HOME}/centralConfiguration && \
-    mv resources/central-conf/*.yaml ${APP_HOME}/centralConfiguration
-COPY resources/central-conf ${APP_HOME}/central-conf
 {% endif %}
 
 # Modify conf/{{ wrapper_conf }} to add node-conf to the classpath and to add container-specific VM options
