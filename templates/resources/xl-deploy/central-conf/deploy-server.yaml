@@ -1,0 +1,3 @@
+deploy.server:
+  license:
+    daysBeforeWarning: 10
