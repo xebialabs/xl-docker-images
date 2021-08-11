@@ -1,4 +1,4 @@
-name: xl-cli
+name: xl-client
 dockerfiles:
   default: 'alpine'
   os:
