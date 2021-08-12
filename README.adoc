@@ -38,6 +38,8 @@ This will install all the dependencies and activate the `virtualenv` containing 
 == Generating the Dockerfiles for a new version of the XebiaLabs DevOps Platform
 In order to generate a new set of Dockerfiles for all components of the XebiaLabs DevOps Platform and commit them to version control, you can execute the following command:
 
+To execute the commands in scope of the same Pip environment, you can prepend the command with `pipenv run python`
+
 [source,shell,subs="verbatim,attributes"]
 ----
 $ {executable} render --xl-version <version> --commit
