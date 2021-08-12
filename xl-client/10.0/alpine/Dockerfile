@@ -7,7 +7,7 @@ COPY resources/xl-client-10.0.4-linux-amd64.bin /tmp
 
 RUN mkdir -p ${APP_HOME} && \
     mv /tmp/xl-client-10.0.4-linux-amd64.bin ${APP_HOME}/xl && \
-    RUN chgrp -R 0 ${APP_ROOT} && \
+    chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/xl
 
