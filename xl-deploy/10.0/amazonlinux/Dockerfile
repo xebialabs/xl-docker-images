@@ -3,15 +3,17 @@ FROM alpine:3.13.0 as installer
 # Install dependencies
 RUN apk add --no-cache gawk unzip curl
 
+
+
 # Set root folders
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-10.0.3-server.zip /tmp
+COPY resources/xl-deploy-10.0.4-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-10.0.3-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-10.0.3-server ${APP_HOME}
+    unzip /tmp/xl-deploy-10.0.4-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-10.0.4-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -27,6 +29,8 @@ RUN chmod ugo+x /tmp/db-drivers.sh && \
 # Modify bin/run.sh so that java becomes a child process of dumb-init
 RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
+
+
 # Move and augment conf directory of regular install to default-conf so that when no external config is loaded we can use default
 RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
     rm ${APP_HOME}/default-conf/xl-deploy.conf && \
@@ -34,6 +38,8 @@ RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
 COPY resources/default-conf ${APP_HOME}/default-conf
 COPY resources/jmx-exporter/jmx-exporter.yaml ${APP_HOME}/default-conf/
 RUN mv ${APP_HOME}/default-conf/boot.conf.template ${APP_HOME}/default-conf/deployit.conf.template
+
+
 
 # Modify conf/xld-wrapper.conf.common to add node-conf to the classpath and to add container-specific VM options
 # ${APP_HOME}/node-conf will have first priority in classpath
@@ -44,7 +50,7 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     rm /tmp/modify-wrapper-linux-conf.gawk
 
 # Create node-specific conf directory and add template for node-specific xl-deploy.conf file
-# The node-specific xl-deploy.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the 
+# The node-specific xl-deploy.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the
 # ${APP_HOME}/conf/xl-deploy.conf file by the xl-platform
 RUN mkdir ${APP_HOME}/node-conf
 COPY resources/node-conf ${APP_HOME}/node-conf
@@ -68,7 +74,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="10.0.3" \
+      version="10.0.4" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -109,7 +115,7 @@ WORKDIR ${APP_HOME}
 RUN useradd -r -M -u 10001 -g 0 xebialabs
 USER 10001
 
-VOLUME ["${APP_HOME}/conf", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/export", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/work"]
+VOLUME ["${APP_HOME}/conf", "${APP_HOME}/centralConfiguration", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/export", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/work"]
 EXPOSE 4516
 
 ENV XL_CLUSTER_MODE=default \
