@@ -1,0 +1,13 @@
+deploy.task:
+  in-process-worker: ${XLD_IN_PROCESS}
+  queue:
+    name: ${XLD_TASK_QUEUE_NAME}
+    archive-queue-name: "xld-archive-queue"
+    in-process:
+      maxDiskUsage: ${XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE}
+      shutdownTimeout: ${XLD_TASK_QUEUE_IN_PROCESS_SHUTDOWN_TIMEOUT}
+    external:
+      jms-driver-classname: "${XLD_TASK_QUEUE_DRIVER_CLASS_NAME}"
+      jms-url: "${XLD_TASK_QUEUE_URL}"
+      jms-username: "${XLD_TASK_QUEUE_USERNAME}"
+      jms-password: "${XLD_TASK_QUEUE_PASSWORD}"

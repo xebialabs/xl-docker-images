@@ -1,0 +1,71 @@
+name: central-configuration
+dockerfiles:
+  default: 'debian-slim'
+  os:
+    debian-slim: debian-slim/Dockerfile.j2
+repositories:
+  nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/ai/digital/config/central-configuration-server/{version}/{product}-{version}-server-trial-edition.zip'
+  dist: 'https://dist.xebialabs.com/customer/central-configuration-server/product/{version}/{product}-{version}-server.zip'
+  localm2: 'ai/digital/config/central-configuration-server/{version}/{product}-{version}-server.zip'
+resources:
+  target_name: '{product}-{version}-server.zip'
+  dirs:
+  - all
+  - common
+  - central-config
+context:
+  license_server: https://download.xebialabs.com
+  product: central-configuration
+  product_name: Central configuration
+  product_description: Enterprise-scale Application Release Automation for any environment
+  license_file: deployit-license.lic
+  boot_conf: deployit.conf
+  wrapper_conf: xlc-wrapper.conf.common
+  central_config_files:
+    - deploy-cluster.yaml
+    - deploy-metrics.yaml
+    - deploy-repository.yaml
+    - deploy-satellite.yaml
+    - deploy-server.yaml
+    - deploy-task.yaml
+  port: 8888
+  volumes:
+    - "${APP_HOME}/conf"
+    - "${APP_HOME}/centralConfiguration"
+  environment:
+  - key: XL_CLUSTER_MODE
+    value: default
+  - key: XL_DB_URL
+    value: "jdbc:h2:file:${APP_HOME}/repository/xl-deploy"
+  - key: XL_DB_USERNAME
+    value: sa
+  - key: XL_DB_PASSWORD
+    value: "123"
+  - key: XL_METRICS_ENABLED
+    value: "false"
+  - key: XLD_IN_PROCESS
+    value: "true"
+  - key: XLD_TASK_QUEUE_NAME
+    value: "xld-tasks-queue"
+  - key: XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE
+    value: "100"
+  - key: XLD_TASK_QUEUE_IN_PROCESS_SHUTDOWN_TIMEOUT
+    value: "60000"
+  - key: XLD_TASK_QUEUE_DRIVER_CLASS_NAME
+    value: ""
+  - key: XLD_TASK_QUEUE_URL
+    value: ""
+  - key: XLD_TASK_QUEUE_USERNAME
+    value: ""
+  - key: XLD_TASK_QUEUE_PASSWORD
+    value: ""
+  - key: HOSTNAME_SUFFIX
+    value: ""
+  - key: XL_LICENSE_KIND
+    value: byol
+  - key: GENERATE_XL_CONFIG
+    value: "true"
+  - key: USE_IP_AS_HOSTNAME
+    value: "false"
+  - key: ENABLE_SATELLITE
+    value: "false"
