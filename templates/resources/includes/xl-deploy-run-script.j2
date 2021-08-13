@@ -18,6 +18,9 @@ done
 
 # Excluding plugins from the container.
 
+cd ${APP_HOME}/plugins/xld-official
+echo "Plugins to exclude from ${APP_HOME}/plugins/xld-official: [$PLUGINS_TO_EXCLUDE]"
+
 if [[ ! -z "$PLUGINS_TO_EXCLUDE" ]]; then
   tmp=${PLUGINS_TO_EXCLUDE//","/$'\2'}
   IFS=$'\2' read -a arr <<< "$tmp"
