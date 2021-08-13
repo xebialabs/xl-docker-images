@@ -2,7 +2,7 @@
 if [ -z "$(ls -A ${APP_HOME}/plugins)" ]; then
   echo "Empty ${APP_HOME}/plugins directory detected:"
 fi
-  
+
 echo "... Copying default plugins from ${APP_HOME}/default-plugins to ${APP_HOME}/plugins when a plugin is missing"
 
 cd ${APP_HOME}/default-plugins
@@ -15,9 +15,27 @@ for pluginjar in *; do
     cp -R ${APP_HOME}/default-plugins/$pluginjar ${APP_HOME}/plugins/
   fi
 done
+
+# Excluding plugins from the container.
+
+if [[ ! -z "$PLUGINS_TO_EXCLUDE" ]]; then
+  tmp=${PLUGINS_TO_EXCLUDE//","/$'\2'}
+  IFS=$'\2' read -a arr <<< "$tmp"
+
+  for name in "${arr[@]}" ; do
+    if [ ! -z "$name" ]; then
+      if [[ $(ls -d *"$name"* | wc -l) -ne 0 ]]; then
+        echo Excluding $(ls -d *"$name"*)
+        ls -d *"$name"* | xargs rm
+      else
+        echo "Plugin names containing '$name' have not found."
+      fi
+    fi
+  done
+fi
+
 cd ${APP_HOME}
 echo "Done copying default plugins"
-
 
 # copy default configurations
 echo "... Copying default configuration from ${APP_HOME}/default-conf"
