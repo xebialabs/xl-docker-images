@@ -67,7 +67,11 @@ threads.min=30
 
 **\${APP_HOME}/ext** - This directory contains the developed (exploded plugins) for XL Deploy. You can customize an existing plugin here, for example you can modify the `synthetic.xml` for a specific plugin here.
 
-**\${APP_HOME}/plugins** - This directory contains the plugins that are running in XL Deploy. When mounted, plugins present in this directory will be loaded instead of bundled ones. If any base plugin is not provided it will be loaded from default plugins. If you mount an empty directory the default bundled plugins will be loaded. But it is recommended to use a custom image with required plugins to avoid issues during the upgrade process. In some cases you want to exclude some plugins from the installation. Like for example you want to include another version of the plugin. At this case you have to list via comma all names in GENERATE_XL_CONFIG. All plugins which contain specified name will be excluded.
+**\${APP_HOME}/plugins** - This directory contains the plugins that are running in XL Deploy. When mounted, plugins present in this directory will be loaded instead of bundled ones. If any base plugin is not provided it will be loaded from default plugins. If you mount an empty directory the default bundled plugins will be loaded. But it is recommended to use a custom image with required plugins to avoid issues during the upgrade process.
+
+Applicable only for Deploy:
+
+In some cases you want to exclude some plugins from the installation. Like for example you want to include another version of the plugin. At this case you have to list via comma all names in GENERATE_XL_CONFIG. All plugins which contain specified name will be excluded.
 Like if you want for example to exclude terraform, it's enough to type "terraform".
 
 **\${APP_HOME}/repository** - This directory contains the embedded repository database for XL Deploy. Using the configuration injected through the `${APP_HOME}/conf` volume, it is possible to configure the used database to a remotely running database engine, instead of using the embedded memory based one. It is highly recommended not to use the embedded DB for production setup.
