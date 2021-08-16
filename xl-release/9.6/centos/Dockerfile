@@ -44,7 +44,7 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     rm /tmp/modify-wrapper-linux-conf.gawk
 
 # Create node-specific conf directory and add template for node-specific xl-release.conf file
-# The node-specific xl-release.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the 
+# The node-specific xl-release.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the
 # ${APP_HOME}/conf/xl-release.conf file by the xl-platform
 RUN mkdir ${APP_HOME}/node-conf
 COPY resources/node-conf ${APP_HOME}/node-conf
@@ -100,7 +100,7 @@ RUN chmod ugo+x ${APP_ROOT}/tini
 WORKDIR ${APP_HOME}
 
 # Don't run as root
-RUN useradd -r -M -u 10001 -g 0 xebialabs
+RUN useradd -r -M -u 10001 -g 0 ${CONTAINER_USER}
 USER 10001
 
 VOLUME ["${APP_ROOT}/bootstrap", "${APP_HOME}/archive", "${APP_HOME}/conf", "${APP_HOME}/hotfix", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/reports"]

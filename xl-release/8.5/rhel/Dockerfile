@@ -98,7 +98,7 @@ RUN chmod ugo+x ${APP_ROOT}/tini
 WORKDIR ${APP_HOME}
 
 # Don't run as root
-RUN useradd -r -M -u 10001 -g 0 xebialabs
+RUN useradd -r -M -u 10001 -g 0 ${CONTAINER_USER}
 USER 10001
 
 VOLUME ["${APP_ROOT}/bootstrap", "${APP_HOME}/archive", "${APP_HOME}/conf", "${APP_HOME}/hotfix", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository"]
