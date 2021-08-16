@@ -13,12 +13,7 @@ FROM centos:7
 
 {% include 'metadata.j2' %}
 
-{% if 'central-config' in product %}
-    {% include './central-config/variables.j2' %}
-{% else %}
-    {% include 'variables.j2' %}
-{% endif %}
-
+{% include 'variables.j2' %}
 
 # Install dependencies
 RUN yum update -y && \

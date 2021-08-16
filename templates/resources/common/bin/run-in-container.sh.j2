@@ -171,12 +171,16 @@ function check_force_upgrade {
 }
 {% include 'includes/' + product + '-run-script.j2' %}
 
-check_eula
-copy_db_driver
-copy_mq_driver
+{% if 'central-config' not in product %}
+    check_eula
+    copy_db_driver
+    copy_mq_driver
+{% endif %}
 generate_product_conf
 generate_node_conf
-store_license
+{% if 'central-config' not in product %}
+    store_license
+{% endif %}
 check_force_upgrade
 
 # Start regular startup process
