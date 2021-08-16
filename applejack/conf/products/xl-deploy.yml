@@ -81,7 +81,3 @@ context:
     value: "false"
   - key: ENABLE_SATELLITE
     value: "false"
-  - key: PLUGINS_TO_EXCLUDE
-    value: ""
-  - key: CONTAINER_USER
-    value: "xebialabs"

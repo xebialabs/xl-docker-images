@@ -72,5 +72,3 @@ context:
     value: "amqp://localhost:61616"
   - key: XLR_TASK_QUEUE_USERNAME
     value: "mqadmin"
-  - key: CONTAINER_USER
-    value: "xebialabs"
