@@ -117,7 +117,7 @@ function generate_node_conf {
 }
 
 function generate_product_conf {
-  {% if central_configuration_enabled %}
+  {% if central_configuration_enabled or 'central-config' in product %}
     if [ -z "$XL_DB_URL" ]; then
       echo "... Using default centralConfiguration/deploy-repository.yaml"
       return

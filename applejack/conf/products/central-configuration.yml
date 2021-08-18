@@ -15,13 +15,12 @@ resources:
   dirs:
   - all
   - common
-  - central-conf
+  - central-configuration
 context:
   license_server: https://download.xebialabs.com
   product: central-configuration
   product_name: Central configuration
   product_description: Enterprise-scale Application Release Automation for any environment
-  license_file: deployit-license.lic
   boot_conf: deployit.conf
   wrapper_conf: xlc-wrapper.conf.common
   central_config_files:

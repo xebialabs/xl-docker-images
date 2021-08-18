@@ -25,7 +25,7 @@ RUN JQ_LOCATION="/usr/bin/jq" && \
     curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
 
 {% if 'central-config' in product %}
-    {% include './central-config/install.j2' %}
+    {% include './central-configuration/install.j2' %}
 {% else %}
     {% include 'install.j2' %}
 {% endif %}

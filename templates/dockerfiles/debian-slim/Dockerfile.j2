@@ -4,7 +4,7 @@ FROM alpine:3.13.0 as installer
 RUN apk add --no-cache gawk unzip curl
 
 {% if 'central-config' in product %}
-    {% include './central-config/install.j2' %}
+    {% include './central-configuration/install.j2' %}
 {% else %}
     {% include 'install.j2' %}
 {% endif %}
