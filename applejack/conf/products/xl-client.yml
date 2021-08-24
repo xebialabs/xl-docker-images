@@ -6,7 +6,7 @@ dockerfiles:
 repositories:
   nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlclient/xl-client/{version}/{product}-{version}-linux-amd64.bin'
   # Todo proper DIST URL
-  dist: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/xlclient/xl-client/{version}/{product}-{version}-linux-amd64.bin'
+  dist: 'https://dist.xebialabs.com/public/xl-cli/{version}/linux-amd64/xl'
 resources:
   target_name: '{product}-{version}-linux-amd64.bin'
   dirs:
