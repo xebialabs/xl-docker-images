@@ -35,12 +35,13 @@ context:
     - deploy-task.yaml
   port: 4516
   volumes:
-    - "${APP_HOME}/conf"
     - "${APP_HOME}/centralConfiguration"
-    - "${APP_HOME}/hotfix/lib"
-    - "${APP_HOME}/hotfix/plugins"
+    - "${APP_HOME}/conf"
     - "${APP_HOME}/export"
     - "${APP_HOME}/ext"
+    - "${APP_HOME}/hotfix/lib"
+    - "${APP_HOME}/hotfix/plugins"
+    - "${APP_HOME}/importablePackages"
     - "${APP_HOME}/plugins"
     - "${APP_HOME}/repository"
     - "${APP_HOME}/work"
