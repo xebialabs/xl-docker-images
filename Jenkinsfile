@@ -29,13 +29,13 @@ pipeline {
             defaultValue: '',
             description: "Version of XL Deploy you want to create Docker Images for")
         booleanParam(
-                name: 'central-configuration',
-                defaultValue: true,
-                description: 'Specifies if you want to generate Docker Image for Central Configuration')
+            name: 'central-configuration',
+            defaultValue: true,
+            description: 'Specifies if you want to generate Docker Image for Central Configuration')
         string(
-                name: 'cc_version',
-                defaultValue: '',
-                description: "Version of Central Configuration you want to create Docker Images for")
+            name: 'cc_version',
+            defaultValue: '',
+            description: "Version of Central Configuration you want to create Docker Images for")
         booleanParam(
             name: 'Linux',
             defaultValue: true,
@@ -420,17 +420,17 @@ def getLatestVersion(xl_product) {
 
         }
 
-        if (xl_product == 'xl-deploy') {
-            if (params.xld-version == '') {
+        if (xl_product == 'xl_deploy') {
+            if (params.xld_version == '') {
 
-                def xld_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
+                def xld_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
 
                 writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${xld_Version}")
                 xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
 
             } else {
 
-                writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${params.xld-version}")
+                writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${params.xld_version}")
                 xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
 
             }
