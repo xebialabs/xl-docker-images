@@ -420,6 +420,23 @@ def getLatestVersion(xl_product) {
 
         }
 
+        if (xl_product == 'xl-deploy') {
+            if (params.xld-version == '') {
+
+                def xld_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/alphas/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | tail -1', returnStdout: true).trim()
+
+                writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${xld_Version}")
+                xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
+
+            } else {
+
+                writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${params.xld-version}")
+                xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
+
+            }
+            return xld_LatestVersion
+        }
+
         if (xl_product == 'central-configuration') {
             if (params.cc_version == '') {
 
