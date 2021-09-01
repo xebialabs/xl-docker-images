@@ -260,7 +260,8 @@ pipeline {
                                     error('Docker Image Start FAILED')
                                 }
 
-                            } else if (params.xl_deploy == true) {
+                            }
+                            if (params.xl_deploy == true) {
                                 // Run Docker
                                 def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy ${params.Registry}/xl-deploy:${xld_LatestVersion}", returnStatus: true)
                                 // Result
@@ -276,7 +277,8 @@ pipeline {
                                     currentBuild.result = 'FAILURE'
                                     error('Docker Image Start FAILED')
                                 }
-                            } else if (params.central_configuration == true) {
+                            }
+                            if (params.central_configuration == true) {
                                 // Run Docker
                                 def status = sh (script: "docker run -d -p 8888:8888 --name central-configuration ${params.Registry}/central-configuration:${cc_LatestVersion}", returnStatus: true)
                                 // Result
