@@ -3,13 +3,21 @@ FROM alpine:3.13.0 as installer
 # Install dependencies
 RUN apk add --no-cache gawk unzip curl
 
-{% include 'install.j2' %}
+{% if 'deploy-task-engine' in product %}
+    {% include './deploy-task-engine/install.j2' %}
+{% else %}
+    {% include 'install.j2' %}
+{% endif %}
 
 FROM centos:7
 
 {% include 'metadata.j2' %}
 
-{% include 'variables.j2' %}
+{% if 'deploy-task-engine' in product %}
+    {% include './deploy-task-engine/variables.j2' %}
+{% else %}
+    {% include 'variables.j2' %}
+{% endif %}
 
 # Install dependencies
 RUN yum update -y && \

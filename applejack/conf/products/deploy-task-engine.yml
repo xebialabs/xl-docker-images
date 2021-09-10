@@ -1,0 +1,47 @@
+name: deploy-task-engine
+dockerfiles:
+  default: 'debian-slim'
+  os:
+    rhel: rhel/Dockerfile.j2
+    debian-slim: debian-slim/Dockerfile.j2
+    centos: centos/Dockerfile.j2
+    amazonlinux: amazonlinux/Dockerfile.j2
+repositories:
+  nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/{product}-{version}-server-trial-edition.zip'
+  dist: 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/{product}-{version}-server.zip'
+  localm2: 'com/xebialabs/deployit/xl-deploy-base/{version}/{product}-base-{version}-server.zip'
+resources:
+  target_name: 'deploy-task-engine-{version}.zip'
+  dirs:
+    - all
+    - common
+    - xl-deploy
+context:
+  license_server: https://download.xebialabs.com
+  product: deploy-task-engine
+  product_name: Deploy Worker
+  product_description: Enterprise-scale Application Release Automation for any environment
+  license_file: deployit-license.lic
+  wrapper_conf: xld-wrapper.conf.common
+  volumes:
+    - "${APP_HOME}/conf"
+    - "${APP_HOME}/ext"
+    - "${APP_HOME}/hotfix/lib"
+    - "${APP_HOME}/hotfix/plugins"
+    - "${APP_HOME}/plugins"
+    - "${APP_HOME}/work"
+  environment:
+    - key: XL_WORKER_HOSTNAME
+      value: ""
+    - key: XL_WORKER_PORT
+      value: "8180"
+    - key: XL_MASTERS
+      value: []
+    - key: XL_HTTP_ENDPOINT
+      value: ""
+    - key: XL_ADDITIONAL_CONFIG_FILE
+      value: ""
+    - key: XL_WORKER_NAME
+      value: ""
+    - key: XL_SOCKET_TIMEOUT
+      value: ""

@@ -1,0 +1,40 @@
+% {{ product | upper }} (1) Container Image Pages
+% Digital.ai Development Team
+% {{ today }}
+
+# NAME
+{{ product }} \- {{ product_description }}
+
+# DESCRIPTION
+{% include 'includes/' + product + '-description.j2' %}
+
+# ENVIRONMENT VARIABLES
+The following environment variables can be set to configure the image for different scenarios
+
+APP_ROOT=/opt/xebialabs
+    This environment variable is used to determine the directory where all application specific code will be copied. Normally there is no need to change this variable.
+
+APP_HOME=/${APP_ROOT}/{{ product }}
+    This environment variable is used as the landing point for all the application data. Ensure that this is a subdirectory of the ${APP_ROOT} variable. Normally there is no need to change this variable.
+
+# VOLUMES
+The following locations can be mounted as volumes to provide either configuration data, and/or persistent storage for application data.
+
+**\${APP_HOME}/conf** - This directory contains the configuration files for Deploy Task Engine. If mounted it is possible to configure (and inject) non-default configuration settings.
+
+ ```
+http.port=8888
+xl.spring.cloud.encrypt.key=changeme
+ ```
+ - The below configuration files also can be overwritten by providing the same in the mounted volume. A default will be used for any file not provided in the mounted volume.
+   - `logback-access.xml`
+   - `logback.xml`
+   - `logging.properties`
+   - `wrapper-daemon.vm`
+   - `xlc-wrapper.conf.common`
+   - `xlc-wrapper.conf.posix`
+   - `xlc-wrapper.conf.win`
+
+
+# PORTS
+The port that can be exposed by default is `{{ port }}`
