@@ -24,7 +24,11 @@ RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-11
 RUN JQ_LOCATION="/usr/bin/jq" && \
     curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
 
-{% include 'install.j2' %}
+{% if 'central-config' in product %}
+    {% include './central-configuration/install.j2' %}
+{% else %}
+    {% include 'install.j2' %}
+{% endif %}
 
 ENV OS=rhel
 

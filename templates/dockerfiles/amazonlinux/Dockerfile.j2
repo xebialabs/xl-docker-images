@@ -3,7 +3,11 @@ FROM alpine:3.13.0 as installer
 # Install dependencies
 RUN apk add --no-cache gawk unzip curl
 
-{% include 'install.j2' %}
+{% if 'central-config' in product %}
+    {% include './central-configuration/install.j2' %}
+{% else %}
+    {% include 'install.j2' %}
+{% endif %}
 
 FROM amazonlinux:2
 
