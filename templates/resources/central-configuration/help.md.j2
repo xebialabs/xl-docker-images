@@ -28,6 +28,16 @@ The following locations can be mounted as volumes to provide either configuratio
  ```
 http.port=8888
 xl.spring.cloud.encrypt.key=changeme
+
+- To enable ssl for central configuration server generate key and certifacte , add those certificate to trustore and configure the following properties in `deployit.conf`.
+
+ssl=true
+keystore.keypassword=password_keystore_file
+keystore.path=path_to_keystore_file
+keystore.password=password_keystore_key
+truststore.path=path_to_truststore_file
+server.url=https\://domain\:port/
+
  ```
  - The below configuration files also can be overwritten by providing the same in the mounted volume. A default will be used for any file not provided in the mounted volume.
    - `logback-access.xml`
