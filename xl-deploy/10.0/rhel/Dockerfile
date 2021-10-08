@@ -5,7 +5,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="10.0.5" \
+      version="10.0.6" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -34,16 +34,17 @@ RUN JQ_LOCATION="/usr/bin/jq" && \
     curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
 
 
+    
 
 # Set root folders
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-10.0.5-server.zip /tmp
+COPY resources/xl-deploy-10.0.6-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-10.0.5-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-10.0.5-server ${APP_HOME}
+    unzip /tmp/xl-deploy-10.0.6-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-10.0.6-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -96,6 +97,7 @@ RUN mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HO
 RUN chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
+
 
 ENV OS=rhel
 
