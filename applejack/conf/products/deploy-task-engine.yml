@@ -7,19 +7,20 @@ dockerfiles:
     centos: centos/Dockerfile.j2
     amazonlinux: amazonlinux/Dockerfile.j2
 repositories:
-  nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/{product}-{version}-server-trial-edition.zip'
-  dist: 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/{product}-{version}-server.zip'
-  localm2: 'com/xebialabs/deployit/xl-deploy-base/{version}/{product}-base-{version}-server.zip'
+  nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/ai/digital/deploy/task-engine/{product}/{version}/{product}-{version}.zip'
+  dist: 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/{product}-{version}.zip'
+  localm2: 'ai/digital/deploy/task-engine/{product}/{version}/{product}-{version}.zip'
 resources:
-  target_name: 'deploy-task-engine-{version}.zip'
+  target_name: '{product}-{version}.zip'
   dirs:
     - all
     - common
-    - xl-deploy
+    - deploy-task-engine
 context:
   license_server: https://download.xebialabs.com
   product: deploy-task-engine
   product_name: Deploy Worker
+  boot_conf: deployit.conf
   product_description: Enterprise-scale Application Release Automation for any environment
   license_file: deployit-license.lic
   wrapper_conf: xld-wrapper.conf.common
