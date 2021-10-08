@@ -492,9 +492,9 @@ def getLatestVersion(xl_product) {
         if (xl_product == 'deploy-task-engine') {
             if (params.deploy_task_engine_version == '') {
 
-                def dte_Version = // TODO:
+                def dte_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/ai/digital/deploy/task-engine/deploy-task-engine/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
 
-                        writeFile(file: "${env.WORKSPACE}/deploy-task-engine-latest", text: "${dte_Version}")
+                writeFile(file: "${env.WORKSPACE}/deploy-task-engine-latest", text: "${dte_Version}")
                 dte_LatestVersion = readFile "${env.WORKSPACE}/deploy-task-engine-latest"
 
             } else {
