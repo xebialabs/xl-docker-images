@@ -154,7 +154,7 @@ pipeline {
                             }
                             if (params.deploy_task_engine == true) {
 
-                                dte_LatestVersion = getLatestVersion("deploy_task_engine_version")
+                                dte_LatestVersion = getLatestVersion("deploy_task_engine")
 
                                 if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
                                     sh "pipenv run ./applejack.py render --xl-version ${dte_LatestVersion} --product deploy-task-engine --registry ${params.Registry} --commit"
@@ -488,7 +488,7 @@ def getLatestVersion(xl_product) {
             return cc_LatestVersion
         }
 
-        if (xl_product == 'deploy-task-engine') {
+        if (xl_product == 'deploy_task_engine') {
             if (params.deploy_task_engine_version == '') {
 
                 def dte_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/ai/digital/deploy/task-engine/deploy-task-engine/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
