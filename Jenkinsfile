@@ -154,7 +154,6 @@ pipeline {
                             }
                             if (params.deploy_task_engine == true) {
 
-                                product_name = "deploy_task_engine"
                                 dte_LatestVersion = getLatestVersion("deploy_task_engine_version")
 
                                 if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
