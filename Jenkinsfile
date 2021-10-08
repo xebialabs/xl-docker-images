@@ -157,13 +157,13 @@ pipeline {
                                 dte_LatestVersion = getLatestVersion("deploy_task_engine_version")
 
                                 if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${dte_LatestVersion} --product ${product_name} --registry ${params.Registry} --commit"
+                                    sh "pipenv run ./applejack.py render --xl-version ${dte_LatestVersion} --product deploy-task-engine --registry ${params.Registry} --commit"
                                 } else {
-                                    sh "pipenv run ./applejack.py render --xl-version ${dte_LatestVersion} --product ${product_name} --registry ${params.Registry}"
+                                    sh "pipenv run ./applejack.py render --xl-version ${dte_LatestVersion} --product deploy-task-engine --registry ${params.Registry}"
                                 }
 
                                 // Build Docker Image and push it
-                                sh "pipenv run ./applejack.py build --xl-version ${dte_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product ${product_name}  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
+                                sh "pipenv run ./applejack.py build --xl-version ${dte_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product deploy-task-engine  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
                             }
                         }
                         script {
