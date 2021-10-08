@@ -1,9 +1,12 @@
 #!groovy
 @Library('jenkins-pipeline-libs@master')
 import java.lang.Object
+import com.xebialabs.pipeline.utils.Branches
+import groovy.transform.Field
 
 def xlr_LatestVersion = ""
 def xld_LatestVersion = ""
+def cc_LatestVersion = ""
 
 pipeline {
     agent none
@@ -33,6 +36,14 @@ pipeline {
                 name: 'deploy_task_engine_version',
                 defaultValue: '',
                 description: "Version of Deploy Task Engine you want to create Docker Images for")
+        booleanParam(
+                name: 'central_configuration',
+                defaultValue: true,
+                description: 'Specifies if you want to generate Docker Image for Central Configuration')
+        string(
+                name: 'cc_version',
+                defaultValue: '',
+                description: "Version of Central Configuration you want to create Docker Images for")
         booleanParam(
                 name: 'Linux',
                 defaultValue: true,
@@ -128,7 +139,19 @@ pipeline {
                                 // Build Docker Image and push it
                                 sh "pipenv run ./applejack.py build --xl-version ${xld_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-deploy  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
                             }
+                            if (params.central_configuration == true) {
 
+                                cc_LatestVersion = getLatestVersion("central_configuration")
+
+                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
+                                    sh "pipenv run ./applejack.py render --xl-version ${cc_LatestVersion} --product central-configuration --registry ${params.Registry} --commit"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${cc_LatestVersion} --product central-configuration --registry ${params.Registry}"
+                                }
+
+                                // Build Docker Image and push it
+                                sh "pipenv run ./applejack.py build --xl-version ${cc_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product central-configuration  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
+                            }
                             if (params.deploy_task_engine == true) {
 
                                 product_name = "deploy_task_engine"
@@ -272,6 +295,23 @@ pipeline {
                                 // Test if port is up
                                 sh "sleep 100"
                                 def pstatus = sh(script: "curl localhost:5616", returnStatus: true)
+                                // Result
+                                if (pstatus != 0) {
+                                    currentBuild.result = 'FAILURE'
+                                    error('Docker Image Start FAILED')
+                                }
+                            }
+                            if (params.central_configuration == true) {
+                                // Run Docker
+                                def status = sh (script: "docker run -d -p 8888:8888 --name central-configuration ${params.Registry}/central-configuration:${cc_LatestVersion}", returnStatus: true)
+                                // Result
+                                if (status != 0) {
+                                    currentBuild.result = 'FAILURE'
+                                    error('Docker Image Start FAILED')
+                                }
+                                // Test if port is up
+                                sh "sleep 100"
+                                def pstatus = sh (script: "curl localhost:8888", returnStatus: true)
                                 // Result
                                 if (pstatus != 0) {
                                     currentBuild.result = 'FAILURE'
@@ -432,12 +472,29 @@ def getLatestVersion(xl_product) {
             return xld_LatestVersion
         }
 
+        if (xl_product == 'central_configuration') {
+            if (params.cc_version == '') {
+
+                def cc_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/ai/digital/config/central-configuration-server/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
+
+                writeFile (file: "${env.WORKSPACE}/central-configuration-latest", text: "${cc_Version}")
+                cc_LatestVersion = readFile "${env.WORKSPACE}/central-configuration-latest"
+
+            } else {
+
+                writeFile (file: "${env.WORKSPACE}/central-configuration-latest", text: "${params.cc_version}")
+                cc_LatestVersion = readFile "${env.WORKSPACE}/central-configuration-latest"
+
+            }
+            return cc_LatestVersion
+        }
+
         if (xl_product == 'deploy-task-engine') {
             if (params.deploy_task_engine_version == '') {
 
                 def dte_Version = // TODO:
 
-                writeFile(file: "${env.WORKSPACE}/deploy-task-engine-latest", text: "${dte_Version}")
+                        writeFile(file: "${env.WORKSPACE}/deploy-task-engine-latest", text: "${dte_Version}")
                 dte_LatestVersion = readFile "${env.WORKSPACE}/deploy-task-engine-latest"
 
             } else {

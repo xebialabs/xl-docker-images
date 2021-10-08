@@ -1,0 +1,47 @@
+{% import 'commons.j2' as commons with context %}
+
+{% include 'variables.j2' %}
+
+# Install {{ product }} from zip file
+COPY resources/{{ product }}-{{ xl_version }}-server.zip /tmp
+RUN mkdir -p ${APP_ROOT} && \
+    unzip /tmp/{{ product }}-{{ xl_version }}-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/{{ product }}-{{ xl_version }}-server ${APP_HOME}
+
+# Add bin/run-in-container.sh
+COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
+
+# Add jmx-exporter for prometheus
+COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
+
+# Modify bin/run.sh so that java becomes a child process of dumb-init
+RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
+
+# Move and augment conf directory of regular install to default-conf so that when no external config is loaded we can use default
+RUN mv ${APP_HOME}/conf ${APP_HOME}/default-conf && \
+    mkdir ${APP_HOME}/conf
+COPY resources/default-conf ${APP_HOME}/default-conf
+COPY resources/jmx-exporter/jmx-exporter.yaml ${APP_HOME}/default-conf/
+
+# Copy central configuration files
+RUN mkdir -p ${APP_HOME}/centralConfiguration
+COPY resources/central-conf ${APP_HOME}/central-conf
+RUN mv ${APP_HOME}/central-conf/boot.conf.template ${APP_HOME}/central-conf/{{ boot_conf }}.template
+RUN mv ${APP_HOME}/central-conf/{{ boot_conf }}.template ${APP_HOME}/conf/{{ boot_conf }}
+
+
+# Modify conf/{{ wrapper_conf }} to add node-conf to the classpath and to add container-specific VM options
+# ${APP_HOME}/node-conf will have first priority in classpath
+COPY resources/modify-wrapper-linux-conf.gawk /tmp
+RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
+    /tmp/modify-wrapper-linux-conf.gawk ${APP_HOME}/default-conf/{{ wrapper_conf }} > /tmp/{{ wrapper_conf}} && \
+    mv /tmp/{{ wrapper_conf }} ${APP_HOME}/default-conf/{{ wrapper_conf }} && \
+    rm /tmp/modify-wrapper-linux-conf.gawk
+
+
+# Set permissions
+RUN chgrp -R 0 ${APP_ROOT} && \
+    chmod -R g=u ${APP_ROOT} && \
+    chmod g+x ${APP_HOME}/bin/*.sh && \
+    chmod a+rwx ${APP_HOME}/centralConfiguration
+

@@ -5,6 +5,8 @@ RUN apk add --no-cache gawk unzip curl
 
 {% if 'deploy-task-engine' in product %}
     {% include './deploy-task-engine/install.j2' %}
+{% else if 'central-config' in product %}
+    {% include './central-configuration/install.j2' %}
 {% else %}
     {% include 'install.j2' %}
 {% endif %}

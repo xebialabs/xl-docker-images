@@ -1,0 +1,30 @@
+name: central-configuration
+dockerfiles:
+  default: 'debian-slim'
+  os:
+    debian-slim: debian-slim/Dockerfile.j2
+    centos: centos/Dockerfile.j2
+    amazonlinux: amazonlinux/Dockerfile.j2
+    rhel: rhel/Dockerfile.j2
+repositories:
+  nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/ai/digital/config/central-configuration-server/{version}/{product}-server-{version}.zip'
+  dist: 'https://dist.xebialabs.com/customer/central-configuration-server/product/{version}/{product}-server-{version}.zip'
+  localm2: 'ai/digital/config/central-configuration-server/{version}/{product}-server-{version}.zip'
+resources:
+  target_name: '{product}-{version}-server.zip'
+  dirs:
+  - all
+  - common
+  - central-configuration
+context:
+  license_server: https://download.xebialabs.com
+  product: central-configuration
+  product_name: Central configuration
+  product_description: Enterprise-scale Application Release Automation for any environment
+  boot_conf: deployit.conf
+  wrapper_conf: xlc-wrapper.conf.common
+  port: 8888
+  volumes:
+    - "${APP_HOME}/conf"
+    - "${APP_HOME}/centralConfiguration"
+
