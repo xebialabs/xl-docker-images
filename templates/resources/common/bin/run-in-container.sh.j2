@@ -178,8 +178,9 @@ function check_force_upgrade {
     store_license
 {% endif %}
 
+generate_product_conf
+
 {% if 'deploy-task-engine' not in product %}
-    generate_product_conf
     generate_node_conf
     check_force_upgrade
 
