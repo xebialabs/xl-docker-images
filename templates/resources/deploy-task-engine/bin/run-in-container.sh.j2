@@ -1,8 +1,7 @@
 #!/bin/bash
 
-{%- set xl_version_splitted = xl_version.split(".") %}
-{%- set xl_version_major_minor = xl_version_splitted[0] + "." + xl_version_splitted[1] %}
-{%- set central_configuration_enabled = product == "xl-deploy" and xl_version_major_minor|float() >= 10.2 %}
+{%- set xl_version_split = xl_version.split(".") %}
+{%- set xl_version_major_minor = xl_version_split[0] + "." + xl_version_split[1] %}
 
 function pwgen {
   tr -cd '[:alnum:]' < /dev/urandom | fold -w$1 | head -n1
@@ -84,7 +83,6 @@ function store_license {
     return
   fi
 
-
   if [ ! -v XL_NO_UNREGISTERED_LICENSE ]; then
     echo "XL_NO_UNREGISTERED_LICENSE was not set. Requesting unregistered license"
     SERVER_PATH_PART=${XL_LICENSE_ENDPOINT:-{{ license_server }}}
@@ -93,59 +91,14 @@ function store_license {
   fi
 }
 
-# Generate node-specific {{ product }}.conf file
-# The ${APP_HOME}/node-conf/{{ product }}.conf file provides node specific properties, which are then merged with the
-# ${APP_HOME}/conf/{{ product }}.conf file by the xl-platform when the instance is started.
-# The ${APP_HOME}/node-conf takes precedance over ${APP_HOME}/conf/{{ product }}.conf and this is specified in ${APP_HOME}/conf/{{ wrapper_conf }}
-function generate_node_conf {
-  {% if central_configuration_enabled != "true" %}
-    echo "Re-generate node cluster configuration"
-    HOSTNAME=$(hostname)
-    if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
-      HOSTNAME=$(hostname -i)
-    fi
-    IP_ADDRESS=$(hostname -i)
-    {% for file in conf_files %}
-      if [ -e ${APP_HOME}/node-conf/{{file}}.template ]; then
-        sed -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
-            -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
-            -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
-          ${APP_HOME}/node-conf/{{ file }}.template > ${APP_HOME}/node-conf/{{ file }}
-      fi
-    {% endfor %}
-  {% endif %}
-}
 
 function generate_product_conf {
-  {% if central_configuration_enabled or 'central-config' in product %}
-    if [ -z "$XL_DB_URL" ]; then
-      echo "... Using default centralConfiguration/deploy-repository.yaml"
-      return
-    fi
+
     HOSTNAME=$(hostname)
     if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
       HOSTNAME=$(hostname -i)
     fi
     IP_ADDRESS=$(hostname -i)
-    {% for file in central_config_files %}
-      if [[ ${GENERATE_XL_CONFIG,,} != "true" ]]; then
-        echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
-      elif [ -e ${APP_HOME}/central-conf/{{file}}.template ]; then
-        echo "Generate configuration file {{ file }} from environment parameters"
-        sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
-            -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
-            -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
-        {% for env in environment %}
-            {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
-        {% endfor -%}
-            ${APP_HOME}/central-conf/{{ file }}.template > ${APP_HOME}/centralConfiguration/{{ file }}
-      fi
-    {% endfor %}
-  {% else %}
-    if [ -z "$XL_DB_URL" ]; then
-      echo "... Using default conf/{{ product }}.conf"
-      return
-    fi
 
     {% for file in conf_files %}
       if [[ ${GENERATE_XL_CONFIG,,} != "true" ]]; then
@@ -159,29 +112,28 @@ function generate_product_conf {
             ${APP_HOME}/default-conf/{{ file }}.template > ${APP_HOME}/conf/{{ file }}
       fi
     {% endfor %}
-  {% endif %}
 }
 
-function check_force_upgrade {
-   FORCE_UPGRADE_FLAG=""
-   if [[ ${FORCE_UPGRADE,,} == "true" ]] ; then
-     echo "Force upgrade setting has been detected. In case of upgrade it will be performed in non-interactive mode. "
-     FORCE_UPGRADE_FLAG="-force-upgrades"
-   fi
-}
 {% include 'includes/' + product + '-run-script.j2' %}
 
-{% if 'central-config' not in product %}
-    check_eula
-    copy_db_driver
-    copy_mq_driver
-    store_license
-{% endif %}
-
+check_eula
+copy_db_driver
+copy_mq_driver
+store_license
 generate_product_conf
-generate_node_conf
-check_force_upgrade
 
-# Start regular startup process
-exec ${APP_HOME}/bin/run.sh ${FORCE_UPGRADE_FLAG} "$@"
-
+exec ${APP_HOME}/bin/run.sh \
+ ${XL_MASTERS} \
+ -api ${XL_HTTP_ENDPOINT} \
+ -configFile ${XL_ADDITIONAL_CONFIG_FILE} \
+ -hostname ${XL_WORKER_HOSTNAME} \
+ -keyPassword ${XL_KEY_PASSWORD} \
+ -keyStore ${XL_KEY_STORE} \
+ -keyStorePassword ${XL_KEY_STORE_PASSWORD} \
+ -name ${XL_WORKER_NAME} \
+ -port 8180 \
+ -skipPortInApi ${XL_SKIP_PORT_IN_API} \
+ -socketTimeout ${XL_SOCKET_TIMEOUT} \
+ -trustStore ${XL_TRUST_STORE} \
+ -trustStorePassword ${XL_TRUST_STORE_PASSWORD} \
+ "$@"

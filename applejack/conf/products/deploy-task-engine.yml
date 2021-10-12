@@ -57,5 +57,3 @@ context:
       value: ""
     - key: XL_WORKER_NAME
       value: "task-engine"
-    - key: XL_WORKER_PORT
-      value: "8180"
