@@ -14,7 +14,7 @@ pipeline {
     parameters {
         booleanParam(
                 name: 'xl_release',
-                defaultValue: true,
+                defaultValue: false,
                 description: 'Specifies if you want to generate Docker Image for XLRelease')
         string(
                 name: 'xlr_version',
@@ -22,7 +22,7 @@ pipeline {
                 description: "Version of XL Release you want to create Docker Images for")
         booleanParam(
                 name: 'xl_deploy',
-                defaultValue: true,
+                defaultValue: false,
                 description: 'Specifies if you want to generate Docker Image for XLDeploy')
         string(
                 name: 'xld_version',
@@ -38,7 +38,7 @@ pipeline {
                 description: "Version of Deploy Task Engine you want to create Docker Images for")
         booleanParam(
                 name: 'central_configuration',
-                defaultValue: true,
+                defaultValue: false,
                 description: 'Specifies if you want to generate Docker Image for Central Configuration')
         string(
                 name: 'cc_version',
