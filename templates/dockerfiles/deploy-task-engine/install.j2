@@ -1,10 +1,6 @@
 {% import 'commons.j2' as commons with context %}
 
-{% if 'deploy-task-engine' in product %}
-    {% include './deploy-task-engine/variables.j2' %}
-{% else %}
-    {% include 'variables.j2' %}
-{% endif %}
+{% include './deploy-task-engine/variables.j2' %}
 
 # Install {{ product }} from zip file
 COPY resources/{{ product }}-{{ xl_version }}.zip /tmp
