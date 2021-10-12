@@ -4,6 +4,7 @@ import java.lang.Object
 import com.xebialabs.pipeline.utils.Branches
 import groovy.transform.Field
 
+def dte_LatestVersion = ""
 def xlr_LatestVersion = ""
 def xld_LatestVersion = ""
 def cc_LatestVersion = ""

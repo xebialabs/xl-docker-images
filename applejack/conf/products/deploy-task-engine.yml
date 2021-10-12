@@ -35,6 +35,8 @@ context:
   environment:
     - key: XL_ADDITIONAL_CONFIG_FILE
       value: ""
+    - key: XL_DB_NAME # Options are: h2, oracle, mysql, postgresql, sqlserver, db2
+      value: ""
     - key: XL_HTTP_ENDPOINT
       value: ""
     - key: XL_KEY_PASSWORD

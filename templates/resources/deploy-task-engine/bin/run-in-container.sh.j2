@@ -34,28 +34,28 @@ function copy_mq_driver {
 }
 
 function copy_db_driver {
-  case ${XL_DB_URL} in
-    jdbc:h2:*)
+  case ${XL_DB_NAME} in
+    h2:*)
       XL_DB_DRIVER="org.h2.Driver"
       cp ${APP_ROOT}/db-libs/h2* ${APP_HOME}/lib
       ;;
-    jdbc:oracle:*)
+    oracle:*)
       XL_DB_DRIVER="oracle.jdbc.OracleDriver"
       echo "oracle jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       ;;
-    jdbc:mysql:*)
+    mysql:*)
       XL_DB_DRIVER="com.mysql.jdbc.Driver"
       cp ${APP_ROOT}/db-libs/mysql* ${APP_HOME}/lib
       ;;
-    jdbc:postgresql:*)
+    postgresql:*)
       XL_DB_DRIVER="org.postgresql.Driver"
       cp ${APP_ROOT}/db-libs/postgresql* ${APP_HOME}/lib
       ;;
-    jdbc:sqlserver:*)
+    sqlserver:*)
       XL_DB_DRIVER="com.microsoft.sqlserver.jdbc.SQLServerDriver"
       cp ${APP_ROOT}/db-libs/mssql* ${APP_HOME}/lib
       ;;
-    jdbc:db2:*)
+    db2:*)
       XL_DB_DRIVER="com.ibm.db2.jcc.DB2Driver"
       echo "db2 jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       ;;
