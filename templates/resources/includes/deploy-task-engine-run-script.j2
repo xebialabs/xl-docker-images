@@ -62,7 +62,7 @@ echo "Done copying default configurations"
 if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
   echo "No ${APP_HOME}/conf/{{ boot_conf }} file detected:"
 
-  if [ $# -eq 0 ] || [ $1 == "worker" ]; then
+  if [ $# -eq 0 ]; then
     echo "No arguments passed to container:"
     echo "... Running default setup"
 

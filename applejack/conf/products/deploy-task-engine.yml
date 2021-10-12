@@ -33,10 +33,8 @@ context:
     - "${APP_HOME}/plugins"
     - "${APP_HOME}/work"
   environment:
-    - key: XL_ADDITIONAL_CONFIG_FILE
-      value: ""
-    - key: XL_DB_NAME # Options are: h2, oracle, mysql, postgresql, sqlserver, db2
-      value: ""
+    - key: XL_DB_URL
+      value: "jdbc:h2:file:${APP_HOME}/repository/xl-deploy"
     - key: XL_HTTP_ENDPOINT
       value: ""
     - key: XL_KEY_PASSWORD
@@ -51,6 +49,20 @@ context:
       value: "true"
     - key: XL_SOCKET_TIMEOUT
       value: "30000"
+    - key: XLD_TASK_QUEUE_NAME
+      value: "xld-tasks-queue"
+    - key: XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE
+      value: "100"
+    - key: XLD_TASK_QUEUE_IN_PROCESS_SHUTDOWN_TIMEOUT
+      value: "60000"
+    - key: XLD_TASK_QUEUE_DRIVER_CLASS_NAME
+      value: ""
+    - key: XLD_TASK_QUEUE_URL
+      value: ""
+    - key: XLD_TASK_QUEUE_USERNAME
+      value: ""
+    - key: XLD_TASK_QUEUE_PASSWORD
+      value: ""
     - key: XL_TRUST_STORE
       value: "truststore"
     - key: XL_TRUST_STORE_PASSWORD
