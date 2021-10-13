@@ -86,7 +86,7 @@ function store_license {
   if [ ! -v XL_NO_UNREGISTERED_LICENSE ]; then
     echo "XL_NO_UNREGISTERED_LICENSE was not set. Requesting unregistered license"
     SERVER_PATH_PART=${XL_LICENSE_ENDPOINT:-{{ license_server }}}
-    echo -e $(curl -X POST "${SERVER_PATH_PART}/api/unregistered/{{ product }}" | jq --raw-output .license) | base64 -di >> ${APP_HOME}/conf/{{ license_file }}
+    echo -e $(curl -X POST "${SERVER_PATH_PART}/api/unregistered/xl-deploy" | jq --raw-output .license) | base64 -di >> ${APP_HOME}/conf/{{ license_file }}
     return
   fi
 }
