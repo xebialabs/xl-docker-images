@@ -35,20 +35,6 @@ context:
   environment:
     - key: XL_DB_URL
       value: "jdbc:h2:file:${APP_HOME}/repository/xl-deploy"
-    - key: XL_HTTP_ENDPOINT
-      value: ""
-    - key: XL_KEY_PASSWORD
-      value: "changeme"
-    - key: XL_KEY_STORE
-      value: "keystore"
-    - key: XL_KEY_STORE_PASSWORD
-      value: "changeme"
-    - key: XL_MASTERS
-      value: []
-    - key: XL_SKIP_PORT_IN_API
-      value: "true"
-    - key: XL_SOCKET_TIMEOUT
-      value: "30000"
     - key: XLD_TASK_QUEUE_NAME
       value: "xld-tasks-queue"
     - key: XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE
@@ -63,11 +49,3 @@ context:
       value: ""
     - key: XLD_TASK_QUEUE_PASSWORD
       value: ""
-    - key: XL_TRUST_STORE
-      value: "truststore"
-    - key: XL_TRUST_STORE_PASSWORD
-      value: "changeme"
-    - key: XL_WORKER_HOSTNAME
-      value: ""
-    - key: XL_WORKER_NAME
-      value: "task-engine"

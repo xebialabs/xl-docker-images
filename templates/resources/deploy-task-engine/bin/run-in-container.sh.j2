@@ -120,37 +120,5 @@ copy_mq_driver
 store_license
 generate_product_conf
 
-echo "Running command ${APP_HOME}/bin/run.sh ${XL_MASTERS} -api ${XL_HTTP_ENDPOINT} -hostname ${XL_WORKER_HOSTNAME} -keyPassword ${XL_KEY_PASSWORD} -keyStore ${XL_KEY_STORE} -keyStorePassword ${XL_KEY_STORE_PASSWORD} -name ${XL_WORKER_NAME} -port 8180 -skipPortInApi ${XL_SKIP_PORT_IN_API} -socketTimeout ${XL_SOCKET_TIMEOUT} -trustStore ${XL_TRUST_STORE} -trustStorePassword ${XL_TRUST_STORE_PASSWORD}"
-
-if [[ -z "$XL_SKIP_PORT_IN_API" ]]; then
-    exec ${APP_HOME}/bin/run.sh \
-     ${XL_MASTERS} \
-     -api ${XL_HTTP_ENDPOINT} \
-     -hostname ${XL_WORKER_HOSTNAME} \
-     -keyPassword ${XL_KEY_PASSWORD} \
-     -keyStore ${XL_KEY_STORE} \
-     -keyStorePassword ${XL_KEY_STORE_PASSWORD} \
-     -name ${XL_WORKER_NAME} \
-     -port 8180 \
-     -socketTimeout ${XL_SOCKET_TIMEOUT} \
-     -trustStore ${XL_TRUST_STORE} \
-     -trustStorePassword ${XL_TRUST_STORE_PASSWORD} \
-     "$@"
-else
-    exec ${APP_HOME}/bin/run.sh \
-     ${XL_MASTERS} \
-     -api ${XL_HTTP_ENDPOINT} \
-     -hostname ${XL_WORKER_HOSTNAME} \
-     -keyPassword ${XL_KEY_PASSWORD} \
-     -keyStore ${XL_KEY_STORE} \
-     -keyStorePassword ${XL_KEY_STORE_PASSWORD} \
-     -name ${XL_WORKER_NAME} \
-     -port 8180 \
-     -skipPortInApi
-     -socketTimeout ${XL_SOCKET_TIMEOUT} \
-     -trustStore ${XL_TRUST_STORE} \
-     -trustStorePassword ${XL_TRUST_STORE_PASSWORD} \
-     "$@"
-fi
-
-
+# Start regular startup process
+exec ${APP_HOME}/bin/run.sh "$@"
