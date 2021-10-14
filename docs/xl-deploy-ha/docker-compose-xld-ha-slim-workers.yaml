@@ -1,0 +1,39 @@
+version: "3"
+services:
+  xl-deploy-worker:
+    image: xl-docker.xebialabs.com/deploy-task-engine:10.4
+    networks:
+      - xld-network
+    environment:
+      - USE_IP_AS_HOSTNAME=true
+      - ADMIN_PASSWORD=${XLD_ADMIN_PASS}
+      - ACCEPT_EULA=Y
+      - XL_CLUSTER_MODE=default
+      - XLD_IN_PROCESS=false
+      - XLD_TASK_QUEUE_DRIVER_CLASS_NAME=com.rabbitmq.jms.admin.RMQConnectionFactory
+      - XLD_TASK_QUEUE_URL=amqp://rabbitmq:5672
+      - XLD_TASK_QUEUE_USERNAME=rabbitmq
+      - XLD_TASK_QUEUE_PASSWORD=${RABBITMQ_PASS}
+      - XL_DB_URL=jdbc:postgresql://postgresql:5432/xld-db
+      - XL_DB_USERNAME=postgres
+      - XL_DB_PASSWORD=${POSTGRES_PASS}
+#      - DEPLOYIT_SERVER_OPTS=-Xmx1024m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:4006
+      #- XL_LICENSE=YOUR_LICENSE_IN_BASE64_STRING
+    command:
+      - "-api"
+      - "http://${XLD_LB}:5000/"
+      - "-master"
+      - "${XLD_MASTER_1}:8180"
+      - "-master"
+      - "${XLD_MASTER_2}:8180"
+      - "-name"
+      - "worker01"
+#    ports:
+#      - "4006:4006"
+    volumes:
+      - $PWD/xl-deploy-worker/conf:/opt/xebialabs/deploy-task-engine/conf # provide deployit-licence.lic file in the conf folder
+      - $PWD/xl-deploy-worker/plugins:/opt/xebialabs/deploy-task-engine/plugins # provide deployit-licence.lic file in the conf folder
+
+networks:
+  xld-network:
+    external: true
