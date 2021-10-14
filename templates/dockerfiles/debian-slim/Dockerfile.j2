@@ -1,6 +1,7 @@
-FROM alpine:3.13.0 as installer
+FROM alpine:3.14.2 as installer
 
 # Install dependencies
+RUN apk update
 RUN apk add --no-cache gawk unzip curl busybox-extras
 
 {% if 'deploy-task-engine' in product %}
