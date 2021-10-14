@@ -1,7 +1,7 @@
 FROM alpine:3.13.0 as installer
 
 # Install dependencies
-RUN apk add --no-cache gawk unzip curl
+RUN apk add --no-cache gawk unzip curl net-tools
 
 {% if 'deploy-task-engine' in product %}
     {% include './deploy-task-engine/install.j2' %}
