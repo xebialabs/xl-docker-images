@@ -20,7 +20,7 @@ services:
       TIMEOUT_CONNECT: 60000
 
   xl-deploy-master:
-    image: xebialabs/xl-deploy:10.3
+    image: xl-docker.xebialabs.com/xl-deploy:10.4
     depends_on:
       - rabbitmq
       - postgresql
@@ -42,9 +42,8 @@ services:
       - FORCE_UPGRADE=true
 #      - DEPLOYIT_SERVER_OPTS=-Xmx1024m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:4005
       #- XL_LICENSE=YOUR_LICENSE_IN_BASE64_STRING
-    ports:
+#    ports:
 #      - "4005:4005"
-      - "8180:8180"
     volumes:
       - $PWD/xl-deploy-master/conf:/opt/xebialabs/xl-deploy-server/conf # provide deployit-licence.lic file in the conf folder
       - $PWD/xl-deploy-master/centralConfiguration:/opt/xebialabs/xl-deploy-server/centralConfiguration
