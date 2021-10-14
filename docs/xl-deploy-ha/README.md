@@ -68,4 +68,13 @@ docker-compose -f docker-compose-xld-ha.yaml -f docker-compose-xld-ha-workers.ya
 docker network rm xld-network
 ```
 
+### Steps to use Digital.ai Deploy Task Engine as a worker
+
+From 10.4 we split Deploy Task Engine to a separate distribution. So that running the task has only the code which 
+is required for that, not the full version of Deploy. It has a less footprint what can give a great benefit in saving VM RAM.
+
+Use shell scripts `slim-up.sh` to bring the cluster up and `slim-down.sh` to shut it down.
+The difference in the configuration is quite subtle, `docker-compose-xld-ha-slim-workers.yaml` points to another image 
+and has a bit different command. `worker` argument is no more required. 
+
 #### For Upgrade procedures please check this [upgrade multi node deployment](upgrade-multi-node-deployment.md)
