@@ -1,7 +1,7 @@
 version: "3"
 services:
   xl-deploy-worker:
-    image: xl-docker.xebialabs.com/deploy-task-engine:10.4
+    image: xebialabs/deploy-task-engine:10.4 # deploy-task-engine is not yet released on the xebialabs repo
     networks:
       - xld-network
     environment:

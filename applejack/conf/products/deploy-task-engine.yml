@@ -9,6 +9,7 @@ dockerfiles:
 repositories:
   nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/xl-deploy-{version}-task-engine-trial-edition.zip'
   dist: 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/xl-deploy-{version}-task-engine.zip'
+  localm2: 'ai/digital/deploy/task-engine/deploy-task-engine-base/{version}/deploy-task-engine-base-{version}.zip'
 resources:
   target_name: '{product}-{version}.zip'
   dirs:
