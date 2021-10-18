@@ -1,9 +1,10 @@
 #!groovy
-
 @Library('jenkins-pipeline-libs@master')
+import java.lang.Object
 import com.xebialabs.pipeline.utils.Branches
 import groovy.transform.Field
 
+def dte_LatestVersion = ""
 def xlr_LatestVersion = ""
 def xld_LatestVersion = ""
 def cc_LatestVersion = ""
@@ -13,49 +14,57 @@ pipeline {
 
     parameters {
         booleanParam(
-            name: 'xl_release',
-            defaultValue: true,
-            description: 'Specifies if you want to generate Docker Image for XLRelease')
+                name: 'xl_release',
+                defaultValue: false,
+                description: 'Specifies if you want to generate Docker Image for XLRelease')
         string(
-            name: 'xlr_version',
-            defaultValue: '',
-            description: "Version of XL Release you want to create Docker Images for")
+                name: 'xlr_version',
+                defaultValue: '',
+                description: "Version of XL Release you want to create Docker Images for")
         booleanParam(
-            name: 'xl_deploy',
-            defaultValue: true,
-            description: 'Specifies if you want to generate Docker Image for XLDeploy')
+                name: 'xl_deploy',
+                defaultValue: false,
+                description: 'Specifies if you want to generate Docker Image for XLDeploy')
         string(
-            name: 'xld_version',
-            defaultValue: '',
-            description: "Version of XL Deploy you want to create Docker Images for")
+                name: 'xld_version',
+                defaultValue: '',
+                description: "Version of XL Deploy you want to create Docker Images for")
         booleanParam(
-            name: 'central_configuration',
-            defaultValue: true,
-            description: 'Specifies if you want to generate Docker Image for Central Configuration')
+                name: 'deploy_task_engine',
+                defaultValue: true, // TODO: change to false when merging to master
+                description: 'Specifies if you want to generate Docker Image for Deploy Task Engine')
         string(
-            name: 'cc_version',
-            defaultValue: '',
-            description: "Version of Central Configuration you want to create Docker Images for")
+                name: 'deploy_task_engine_version',
+                defaultValue: '',
+                description: "Version of Deploy Task Engine you want to create Docker Images for")
         booleanParam(
-            name: 'Linux',
-            defaultValue: true,
-            description: 'Specifies if Target OS is "Debian-slim, CentOS, Amazon" which defines what tags will be generated')
+                name: 'central_configuration',
+                defaultValue: false,
+                description: 'Specifies if you want to generate Docker Image for Central Configuration')
+        string(
+                name: 'cc_version',
+                defaultValue: '',
+                description: "Version of Central Configuration you want to create Docker Images for")
         booleanParam(
-            name: 'RHEL',
-            defaultValue: false,
-            description: 'Specifies if Target OS is "RHEL" which defines what tags will be generated')
+                name: 'Linux',
+                defaultValue: true,
+                description: 'Specifies if Target OS is "Debian-slim, CentOS, Amazon" which defines what tags will be generated')
+        booleanParam(
+                name: 'RHEL',
+                defaultValue: false,
+                description: 'Specifies if Target OS is "RHEL" which defines what tags will be generated')
         choice(
-            name: 'ReleaseType',
-            choices: ['nightly', 'final'],
-            description: "Type of Release if it is nightly or final")
+                name: 'ReleaseType',
+                choices: ['nightly', 'final'],
+                description: "Type of Release if it is nightly or final")
         choice(
-            name: 'Registry',
-            choices: ['xl-docker.xebialabs.com', 'xebialabs', 'xebialabsunsupported', 'xebialabsearlyaccess'],
-            description: "Docker Registry you want to push non RHEL Docker Images to")
+                name: 'Registry',
+                choices: ['xl-docker.xebialabs.com', 'xebialabs', 'xebialabsunsupported', 'xebialabsearlyaccess'],
+                description: "Docker Registry you want to push non RHEL Docker Images to")
         booleanParam(
-            name: 'TestXLUP',
-            defaultValue: false,
-            description: 'Specifies if We need to test new docker images with xlup or not')
+                name: 'TestXLUP',
+                defaultValue: false,
+                description: 'Specifies if We need to test new docker images with xlup or not')
     }
 
     options {
@@ -81,10 +90,10 @@ pipeline {
             parallel {
                 stage('Rendering and Build Docker Images for debian-slim centos amazonlinux') {
                     when {
-                         expression { params.Linux == true }
+                        expression { params.Linux == true }
                     }
                     agent {
-                            label 'docker_linux'
+                        label 'docker_linux'
                     }
                     steps {
                         // Clean old workspace
@@ -144,6 +153,19 @@ pipeline {
                                 // Build Docker Image and push it
                                 sh "pipenv run ./applejack.py build --xl-version ${cc_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product central-configuration  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
                             }
+                            if (params.deploy_task_engine == true) {
+
+                                dte_LatestVersion = getLatestVersion("deploy_task_engine")
+
+                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
+                                    sh "pipenv run ./applejack.py render --xl-version ${dte_LatestVersion} --product deploy-task-engine --registry ${params.Registry} --commit"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${dte_LatestVersion} --product deploy-task-engine --registry ${params.Registry}"
+                                }
+
+                                // Build Docker Image and push it
+                                sh "pipenv run ./applejack.py build --xl-version ${dte_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product deploy-task-engine  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
+                            }
                         }
                         script {
                             cleanWs()
@@ -153,10 +175,10 @@ pipeline {
 
                 stage('Rendering and Build Docker Images for rhel') {
                     when {
-                         expression { params.RHEL == true }
+                        expression { params.RHEL == true }
                     }
                     agent {
-                            label 'docker_rhel'
+                        label 'docker_rhel'
                     }
                     steps {
                         // Clean old workspace
@@ -236,16 +258,16 @@ pipeline {
             parallel {
                 stage('Test Docker Images for debian-slim') {
                     when {
-                         expression { params.Linux == true }
+                        expression { params.Linux == true }
                     }
                     agent {
-                            label 'docker_linux'
+                        label 'docker_linux'
                     }
                     steps {
                         script {
                             if (params.xl_release == true) {
                                 // Run Docker
-                                def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name xl-release ${params.Registry}/xl-release:${xlr_LatestVersion}", returnStatus: true)
+                                def status = sh(script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name xl-release ${params.Registry}/xl-release:${xlr_LatestVersion}", returnStatus: true)
                                 // Result
                                 if (status != 0) {
                                     currentBuild.result = 'FAILURE'
@@ -253,7 +275,7 @@ pipeline {
                                 }
                                 // Test if port is up
                                 sh "sleep 100"
-                                def pstatus = sh (script: "curl localhost:6616", returnStatus: true)
+                                def pstatus = sh(script: "curl localhost:6616", returnStatus: true)
                                 // Result
                                 if (pstatus != 0) {
                                     currentBuild.result = 'FAILURE'
@@ -261,9 +283,10 @@ pipeline {
                                 }
 
                             }
+
                             if (params.xl_deploy == true) {
                                 // Run Docker
-                                def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy ${params.Registry}/xl-deploy:${xld_LatestVersion}", returnStatus: true)
+                                def status = sh(script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy ${params.Registry}/xl-deploy:${xld_LatestVersion}", returnStatus: true)
                                 // Result
                                 if (status != 0) {
                                     currentBuild.result = 'FAILURE'
@@ -271,7 +294,7 @@ pipeline {
                                 }
                                 // Test if port is up
                                 sh "sleep 100"
-                                def pstatus = sh (script: "curl localhost:5616", returnStatus: true)
+                                def pstatus = sh(script: "curl localhost:5616", returnStatus: true)
                                 // Result
                                 if (pstatus != 0) {
                                     currentBuild.result = 'FAILURE'
@@ -295,6 +318,16 @@ pipeline {
                                     error('Docker Image Start FAILED')
                                 }
                             }
+
+                            if (params.deploy_task_engine == true) {
+                                // Run Docker
+                                def status = sh(script: "docker run -d -p 9180:8180 --name deploy-task-engine ${params.Registry}/deploy-task-engine:${dte_LatestVersion}", returnStatus: true)
+                                // Result
+                                if (status != 0) {
+                                    currentBuild.result = 'FAILURE'
+                                    error('Docker Image Start FAILED')
+                                }
+                            }
                         }
                         script {
                             cleanWs()
@@ -304,18 +337,18 @@ pipeline {
 
                 stage('Test Docker Images for rhel') {
                     when {
-                         expression { params.RHEL == true }
+                        expression { params.RHEL == true }
                     }
                     agent {
-                            label 'docker_rhel'
+                        label 'docker_rhel'
                     }
                     steps {
                         withCredentials([string(credentialsId: 'xlr-rhel-token', variable: 'xlr_rhel_token'),
-                        string(credentialsId: 'xld-rhel-token', variable: 'xld_rhel_token')]) {
-                        script {
+                                         string(credentialsId: 'xld-rhel-token', variable: 'xld_rhel_token')]) {
+                            script {
                                 if (params.xl_release == true) {
                                     // Run Docker
-                                    def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name xl-release xl-docker.xebialabs.com/xl-release:${xlr_LatestVersion}-rhel", returnStatus: true)
+                                    def status = sh(script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name xl-release xl-docker.xebialabs.com/xl-release:${xlr_LatestVersion}-rhel", returnStatus: true)
                                     // Check Result
                                     if (status != 0) {
                                         currentBuild.result = 'FAILURE'
@@ -323,7 +356,7 @@ pipeline {
                                     }
                                     // Test if port is up
                                     sh "sleep 100"
-                                    def pstatus = sh (script: "curl localhost:6616", returnStatus: true)
+                                    def pstatus = sh(script: "curl localhost:6616", returnStatus: true)
                                     // Result
                                     if (pstatus != 0) {
                                         currentBuild.result = 'FAILURE'
@@ -334,7 +367,7 @@ pipeline {
 
                                 if (params.xl_deploy == true) {
                                     // Run Docker
-                                    def status = sh (script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy xl-docker.xebialabs.com/xl-deploy:${xld_LatestVersion}-rhel", returnStatus: true)
+                                    def status = sh(script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy xl-docker.xebialabs.com/xl-deploy:${xld_LatestVersion}-rhel", returnStatus: true)
                                     // Check Result
                                     if (status != 0) {
                                         currentBuild.result = 'FAILURE'
@@ -342,7 +375,7 @@ pipeline {
                                     }
                                     // Test if port is up
                                     sh "sleep 100"
-                                    def pstatus = sh (script: "curl localhost:5616", returnStatus: true)
+                                    def pstatus = sh(script: "curl localhost:5616", returnStatus: true)
                                     // Result
                                     if (pstatus != 0) {
                                         currentBuild.result = 'FAILURE'
@@ -350,7 +383,7 @@ pipeline {
                                     }
                                 }
                             }
-                            script{
+                            script {
                                 cleanWs()
                             }
                         }
@@ -359,12 +392,12 @@ pipeline {
 
                 stage('Test XLUP with New Docker Images for debian-slim') {
                     when {
-                         expression {
+                        expression {
                             params.Linux == true && params.TestXLUP == true
-                         }
+                        }
                     }
                     agent {
-                            label 'docker_minikube'
+                        label 'docker_minikube'
                     }
                     steps {
                         // Clean old workspace
@@ -407,14 +440,14 @@ def getLatestVersion(xl_product) {
         if (xl_product == 'xl_release') {
             if (params.xlr_version == '') {
 
-                def xlr_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlrelease/xl-release/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
+                def xlr_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlrelease/xl-release/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
 
-                writeFile (file: "${env.WORKSPACE}/xl-release-latest", text: "${xlr_Version}")
+                writeFile(file: "${env.WORKSPACE}/xl-release-latest", text: "${xlr_Version}")
                 xlr_LatestVersion = readFile "${env.WORKSPACE}/xl-release-latest"
 
             } else {
 
-                writeFile (file: "${env.WORKSPACE}/xl-release-latest", text: "${params.xlr_version}")
+                writeFile(file: "${env.WORKSPACE}/xl-release-latest", text: "${params.xlr_version}")
                 xlr_LatestVersion = readFile "${env.WORKSPACE}/xl-release-latest"
 
             }
@@ -425,14 +458,14 @@ def getLatestVersion(xl_product) {
         if (xl_product == 'xl_deploy') {
             if (params.xld_version == '') {
 
-                def xld_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
+                def xld_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
 
-                writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${xld_Version}")
+                writeFile(file: "${env.WORKSPACE}/xl-deploy-latest", text: "${xld_Version}")
                 xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
 
             } else {
 
-                writeFile (file: "${env.WORKSPACE}/xl-deploy-latest", text: "${params.xld_version}")
+                writeFile(file: "${env.WORKSPACE}/xl-deploy-latest", text: "${params.xld_version}")
                 xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
 
             }
@@ -442,7 +475,7 @@ def getLatestVersion(xl_product) {
         if (xl_product == 'central_configuration') {
             if (params.cc_version == '') {
 
-                def cc_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/ai/digital/config/central-configuration-server/maven-metadata.xml | grep "<version>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
+                def cc_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/ai/digital/config/central-configuration-server/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
 
                 writeFile (file: "${env.WORKSPACE}/central-configuration-latest", text: "${cc_Version}")
                 cc_LatestVersion = readFile "${env.WORKSPACE}/central-configuration-latest"
@@ -454,6 +487,23 @@ def getLatestVersion(xl_product) {
 
             }
             return cc_LatestVersion
+        }
+
+        if (xl_product == 'deploy_task_engine') {
+            if (params.deploy_task_engine_version == '') {
+
+                def dte_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
+
+                writeFile(file: "${env.WORKSPACE}/deploy-task-engine-latest", text: "${dte_Version}")
+                dte_LatestVersion = readFile "${env.WORKSPACE}/deploy-task-engine-latest"
+
+            } else {
+
+                writeFile(file: "${env.WORKSPACE}/deploy-task-engine-latest", text: "${params.deploy_task_engine_version}")
+                dte_LatestVersion = readFile "${env.WORKSPACE}/deploy-task-engine-latest"
+
+            }
+            return dte_LatestVersion
         }
     }
 }
@@ -503,7 +553,7 @@ def runXlUpOnMiniKube() {
 
     }
 
-    if ((params.xl_release == true) && (params.xl_deploy == true)){
+    if ((params.xl_release == true) && (params.xl_deploy == true)) {
 
         sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/xl-release-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-release.lic"
         sh "sed -ie 's@InstallXLR: false@InstallXLR: true@g' xlup/xl_generated_answers.yaml"

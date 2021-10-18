@@ -1,9 +1,12 @@
-FROM alpine:3.13.0 as installer
+FROM alpine:3.14.2 as installer
 
 # Install dependencies
-RUN apk add --no-cache gawk unzip curl
+RUN apk update
+RUN apk add --no-cache gawk unzip curl busybox-extras
 
-{% if 'central-config' in product %}
+{% if 'deploy-task-engine' in product %}
+    {% include './deploy-task-engine/install.j2' %}
+{% elif 'central-config' in product %}
     {% include './central-configuration/install.j2' %}
 {% else %}
     {% include 'install.j2' %}
@@ -13,11 +16,15 @@ FROM centos:7
 
 {% include 'metadata.j2' %}
 
-{% include 'variables.j2' %}
+{% if 'deploy-task-engine' in product %}
+    {% include './deploy-task-engine/variables.j2' %}
+{% else %}
+    {% include 'variables.j2' %}
+{% endif %}
 
 # Install dependencies
 RUN yum update -y && \
-    yum install -y epel-release && \
+    yum install -y epel-release telnet && \
     yum install -y java-11-openjdk-devel curl jq unzip which && \
     yum clean all -q
 

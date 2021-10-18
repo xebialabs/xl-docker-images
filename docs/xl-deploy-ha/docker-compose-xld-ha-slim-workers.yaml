@@ -1,7 +1,7 @@
 version: "3"
 services:
   xl-deploy-worker:
-    image: xebialabs/xl-deploy:10.3
+    image: xebialabs/deploy-task-engine:10.4 # deploy-task-engine is not yet released on the xebialabs repo
     networks:
       - xld-network
     environment:
@@ -19,7 +19,6 @@ services:
       - XL_DB_PASSWORD=${POSTGRES_PASS}
       #- XL_LICENSE=YOUR_LICENSE_IN_BASE64_STRING
     command:
-      - "worker"
       - "-api"
       - "http://${XLD_LB}:5000/"
       - "-master"
@@ -27,7 +26,8 @@ services:
       - "-master"
       - "${XLD_MASTER_2}:8180"
     volumes:
-      - $PWD/xl-deploy-worker/conf:/opt/xebialabs/xl-deploy-server/conf # provide deployit-licence.lic file in the conf folder
+      - $PWD/xl-deploy-worker/conf:/opt/xebialabs/deploy-task-engine/conf # provide deployit-licence.lic file in the conf folder
+      - $PWD/xl-deploy-worker/plugins:/opt/xebialabs/deploy-task-engine/plugins # provide deployit-licence.lic file in the conf folder
 
 networks:
   xld-network:

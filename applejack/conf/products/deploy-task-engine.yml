@@ -1,0 +1,51 @@
+name: deploy-task-engine
+dockerfiles:
+  default: 'debian-slim'
+  os:
+    rhel: rhel/Dockerfile.j2
+    debian-slim: debian-slim/Dockerfile.j2
+    centos: centos/Dockerfile.j2
+    amazonlinux: amazonlinux/Dockerfile.j2
+repositories:
+  nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/xl-deploy-{version}-task-engine-trial-edition.zip'
+  dist: 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/xl-deploy-{version}-task-engine.zip'
+  localm2: 'ai/digital/deploy/task-engine/deploy-task-engine-base/{version}/deploy-task-engine-base-{version}.zip'
+resources:
+  target_name: '{product}-{version}.zip'
+  dirs:
+    - all
+    - common
+    - deploy-task-engine
+context:
+  license_server: https://download.xebialabs.com
+  product: deploy-task-engine
+  product_name: Deploy Worker
+  boot_conf: deployit.conf
+  product_description: Enterprise-scale Application Release Automation for any environment
+  license_file: deployit-license.lic
+  wrapper_conf: xld-wrapper.conf.common
+  port: 8180
+  volumes:
+    - "${APP_HOME}/conf"
+    - "${APP_HOME}/ext"
+    - "${APP_HOME}/hotfix/lib"
+    - "${APP_HOME}/hotfix/plugins"
+    - "${APP_HOME}/plugins"
+    - "${APP_HOME}/work"
+  environment:
+    - key: XL_DB_URL
+      value: "jdbc:h2:file:${APP_HOME}/repository/xl-deploy"
+    - key: XLD_TASK_QUEUE_NAME
+      value: "xld-tasks-queue"
+    - key: XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE
+      value: "100"
+    - key: XLD_TASK_QUEUE_IN_PROCESS_SHUTDOWN_TIMEOUT
+      value: "60000"
+    - key: XLD_TASK_QUEUE_DRIVER_CLASS_NAME
+      value: ""
+    - key: XLD_TASK_QUEUE_URL
+      value: ""
+    - key: XLD_TASK_QUEUE_USERNAME
+      value: ""
+    - key: XLD_TASK_QUEUE_PASSWORD
+      value: ""
