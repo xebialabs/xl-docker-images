@@ -1,7 +1,8 @@
-FROM alpine:3.13.0 as installer
+FROM alpine:3.14.2 as installer
 
 # Install dependencies
-RUN apk add --no-cache gawk unzip curl
+RUN apk update
+RUN apk add --no-cache gawk unzip curl busybox-extras
 
 
     
@@ -11,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-10.0.6-server.zip /tmp
+COPY resources/xl-deploy-10.0.7-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-10.0.6-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-10.0.6-server ${APP_HOME}
+    unzip /tmp/xl-deploy-10.0.7-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-10.0.7-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -76,19 +77,21 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="10.0.6" \
+      version="10.0.7" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
       url="https://www.xebialabs.com/xl-deploy"
 
-# Set root folders
+
+    # Set root folders
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
+
 # Install dependencies
 RUN apt-get update -y && \
-    apt-get install -y curl jq unzip apt-utils&& \
+    apt-get install -y curl jq unzip apt-utils telnet && \
     apt-get install -y fontconfig libfreetype6 && \
     apt-get clean all -q
 
@@ -143,4 +146,6 @@ ENV XL_CLUSTER_MODE=default \
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
+
+
 ENTRYPOINT ["/opt/xebialabs/tini", "--", "/opt/xebialabs/xl-deploy-server/bin/run-in-container.sh"]

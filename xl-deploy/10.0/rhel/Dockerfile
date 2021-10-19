@@ -5,7 +5,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="10.0.6" \
+      version="10.0.7" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -41,10 +41,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-10.0.6-server.zip /tmp
+COPY resources/xl-deploy-10.0.7-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-10.0.6-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-10.0.6-server ${APP_HOME}
+    unzip /tmp/xl-deploy-10.0.7-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-10.0.7-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -99,6 +99,8 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
 
 
+
+
 ENV OS=rhel
 
 
@@ -147,4 +149,6 @@ ENV XL_CLUSTER_MODE=default \
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
+
+
 ENTRYPOINT ["/opt/xebialabs/tini", "--", "/opt/xebialabs/xl-deploy-server/bin/run-in-container.sh"]
