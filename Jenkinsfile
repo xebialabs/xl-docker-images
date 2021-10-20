@@ -31,7 +31,7 @@ pipeline {
                 description: "Version of XL Deploy you want to create Docker Images for")
         booleanParam(
                 name: 'deploy_task_engine',
-                defaultValue: true, // TODO: change to false when merging to master
+                defaultValue: false,
                 description: 'Specifies if you want to generate Docker Image for Deploy Task Engine')
         string(
                 name: 'deploy_task_engine_version',

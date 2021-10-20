@@ -27,7 +27,7 @@ services:
       - "${XLD_MASTER_2}:8180"
     volumes:
       - $PWD/xl-deploy-worker/conf:/opt/xebialabs/deploy-task-engine/conf # provide deployit-licence.lic file in the conf folder
-      - $PWD/xl-deploy-worker/plugins:/opt/xebialabs/deploy-task-engine/plugins # provide deployit-licence.lic file in the conf folder
+      - $PWD/xl-deploy-worker/plugins:/opt/xebialabs/deploy-task-engine/plugins
 
 networks:
   xld-network:
