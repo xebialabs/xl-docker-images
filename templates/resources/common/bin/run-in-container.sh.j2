@@ -152,12 +152,13 @@ function generate_product_conf {
         echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
       elif [ -e ${APP_HOME}/default-conf/{{file}}.template ]; then
         echo "Generate configuration file {{ file }} from environment parameters"
-        sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
         if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
-            DNS_RESOLVER=async-dns
+            DNS_RESOLVER="async-dns"
         else
-            DNS_RESOLVER=inet-address
+            DNS_RESOLVER="inet-address"
         fi
+        sed -e "s#\${DNS_RESOLVER}#${DNS_RESOLVER}#g" \
+        sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
         {% for env in environment %}
             {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
         {% endfor -%}
