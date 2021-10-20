@@ -119,9 +119,9 @@ function generate_node_conf {
 function generate_product_conf {
   {% if central_configuration_enabled or 'central-config' in product %}
     if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
-        DNS_RESOLVER="async-dns"
-    else
         DNS_RESOLVER="inet-address"
+    else
+        DNS_RESOLVER="async-dns"
     fi
 
     if [ -z "$XL_DB_URL" ]; then
