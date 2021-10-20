@@ -1,3 +1,9 @@
+if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
+akka:
+  io:
+    dns:
+      resolver: inet-address
+fi
 deploy.task:
   in-process-worker: ${XLD_IN_PROCESS}
   queue:
