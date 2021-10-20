@@ -118,14 +118,22 @@ function generate_node_conf {
 
 function generate_product_conf {
   {% if central_configuration_enabled or 'central-config' in product %}
+    if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
+        DNS_RESOLVER="async-dns"
+    else
+        DNS_RESOLVER="inet-address"
+    fi
+
     if [ -z "$XL_DB_URL" ]; then
       echo "... Using default centralConfiguration/deploy-repository.yaml"
       return
     fi
+
     HOSTNAME=$(hostname)
     if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
       HOSTNAME=$(hostname -i)
     fi
+
     IP_ADDRESS=$(hostname -i)
     {% for file in central_config_files %}
       if [[ ${GENERATE_XL_CONFIG,,} != "true" ]]; then
@@ -134,6 +142,7 @@ function generate_product_conf {
         echo "Generate configuration file {{ file }} from environment parameters"
         sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
             -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
+            -e "s#\${DNS_RESOLVER}#${DNS_RESOLVER}#g" \
             -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
         {% for env in environment %}
             {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
@@ -152,12 +161,6 @@ function generate_product_conf {
         echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
       elif [ -e ${APP_HOME}/default-conf/{{file}}.template ]; then
         echo "Generate configuration file {{ file }} from environment parameters"
-        if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
-            DNS_RESOLVER="async-dns"
-        else
-            DNS_RESOLVER="inet-address"
-        fi
-        sed -e "s#\${DNS_RESOLVER}#${DNS_RESOLVER}#g" \
         sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
         {% for env in environment %}
             {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
