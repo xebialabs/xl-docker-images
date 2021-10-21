@@ -137,9 +137,9 @@ $ {executable} build --xl-version <version> --product=xl-deploy --download-sourc
 
 Both XL Release and XL Deploy supports db2, mysql, mssql, postgresql, oracle database for production setups more information can be found on official documentation :
 
-XL-Release : https://docs.xebialabs.com/xl-release/how-to/configure-the-xl-release-sql-repository-in-a-database.html
+XL-Release : https://docs.xebialabs.com/release/how-to/configure-the-xl-release-sql-repository-in-a-database.html
 
-XL-Deploy : https://docs.xebialabs.com/xl-deploy/how-to/configure-the-xl-deploy-sql-repository.html
+XL-Deploy : https://docs.xebialabs.com/deploy/how-to/configure-the-xl-deploy-sql-repository.html
 
 To connect with these databases both the products needs jdbc driver in the classpath, example:  inside `/opt/xebialabs/xl-release-server/lib` (for xl release).
 
