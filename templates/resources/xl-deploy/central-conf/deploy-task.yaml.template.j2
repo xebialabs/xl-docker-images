@@ -11,3 +11,7 @@ deploy.task:
       jms-url: "${XLD_TASK_QUEUE_URL}"
       jms-username: "${XLD_TASK_QUEUE_USERNAME}"
       jms-password: "${XLD_TASK_QUEUE_PASSWORD}"
+akka:
+  io:
+    dns:
+      resolver: "${DNS_RESOLVER}"
