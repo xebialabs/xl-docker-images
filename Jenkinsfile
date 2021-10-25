@@ -4,9 +4,9 @@ import java.lang.Object
 import com.xebialabs.pipeline.utils.Branches
 import groovy.transform.Field
 
-def dte_LatestVersion = ""
+def dte_LatestVersion = "10.4.0-1025.113"
 def xlr_LatestVersion = ""
-def xld_LatestVersion = ""
+def xld_LatestVersion = "10.4.0-1025.113"
 def cc_LatestVersion = ""
 
 pipeline {
@@ -23,7 +23,7 @@ pipeline {
                 description: "Version of XL Release you want to create Docker Images for")
         booleanParam(
                 name: 'xl_deploy',
-                defaultValue: false,
+                defaultValue: true,
                 description: 'Specifies if you want to generate Docker Image for XLDeploy')
         string(
                 name: 'xld_version',
@@ -31,7 +31,7 @@ pipeline {
                 description: "Version of XL Deploy you want to create Docker Images for")
         booleanParam(
                 name: 'deploy_task_engine',
-                defaultValue: false,
+                defaultValue: true,
                 description: 'Specifies if you want to generate Docker Image for Deploy Task Engine')
         string(
                 name: 'deploy_task_engine_version',
