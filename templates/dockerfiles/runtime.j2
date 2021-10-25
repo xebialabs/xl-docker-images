@@ -21,7 +21,7 @@ EXPOSE {{ port }}
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
 
 {% if 'xl-deploy' in product %}
-    ENV DEPLOY_SERVER_HOSTNAME=$(hostname -i)
+    RUN echo "export DEPLOY_SERVER_HOSTNAME=$(hostname -i)"
 {% endif %}
 
 {% if 'deploy-task-engine' in product %}
