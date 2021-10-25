@@ -191,10 +191,6 @@ generate_product_conf
 generate_node_conf
 check_force_upgrade
 
-{% if 'xl-deploy' in product %}
-    export DEPLOY_SERVER_HOSTNAME=$(hostname -i)
-{% endif %}
-
 # Start regular startup process
 exec ${APP_HOME}/bin/run.sh ${FORCE_UPGRADE_FLAG} "$@"
 
