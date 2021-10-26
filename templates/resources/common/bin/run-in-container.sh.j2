@@ -135,6 +135,12 @@ function generate_product_conf {
     fi
 
     IP_ADDRESS=$(hostname -i)
+    JMS_DRIVER_CLASS_NAME=${XLD_TASK_QUEUE_DRIVER_CLASS_NAME}
+    if [[ ${XLD_TASK_QUEUE_DRIVER_CLASS_NAME,,} == "rabbitmq" ]]; then
+      JMS_DRIVER_CLASS_NAME="com.rabbitmq.jms.admin.RMQConnectionFactory"
+    elif [[ ${XLD_TASK_QUEUE_DRIVER_CLASS_NAME,,} == "activemq" ]]; then
+      JMS_DRIVER_CLASS_NAME="org.apache.activemq.ActiveMQConnectionFactory"
+    fi
     {% for file in central_config_files %}
       if [[ ${GENERATE_XL_CONFIG,,} != "true" ]]; then
         echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
@@ -144,6 +150,7 @@ function generate_product_conf {
             -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
             -e "s#\${DNS_RESOLVER}#${DNS_RESOLVER}#g" \
             -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
+            -e "s#\${XLD_TASK_QUEUE_DRIVER_CLASS_NAME}#${JMS_DRIVER_CLASS_NAME}#g" \
         {% for env in environment %}
             {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
         {% endfor -%}
