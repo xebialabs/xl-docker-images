@@ -1,6 +1,6 @@
 # XL Deploy active-active cluster setup with docker compose
 
-The production setup for XL Deploy as mentioned [here](https://docs.xebialabs.com/v.9.0/xl-deploy/how-to/set-up-xl-deploy-in-production/) can be done using Docker compose as below.
+The production setup for XL Deploy as mentioned [here](https://docs.xebialabs.com/v.10.3/deploy/how-to/set-up-xl-deploy-in-production/) can be done using Docker compose as below.
 
 This article provides a sample approach you can follow to setup the database and other infrastructure of your choice.
 
