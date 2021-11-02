@@ -3,10 +3,10 @@ FROM alpine:3.14.2 as installer
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-client
 
-COPY resources/xl-client-10.3.2-linux-amd64.bin /tmp
+COPY resources/xl-client-10.3.3-linux-amd64.bin /tmp
 
 RUN mkdir -p ${APP_HOME} && \
-    mv /tmp/xl-client-10.3.2-linux-amd64.bin ${APP_HOME}/xl && \
+    mv /tmp/xl-client-10.3.3-linux-amd64.bin ${APP_HOME}/xl && \
     chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/xl
@@ -19,7 +19,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-client" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="10.3.2" \
+      version="10.3.3" \
       release="1" \
       summary="XL Client" \
       description="Enterprise-scale Application Release Automation for any environment" \
