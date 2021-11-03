@@ -7,8 +7,8 @@ RUN chmod ugo+x ${APP_ROOT}/tini
 WORKDIR ${APP_HOME}
 
 # Don't run as root
-RUN useradd -r -M -u 10001 -g 0 xebialabs
-USER 10001
+RUN useradd -r -M -u ${XL_USER} -g 0 xebialabs
+USER ${XL_USER}
 
 VOLUME ["{{ volumes|join('", "') }}"]
 EXPOSE {{ port }}
