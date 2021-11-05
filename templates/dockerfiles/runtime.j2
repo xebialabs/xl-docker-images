@@ -16,10 +16,6 @@ USER 10001
 
 VOLUME ["{{ volumes|join('", "') }}"]
 
-{% for volume in volumes %}
-    chown -R 10001:0 {{volume}}
-{% endfor %}
-
 EXPOSE {{ port }}
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are

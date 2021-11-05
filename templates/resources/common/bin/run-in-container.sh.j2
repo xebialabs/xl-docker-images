@@ -4,6 +4,10 @@
 {%- set xl_version_major_minor = xl_version_splitted[0] + "." + xl_version_splitted[1] %}
 {%- set central_configuration_enabled = product == "xl-deploy" and xl_version_major_minor|float() >= 10.2 %}
 
+{% for volume in volumes %}
+    chown -R 10001:0 {{volume}}
+{% endfor %}
+
 function pwgen {
   tr -cd '[:alnum:]' < /dev/urandom | fold -w$1 | head -n1
 }
