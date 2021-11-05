@@ -3,10 +3,6 @@
 {%- set xl_version_split = xl_version.split(".") %}
 {%- set xl_version_major_minor = xl_version_split[0] + "." + xl_version_split[1] %}
 
-{% for volume in volumes %}
-    chown -R 10001:0 {{volume}}
-{% endfor %}
-
 function pwgen {
   tr -cd '[:alnum:]' < /dev/urandom | fold -w$1 | head -n1
 }

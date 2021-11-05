@@ -14,6 +14,10 @@ WORKDIR ${APP_HOME}
 RUN useradd -r -M -u 10001 -g 0 xebialabs
 USER 10001
 
+{% for volume in volumes %}
+    RUN chown -R 10001:0 {{volume}}
+{% endfor %}
+
 VOLUME ["{{ volumes|join('", "') }}"]
 
 EXPOSE {{ port }}
