@@ -35,6 +35,8 @@ context:
   environment:
     - key: XL_USER
       value: 10001
+    - key: XL_USER_GROUP
+      value: 0
     - key: XL_DB_URL
       value: "jdbc:h2:file:${APP_HOME}/repository/xl-deploy"
     - key: XLD_TASK_QUEUE_NAME

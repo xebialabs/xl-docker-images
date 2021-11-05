@@ -11,7 +11,7 @@ WORKDIR ${APP_HOME}
 {% endfor %}
 
 # Don't run as root
-RUN useradd -r -M -u ${XL_USER} -g 0 xebialabs
+RUN useradd -r -M -u ${XL_USER} -g ${XL_USER_GROUP} xebialabs
 USER ${XL_USER}
 
 VOLUME ["{{ volumes|join('", "') }}"]
