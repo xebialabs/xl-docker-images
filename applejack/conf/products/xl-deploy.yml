@@ -46,10 +46,6 @@ context:
     - "${APP_HOME}/repository"
     - "${APP_HOME}/work"
   environment:
-  - key: XL_USER
-    value: 10001
-  - key: XL_USER_GROUP
-    value: 0
   - key: XL_CLUSTER_MODE
     value: default
   - key: XL_DB_URL

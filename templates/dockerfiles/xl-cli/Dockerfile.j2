@@ -1,6 +1,6 @@
 FROM alpine:3.14.2 as installer
 
-ENV APP_ROOT=/opt/xebialabs
+ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/{{ product }}
 
 COPY resources/{{ product }}-{{ xl_version }}-linux-amd64.bin /tmp
@@ -16,7 +16,7 @@ FROM alpine:3.14.2
 
 {% include 'metadata.j2' %}
 
-ENV APP_ROOT=/opt/xebialabs
+ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/{{ product }}
 
 # Copy installed {{ product_name }}
@@ -28,6 +28,6 @@ RUN chmod ugo+x /opt/tini
 WORKDIR ${APP_HOME}
 
 # Don't run as root
-USER ${XL_USER}
+USER 10001
 
 ENTRYPOINT ["/opt/tini", "/opt/xebialabs/{{ product }}/xl"]

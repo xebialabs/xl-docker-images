@@ -11,10 +11,15 @@ WORKDIR ${APP_HOME}
 {% endfor %}
 
 # Don't run as root
-RUN useradd -r -M -u ${XL_USER} -g ${XL_USER_GROUP} xebialabs
-USER ${XL_USER}
+RUN useradd -r -M -u 10001 -g 0 xebialabs
+USER 10001
 
 VOLUME ["{{ volumes|join('", "') }}"]
+
+{% for volume in volumes %}
+    chown -R 10001:0 {{volume}}
+{% endfor %}
+
 EXPOSE {{ port }}
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
