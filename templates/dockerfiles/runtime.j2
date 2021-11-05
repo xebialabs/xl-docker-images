@@ -14,7 +14,7 @@ WORKDIR ${APP_HOME}
 RUN useradd -r -M -u 10001 -g 0 xebialabs
 
 {% for volume in volumes %}
-    RUN chown -R 10001:0 {{volume}}
+    RUN chmod -R ugo+w {{volume}}
 {% endfor %}
 
 USER 10001
