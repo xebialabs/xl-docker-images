@@ -11,13 +11,16 @@ WORKDIR ${APP_HOME}
 {% endfor %}
 
 # Don't run as root
-RUN useradd -r -M -u 10001 -g 0 xebialabs
+RUN useradd -r -M -u ${XL_USER} -g ${XL_USER_GROUP} xebialabs
+
+RUN echo "Adding 'xebialabs' user with UID=${XL_USER} and GUI=${XL_USER_GROUP}"
 
 {% for volume in volumes %}
+    RUN chown -R ${XL_USER}:${XL_USER_GROUP} {{volume}}
     RUN chmod -R ugo+w {{volume}}
 {% endfor %}
 
-USER 10001
+USER ${XL_USER}
 
 VOLUME ["{{ volumes|join('", "') }}"]
 
