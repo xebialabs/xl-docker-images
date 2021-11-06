@@ -42,6 +42,6 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
 # Set permissions
 RUN chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
-    chmod g+x ${APP_HOME}/bin/*.sh && \
+    chmod ugo+x ${APP_HOME}/bin/*.sh && \
     chmod a+rwx ${APP_HOME}/centralConfiguration
 

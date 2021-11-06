@@ -3,7 +3,6 @@ if [ -z "$(ls -A ${APP_HOME}/plugins)" ]; then
   echo "Empty ${APP_HOME}/plugins directory detected:"
 fi
 
-echo "User to perform actions: $(whoami)"
 echo "... Copying default plugins from ${APP_HOME}/default-plugins to ${APP_HOME}/plugins when a plugin is missing"
 
 cd ${APP_HOME}/default-plugins
