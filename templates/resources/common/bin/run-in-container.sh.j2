@@ -191,6 +191,8 @@ function check_force_upgrade {
 
 {% if 'central-config' not in product %}
     check_eula
+    copy_db_driver
+    copy_mq_driver
     store_license
 {% endif %}
 
