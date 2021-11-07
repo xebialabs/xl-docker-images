@@ -35,6 +35,8 @@ function copy_mq_driver {
 }
 
 function copy_db_driver {
+  echo "Copying a database driver"
+
   case ${XL_DB_URL} in
     jdbc:h2:*)
       XL_DB_DRIVER="org.h2.Driver"

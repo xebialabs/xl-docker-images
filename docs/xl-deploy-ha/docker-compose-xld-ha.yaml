@@ -32,7 +32,7 @@ services:
       - ACCEPT_EULA=Y
       - XL_CLUSTER_MODE=default
       - XLD_IN_PROCESS=false
-      - XLD_TASK_QUEUE_DRIVER_CLASS_NAME=rabbitmq
+      - XLD_TASK_QUEUE_DRIVER_CLASS_NAME=com.rabbitmq.jms.admin.RMQConnectionFactory
       - XLD_TASK_QUEUE_URL=amqp://rabbitmq:5672
       - XLD_TASK_QUEUE_USERNAME=rabbitmq
       - XLD_TASK_QUEUE_PASSWORD=${RABBITMQ_PASS}
