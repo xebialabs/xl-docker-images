@@ -82,3 +82,5 @@ context:
     value: "false"
   - key: ENABLE_SATELLITE
     value: "false"
+  - key: PLUGIN_SOURCE
+    value: "database"
