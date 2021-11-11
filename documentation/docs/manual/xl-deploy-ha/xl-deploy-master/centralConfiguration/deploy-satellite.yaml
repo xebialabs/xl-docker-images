@@ -1,0 +1,2 @@
+deploy.satellite:
+  enabled: false

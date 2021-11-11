@@ -1,0 +1,14 @@
+deploy:
+  task:
+    in-process-worker: false
+    queue:
+      archive-queue-name: xld-archive-queue
+      external:
+        jms-driver-classname: com.rabbitmq.jms.admin.RMQConnectionFactory
+        jms-password: '{cipher}d1fffc4a6956c5ba61e4562c1112b0d3c05677363a610fc792efe78b52c00e8e'
+        jms-url: amqp://rabbitmq:5672
+        jms-username: rabbitmq
+      in-process:
+        maxDiskUsage: 100
+        shutdownTimeout: 60000
+      name: xld-tasks-queue

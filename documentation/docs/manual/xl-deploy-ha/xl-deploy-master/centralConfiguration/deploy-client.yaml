@@ -1,0 +1,31 @@
+deploy.client:
+  automatically-map-all-deployables: true
+  automatically-map-all-deployables-on-initial: false
+  automatically-map-all-deployables-on-update: false
+  gui:
+    toastr:
+      error:
+        timeout-ms: 0
+      info:
+        timeout-ms: 10000
+      success:
+        timeout-ms: 10000
+      warning:
+        timeout-ms: 10000
+    landing-page: explorer
+  importable-package-directory: importablePackages
+  maintenance:
+    forbidden-paths:
+      - deployit/task:POST
+      - deployit/tasks/v2:POST
+      - deployit/control:POST
+      - xldeploy/task:POST
+      - xldeploy/tasks/v2:POST
+      - xldeploy/control:POST
+  secure-cookie-enabled: false
+  session:
+    timeout-minute: 20
+  session-remember-enabled: true
+  upgrade-batch-size: 100
+  hide-internals: false
+  upload-file-buffer-size: 262144

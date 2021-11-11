@@ -1,0 +1,32 @@
+deploy.security:
+  auth:
+    providers:
+     oidc:
+      loginMethodDescription:
+      clientId:
+      clientSecret:
+      clientAuthMethod:
+      issuer:
+      keyRetrievalUri:
+      accessTokenUri:
+      userAuthorizationUri:
+      logoutUri:
+      redirectUri:
+      postLogoutRedirectUri:
+      rolesClaimName:
+      userNameClaimName:
+      idTokenJWSAlg:
+      access-token:
+        issuer:
+        audience:
+        keyRetrievalUri:
+        jwsAlg:
+        secretKey:
+      proxyHost:
+      proxyPort:
+      scopes:
+        -
+
+
+
+

@@ -1,0 +1,63 @@
+<!--
+    Note: If you modify this file, you must restart the XL Deploy server.
+-->
+<configuration>
+
+    <!-- removing this listener may cause performance issues-->
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <!-- Name changed from STDOUT to prevent appender from being removed by LogbackHelper.disableConsoleLoggerIfNeeded -->
+    <appender name="STDOUT2" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] {%mdc} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="STDOUT2" />
+    </root>
+
+    <logger name="com.xebialabs" level="info" />
+    <logger name="com.xebialabs.deployit.core.api.resteasy.http" level="info" />
+    <logger name="com.xebialabs.deployit.jetty.HttpHeaderOverrideServletRequest" level="info" />
+    <logger name="com.xebialabs.deployit.jetty.FlexRestCompatibilityServletRequest" level="info" />
+    <logger name="com.xebialabs.deployit.migration" level="info" />
+    <logger name="com.xebialabs.overthere" level="info" />
+    <logger name="net.schmizz.sshj" level="error" />
+    <logger name="org.springframework" level="warn"/>
+    <logger name="org.apache.commons.httpclient" level="warn" />
+    <logger name="org.apache.jackrabbit.core.value.BLOBInDataStore" level="error" />
+    <logger name="org.eclipse.aether" level="info" />
+    <logger name="de.schlichtherle.truezip" level="warn" />
+    <logger name="com.google.inject.internal.util" level="error"/>
+    <logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory" level="error"/>
+    <logger name="liquibase" level="warn"/>
+    <logger name="org.springframework.web.socket.adapter.jetty.JettyWebSocketHandlerAdapter" level="off"/>
+
+    <!--  Audit logging -->
+
+    <appender name="AUDIT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[AUDIT] %d{yyyy-MM-dd HH:mm:ss.SSS} [%logger{36}] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="audit" level="off" additivity="false">
+        <appender-ref ref="AUDIT" />
+    </logger>
+
+    <!-- access log -->
+    <appender name="ACCESS" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[ACCESS] %d{yyyy-MM-dd HH:mm:ss.SSS} [%logger{36}] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.xebialabs.deployit.AccessLogFilter" level="trace" additivity="false">
+        <appender-ref ref="ACCESS"/>
+    </logger>
+
+</configuration>
