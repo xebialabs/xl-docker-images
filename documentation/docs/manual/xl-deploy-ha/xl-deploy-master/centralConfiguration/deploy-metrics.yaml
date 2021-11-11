@@ -1,0 +1,2 @@
+deploy.metrics:
+  enabled: false

@@ -1,0 +1,11 @@
+deploy:
+  cluster:
+    membership:
+      heartbeat: 10 seconds
+      jdbc:
+        password: '{cipher}4acf1f7992a93ef2f38fc3960fa220de4184180ff03dff53d64139163e4f8c63'
+        url: jdbc:postgresql://postgresql:5432/xld-db
+        username: postgres
+      ttl: 60 seconds
+    mode: default
+    name: xl-deploy_cluster

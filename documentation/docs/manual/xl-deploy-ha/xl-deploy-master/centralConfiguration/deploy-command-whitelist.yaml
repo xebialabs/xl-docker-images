@@ -1,0 +1,9 @@
+deploy.command-whitelist:
+  enabled: false
+  all-users:
+    allowed-commands: [ ]
+    restricted-commands: [ ]
+  roles:
+    - role-name: ""
+      allowed-commands: [ ]
+      restricted-commands: [ ]
