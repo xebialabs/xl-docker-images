@@ -82,3 +82,7 @@ context:
     value: "false"
   - key: ENABLE_SATELLITE
     value: "false"
+  - key: USE_EXTERNAL_CENTRAL_CONFIG
+    value: "false"
+  - key: CENTRAL_CONFIG_URL
+    value: ""
