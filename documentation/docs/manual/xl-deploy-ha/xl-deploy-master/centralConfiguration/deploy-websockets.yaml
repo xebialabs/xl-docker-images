@@ -1,0 +1,10 @@
+deploy.websockets:
+  enabled: true
+  message-broker:
+    input-buffer-size: 32768
+  threadpool:
+    core-pool-size: 10
+    daemon: false
+    keep-alive-seconds: 180
+    max-pool-size: 24
+    queue-capacity: 500

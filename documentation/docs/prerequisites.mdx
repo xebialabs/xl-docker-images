@@ -1,0 +1,33 @@
+---
+sidebar_position: 2
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+# Prerequisites
+
+## Setup virtualenv
+
+If you want to generate Dockerfiles for new versions of the DevOps platform, or build a container out of them using the script provided, you need to setup your Python environment.
+To make this easy we've provided a `Pipfile` that contains the necessary dependencies for the Python build scripts. To install these, you can use the link: [pipenv](https://docs.pipenv.org/) command line tool.
+
+You can install this on Mac using Brew:
+
+```shell
+$ brew install pipenv
+```
+
+Or you can install this using regular Python pip:
+
+```shell
+$ pip install --user pipenv
+```
+
+After you've installed `pipenv` just execute:
+
+```shell
+$ pipenv install
+$ pipenv shell
+```
+
+This will install all the dependencies and activate the `virtualenv` containing all the installed dependencies.
