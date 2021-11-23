@@ -39,33 +39,52 @@ function copy_db_driver {
 
   case ${XL_DB_URL} in
     jdbc:h2:*)
-      XL_DB_DRIVER="org.h2.Driver"
       cp ${APP_ROOT}/db-libs/h2* ${APP_HOME}/lib
       ;;
     jdbc:oracle:*)
-      XL_DB_DRIVER="oracle.jdbc.OracleDriver"
       echo "oracle jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       ;;
     jdbc:mysql:*)
-      XL_DB_DRIVER="com.mysql.jdbc.Driver"
       cp ${APP_ROOT}/db-libs/mysql* ${APP_HOME}/lib
       ;;
     jdbc:postgresql:*)
-      XL_DB_DRIVER="org.postgresql.Driver"
       cp ${APP_ROOT}/db-libs/postgresql* ${APP_HOME}/lib
       ;;
     jdbc:sqlserver:*)
-      XL_DB_DRIVER="com.microsoft.sqlserver.jdbc.SQLServerDriver"
       cp ${APP_ROOT}/db-libs/mssql* ${APP_HOME}/lib
       ;;
     jdbc:db2:*)
-      XL_DB_DRIVER="com.ibm.db2.jcc.DB2Driver"
       echo "db2 jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       ;;
     *)
         echo "Database type could not be inferred from url '${XL_REPO_DB_URL}', supported db types are 'h2', 'oracle', 'mysql', 'postgresql', 'sqlserver', 'db2'"
         exit 1
         ;;
+  esac
+}
+
+function set_db_driver {
+  echo "Getting database driver classname"
+
+  case ${XL_DB_URL} in
+    jdbc:h2:*)
+      XL_DB_DRIVER="org.h2.Driver"
+      ;;
+    jdbc:oracle:*)
+      XL_DB_DRIVER="oracle.jdbc.OracleDriver"
+      ;;
+    jdbc:mysql:*)
+      XL_DB_DRIVER="com.mysql.jdbc.Driver"
+      ;;
+    jdbc:postgresql:*)
+      XL_DB_DRIVER="org.postgresql.Driver"
+      ;;
+    jdbc:sqlserver:*)
+      XL_DB_DRIVER="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+      ;;
+    jdbc:db2:*)
+      XL_DB_DRIVER="com.ibm.db2.jcc.DB2Driver"
+      ;;
   esac
 }
 
@@ -119,7 +138,7 @@ function generate_node_conf {
 }
 
 function generate_product_conf {
-  {% if central_configuration_enabled %}
+  {% if central_configuration_enabled or 'central-config' in product %}
     if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
         DNS_RESOLVER="inet-address"
     else
@@ -189,12 +208,17 @@ function check_force_upgrade {
 }
 {% include 'includes/' + product + '-run-script.j2' %}
 
-check_eula
-copy_db_driver
-copy_mq_driver
+set_db_driver
+
+{% if 'central-config' not in product %}
+    check_eula
+    copy_db_driver
+    copy_mq_driver
+    store_license
+{% endif %}
+
 generate_product_conf
 generate_node_conf
-store_license
 check_force_upgrade
 
 # Start regular startup process
