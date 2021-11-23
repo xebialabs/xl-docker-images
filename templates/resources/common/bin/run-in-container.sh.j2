@@ -206,6 +206,12 @@ function check_force_upgrade {
      FORCE_UPGRADE_FLAG="-force-upgrades"
    fi
 }
+
+function set_plugin_source {
+    PLUGIN_SOURCE_FLAG="-plugin-source=${PLUGIN_SOURCE}"
+    echo "Configuring plugin source. Setting value to ${PLUGIN_SOURCE}"
+}
+
 {% include 'includes/' + product + '-run-script.j2' %}
 
 set_db_driver
@@ -220,7 +226,8 @@ set_db_driver
 generate_product_conf
 generate_node_conf
 check_force_upgrade
+set_plugin_source
 
 # Start regular startup process
-exec ${APP_HOME}/bin/run.sh ${FORCE_UPGRADE_FLAG} "$@"
+exec ${APP_HOME}/bin/run.sh ${FORCE_UPGRADE_FLAG} ${PLUGIN_SOURCE_FLAG} "$@"
 
