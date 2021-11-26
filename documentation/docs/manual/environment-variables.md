@@ -194,3 +194,14 @@ sidebar_position: 1
 - possible values: "suffix-string-value"
 - default value: none
 - example: "xldmaster01"
+
+##### `USE_EXTERNAL_CENTRAL_CONFIG`
+- Flag to disable the embedded config server and use external config server. If "true", the embedded config server will be used and the external config server denoted by the "CENTRAL_CONFIG_URL" variable will be used
+- possible values: "true,false"
+- default value: "false"
+
+##### `CENTRAL_CONFIG_URL`
+- URL of the external central config server
+- possible values: "valid URL"
+- default value: ""
+- example: "http://localhost:8888/centralConfiguration"
