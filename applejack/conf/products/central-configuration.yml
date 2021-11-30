@@ -72,3 +72,5 @@ context:
       value: "false"
     - key: ENABLE_SATELLITE
       value: "false"
+    - key: SPRING_CLOUD_ENCRYPT_KEY
+      value: ""
