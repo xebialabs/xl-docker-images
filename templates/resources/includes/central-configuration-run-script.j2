@@ -4,7 +4,7 @@ cd ${APP_HOME}/default-conf
 if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
   echo "No ${APP_HOME}/conf/{{ boot_conf }} file detected:"
   echo "... Generating {{ boot_conf }}"
-  sed -e "s#\${SPRING_CLOUD_ENCRYPT_KEY}#${SPRING_CLOUD_ENCRYPT_KEY}#g" ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
+  sed -e "s#\${CENTRAL_CONFIG_ENCRYPT_KEY}#${CENTRAL_CONFIG_ENCRYPT_KEY}#g" ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
   echo "Done"
 fi
 

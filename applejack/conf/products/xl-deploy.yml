@@ -89,5 +89,5 @@ context:
     value: "false"
   - key: CENTRAL_CONFIG_URL
     value: ""
-  - key: SPRING_CLOUD_ENCRYPT_KEY
+  - key: CENTRAL_CONFIG_ENCRYPT_KEY
     value: ""
