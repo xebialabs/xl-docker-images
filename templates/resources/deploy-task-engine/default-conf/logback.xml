@@ -20,6 +20,7 @@
         <appender-ref ref="STDOUT2" />
     </root>
 
+    <logger name="ai.digital" level="info" />
     <logger name="com.xebialabs" level="info" />
     <logger name="com.xebialabs.deployit.core.api.resteasy.http" level="info" />
     <logger name="com.xebialabs.deployit.jetty.HttpHeaderOverrideServletRequest" level="info" />

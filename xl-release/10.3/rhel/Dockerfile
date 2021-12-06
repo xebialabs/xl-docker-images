@@ -5,7 +5,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="10.3.3" \
+      version="10.3.5" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -41,10 +41,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-10.3.3-server.zip /tmp
+COPY resources/xl-release-10.3.5-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-10.3.3-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-10.3.3-server ${APP_HOME}
+    unzip /tmp/xl-release-10.3.5-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-10.3.5-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -113,13 +113,6 @@ RUN chmod ugo+x ${APP_ROOT}/tini
 
 WORKDIR ${APP_HOME}
 
-# Don't run as root
-RUN useradd -r -M -u 10001 -g 0 xebialabs
-USER 10001
-
-VOLUME ["${APP_ROOT}/bootstrap", "${APP_HOME}/archive", "${APP_HOME}/conf", "${APP_HOME}/hotfix", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/reports"]
-EXPOSE 5516
-
 ENV XL_CLUSTER_MODE=default \
     XL_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-release \
     XL_DB_USERNAME=sa \
@@ -137,8 +130,17 @@ ENV XL_CLUSTER_MODE=default \
     XLR_TASK_QUEUE_PASSWORD=mqadmin \
     XLR_TASK_QUEUE_NAME=xlr-tasks-queue \
     XLR_TASK_QUEUE_URL=amqp://localhost:61616 \
-    XLR_TASK_QUEUE_USERNAME=mqadmin
+    XLR_TASK_QUEUE_USERNAME=mqadmin \
+    PLUGIN_SOURCE=database
 
+
+# Don't run as root
+RUN useradd -r -M -u 10001 -g 0 xebialabs
+USER 10001
+
+VOLUME ["${APP_ROOT}/bootstrap", "${APP_HOME}/archive", "${APP_HOME}/conf", "${APP_HOME}/hotfix", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/reports"]
+
+EXPOSE 5516
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
