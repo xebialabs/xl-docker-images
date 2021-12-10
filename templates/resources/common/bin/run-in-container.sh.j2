@@ -196,7 +196,7 @@ function set_plugin_source {
         PLUGIN_SOURCE_FLAG="-plugin-source=${PLUGIN_SOURCE}"
     fi
 
-    echo "Configuring plugin source. Setting value to ${PLUGIN_SOURCE}"
+    echo "Configuring plugin source. Setting value to ${PLUGIN_SOURCE_FLAG}"
 }
 
 {% include 'includes/' + product + '-run-script.j2' %}
