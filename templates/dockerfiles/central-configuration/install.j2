@@ -12,7 +12,7 @@ RUN mkdir -p ${APP_ROOT} && \
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
 # script to copy cc from embedded master to standalone cc
-COPY resources/central-conf/copy-central-config-from-embedded.sh ${APP_HOME}/bin/
+COPY resources/bin/migrate-from-embedded-cc-to-standalone.sh ${APP_HOME}/bin/
 
 # Add jmx-exporter for prometheus
 COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
