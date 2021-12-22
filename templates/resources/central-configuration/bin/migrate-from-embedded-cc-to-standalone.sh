@@ -6,7 +6,7 @@ SOURCE_DIR="/mnt/centralConfiguration-source-dir"
 TARGET_DIR="/mnt/centralConfiguration-target-dir"
 
 echo "Start migrating from embedded central-configuration to standalone"
-if [[ -d $SOURCE_DIR && -d $TARGET_DIR ]]
+if [[ -d $SOURCE_DIR && -d $TARGET_DIR  &&  ! -d "$TARGET_DIR/conf" && ! -d "$TARGET_DIR/centralConfiguration" ]]
 then
   echo "Copying embedded central-configuration from directory '$SOURCE_DIR'"
   if [[ -d $SOURCE_DIR/centralConfiguration ]]
