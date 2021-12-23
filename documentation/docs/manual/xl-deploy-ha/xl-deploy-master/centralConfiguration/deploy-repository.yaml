@@ -1,8 +1,0 @@
-xl.repository:
-  artifacts:
-    type: "db"
-  database:
-    db-driver-classname: "org.postgresql.Driver"
-    db-url: "jdbc:postgresql://postgresql:5432/xld-db"
-    db-password: "admin"
-    db-username: "postgres"

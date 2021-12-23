@@ -1,4 +1,0 @@
-deploy.server:
-  hostname: 172.23.0.5
-  license:
-    daysBeforeWarning: 10

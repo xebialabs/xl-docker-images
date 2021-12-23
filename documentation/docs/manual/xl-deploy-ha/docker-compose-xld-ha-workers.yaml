@@ -1,7 +1,7 @@
 version: "3"
 services:
   xl-deploy-worker:
-    image: xebialabs/xl-deploy:10.4.0-SNAPSHOT
+    image: xebialabs/xl-deploy:10.3
     networks:
       - xld-network
     environment:
@@ -24,8 +24,6 @@ services:
       - "http://${XLD_LB}:5000/"
       - "-master"
       - "${XLD_MASTER_1}:8180"
-      - "-master"
-      - "${XLD_MASTER_2}:8180"
     volumes:
       - $PWD/xl-deploy-worker/conf:/opt/xebialabs/xl-deploy-server/conf # provide deployit-licence.lic file in the conf folder
 
