@@ -15,9 +15,6 @@ docker-compose -f docker-compose-xld-ha.yaml up --scale xl-deploy-master=1 -d ||
 # get the IP of master nodes, change the container names if you are not inside a folder named "xl-deploy-ha"
 export XLD_MASTER_1=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' xldeployha_xl-deploy-master_1)
 export XLD_LB=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' xl-deploy-lb)
-
-sleep 60
-
 echo ">>> Deploy worker nodes"
 # Deploy the worker nodes, you can change the number of nodes here if you wish
 docker-compose -f docker-compose-xld-ha-workers.yaml up --scale xl-deploy-worker=2 -d || exit
