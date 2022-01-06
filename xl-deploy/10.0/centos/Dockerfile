@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-10.0.9-server.zip /tmp
+COPY resources/xl-deploy-10.0.10-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-10.0.9-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-10.0.9-server ${APP_HOME}
+    unzip /tmp/xl-deploy-10.0.10-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-10.0.10-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -77,7 +77,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="10.0.9" \
+      version="10.0.10" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -117,13 +117,6 @@ RUN chmod ugo+x ${APP_ROOT}/tini
 
 WORKDIR ${APP_HOME}
 
-# Don't run as root
-RUN useradd -r -M -u 10001 -g 0 xebialabs
-USER 10001
-
-VOLUME ["${APP_HOME}/centralConfiguration", "${APP_HOME}/conf", "${APP_HOME}/export", "${APP_HOME}/ext", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/importablePackages", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/work"]
-EXPOSE 4516
-
 ENV XL_CLUSTER_MODE=default \
     XL_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-deploy \
     XL_DB_USERNAME=sa \
@@ -141,8 +134,19 @@ ENV XL_CLUSTER_MODE=default \
     XL_LICENSE_KIND=byol \
     GENERATE_XL_CONFIG=true \
     USE_IP_AS_HOSTNAME=false \
-    ENABLE_SATELLITE=false
+    ENABLE_SATELLITE=false \
+    PLUGIN_SOURCE=database \
+    USE_EXTERNAL_CENTRAL_CONFIG=false \
+    CENTRAL_CONFIG_URL=
 
+
+# Don't run as root
+RUN useradd -r -M -u 10001 -g 0 xebialabs
+USER 10001
+
+VOLUME ["${APP_HOME}/centralConfiguration", "${APP_HOME}/conf", "${APP_HOME}/export", "${APP_HOME}/ext", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/importablePackages", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/work"]
+
+EXPOSE 4516
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
