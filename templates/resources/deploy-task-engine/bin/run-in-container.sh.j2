@@ -112,6 +112,11 @@ function generate_product_conf {
     fi
 }
 
+function set_plugin_source {
+    PLUGIN_SOURCE_FLAG="-pluginSource=${PLUGIN_SOURCE}"
+    echo "Configuring plugin source. Setting value to ${PLUGIN_SOURCE_FLAG}"
+}
+
 {% include 'includes/' + product + '-run-script.j2' %}
 
 check_eula
@@ -119,6 +124,7 @@ copy_db_driver
 copy_mq_driver
 store_license
 generate_product_conf
+set_plugin_source
 
 # Start regular startup process
-exec ${APP_HOME}/bin/run.sh "$@"
+exec ${APP_HOME}/bin/run.sh "$@" ${PLUGIN_SOURCE_FLAG}

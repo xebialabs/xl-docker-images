@@ -49,3 +49,5 @@ context:
       value: ""
     - key: XLD_TASK_QUEUE_PASSWORD
       value: ""
+    - key: PLUGIN_SOURCE
+      value: "database"
