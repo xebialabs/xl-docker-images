@@ -165,7 +165,7 @@ function generate_product_conf {
     {% for file in central_config_files %}
       if [[ ${GENERATE_XL_CONFIG,,} != "true" ]]; then
         echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
-      elif [ -e ${APP_HOME}/central-conf/{{file}}.template ]; then
+      elif [[ -e ${APP_HOME}/central-conf/{{file}}.template && ! -f "${APP_HOME}/centralConfiguration/{{ file }}" ]]; then
         echo "Generate configuration file {{ file }} from environment parameters"
         sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
             -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
