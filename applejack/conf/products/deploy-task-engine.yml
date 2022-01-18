@@ -34,7 +34,7 @@ context:
     - "${APP_HOME}/work"
   environment:
     - key: XL_DB_URL
-      value: "jdbc:h2:file:${APP_HOME}/repository/xl-deploy"
+      value: "jdbc:derby:repository/db;create=true"
     - key: XLD_TASK_QUEUE_NAME
       value: "xld-tasks-queue"
     - key: XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE

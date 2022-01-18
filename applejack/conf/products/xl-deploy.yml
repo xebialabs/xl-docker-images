@@ -49,7 +49,7 @@ context:
   - key: XL_CLUSTER_MODE
     value: default
   - key: XL_DB_URL
-    value: "jdbc:h2:file:${APP_HOME}/repository/xl-deploy"
+    value: "jdbc:derby:repository/db;create=true"
   - key: XL_DB_USERNAME
     value: sa
   - key: XL_DB_PASSWORD
