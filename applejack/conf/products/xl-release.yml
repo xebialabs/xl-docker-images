@@ -74,3 +74,5 @@ context:
     value: "mqadmin"
   - key: PLUGIN_SOURCE
     value: "database"
+  - key: FORCE_REMOVE_MISSING_TYPES
+    value: "false"
