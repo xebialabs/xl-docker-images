@@ -3,6 +3,8 @@
 {%- set xl_version_splitted = xl_version.split(".") %}
 {%- set xl_version_major_minor = xl_version_splitted[0] + "." + xl_version_splitted[1] %}
 {%- set central_configuration_enabled = product == "xl-deploy" and xl_version_major_minor|float() >= 10.2 %}
+{%- set new_derby = product == "xl-deploy" and xl_version_major_minor|float() > 10.3 %}
+{%- set plugin_source_supported = xl_version_major_minor|float() > 10.3 %}
 
 function pwgen {
   tr -cd '[:alnum:]' < /dev/urandom | fold -w$1 | head -n1
@@ -42,6 +44,14 @@ function copy_db_driver {
       XL_DB_DRIVER="org.h2.Driver"
       cp ${APP_ROOT}/db-libs/h2* ${APP_HOME}/lib
       ;;
+    jdbc:derby:*)
+      {% if new_derby %}
+		XL_DB_DRIVER="org.apache.derby.iapi.jdbc.AutoloadedDriver"
+      {% else %}
+        XL_DB_DRIVER="org.apache.derby.jdbc.AutoloadedDriver"
+      {% endif %}
+      echo "Derby jdbc driver is provided by default in the classpath"
+      ;;
     jdbc:oracle:*)
       XL_DB_DRIVER="oracle.jdbc.OracleDriver"
       echo "oracle jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
@@ -63,7 +73,7 @@ function copy_db_driver {
       echo "db2 jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       ;;
     *)
-        echo "Database type could not be inferred from url '${XL_REPO_DB_URL}', supported db types are 'h2', 'oracle', 'mysql', 'postgresql', 'sqlserver', 'db2'"
+        echo "Database type could not be inferred from url '${XL_REPO_DB_URL}', supported db types are 'h2', 'derby', 'oracle', 'mysql', 'postgresql', 'sqlserver', 'db2'"
         exit 1
         ;;
   esac
@@ -187,7 +197,7 @@ function check_force_upgrade {
      FORCE_UPGRADE_FLAG="-force-upgrades"
    fi
 }
-
+{% if plugin_source_supported %}
 function set_plugin_source {
     if [[ "$1" == "worker" ]]
     then
@@ -198,6 +208,16 @@ function set_plugin_source {
 
     echo "Configuring plugin source. Setting value to ${PLUGIN_SOURCE_FLAG}"
 }
+{% endif %}
+
+{% if 'xl-release' in product %}
+function set_force_remove_missing_types {
+    if [[ "${FORCE_REMOVE_MISSING_TYPES}" == "true" ]]
+    then
+        FORCE_REMOVE_MISSING_TYPES_FLAG="-force-remove-missing-types=true"
+    fi
+}
+{% endif %}
 
 {% include 'includes/' + product + '-run-script.j2' %}
 
@@ -211,8 +231,9 @@ function set_plugin_source {
 generate_product_conf
 generate_node_conf
 check_force_upgrade
-set_plugin_source $1
+{% if plugin_source_supported %}set_plugin_source $1{% endif %}
+{% if 'xl-release' in product %}set_force_remove_missing_types{% endif %}
 
 # Start regular startup process
-exec ${APP_HOME}/bin/run.sh ${FORCE_UPGRADE_FLAG} "$@" ${PLUGIN_SOURCE_FLAG}
+exec ${APP_HOME}/bin/run.sh ${FORCE_UPGRADE_FLAG} "$@" {% if plugin_source_supported %} ${PLUGIN_SOURCE_FLAG} {% endif %} ${FORCE_REMOVE_MISSING_TYPES_FLAG}
 
