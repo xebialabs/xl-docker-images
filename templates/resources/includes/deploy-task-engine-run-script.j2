@@ -62,28 +62,37 @@ echo "Done copying default configurations"
 if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
   echo "No ${APP_HOME}/conf/{{ boot_conf }} file detected:"
 
-  if [ "${ADMIN_PASSWORD}" = "" ]; then
-    ADMIN_PASSWORD=`pwgen 8`
-    echo "... Generating admin password: ${ADMIN_PASSWORD}"
-  fi
+  if [ $# -gt 0 ]; then
+    echo "No arguments passed to container:"
+    echo "... Running default setup"
 
-  if [ "${REPOSITORY_KEYSTORE}" = "" ]; then
-    if [ "${REPOSITORY_KEYSTORE_PASSPHRASE}" = "" ]; then
-      REPOSITORY_KEYSTORE_PASSPHRASE=`pwgen 16`
-      echo "... Generating repository keystore passphrase: ${REPOSITORY_KEYSTORE_PASSPHRASE}"
+    if [ "${ADMIN_PASSWORD}" = "" ]; then
+      ADMIN_PASSWORD=`pwgen 8`
+      echo "... Generating admin password: ${ADMIN_PASSWORD}"
     fi
-    echo "... Generating repository keystore"
-    keytool -genseckey -alias deployit-passsword-key -keyalg aes -keysize 128 -keypass "deployit" -keystore ${APP_HOME}/conf/repository-keystore.jceks -storetype jceks -storepass ${REPOSITORY_KEYSTORE_PASSPHRASE}
-  else
-    if [ "${REPOSITORY_KEYSTORE_PASSPHRASE}" = "" ]; then
-      echo "REPOSITORY_KEYSTORE provided, without an accompanying passphrase. exiting..."
-      exit 1
+
+    if [ "${REPOSITORY_KEYSTORE}" = "" ]; then
+      if [ "${REPOSITORY_KEYSTORE_PASSPHRASE}" = "" ]; then
+        REPOSITORY_KEYSTORE_PASSPHRASE=`pwgen 16`
+        echo "... Generating repository keystore passphrase: ${REPOSITORY_KEYSTORE_PASSPHRASE}"
+      fi
+      echo "... Generating repository keystore"
+      keytool -genseckey -alias deployit-passsword-key -keyalg aes -keysize 128 -keypass "deployit" -keystore ${APP_HOME}/conf/repository-keystore.jceks -storetype jceks -storepass ${REPOSITORY_KEYSTORE_PASSPHRASE}
+    else
+      if [ "${REPOSITORY_KEYSTORE_PASSPHRASE}" = "" ]; then
+        echo "REPOSITORY_KEYSTORE provided, without an accompanying passphrase. exiting..."
+        exit 1
+      fi
+      echo ${REPOSITORY_KEYSTORE} | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
     fi
-    echo ${REPOSITORY_KEYSTORE} | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
+
+    if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
+      HOSTNAME=$(hostname -i)
+    fi
+
+    echo "... Generating {{ boot_conf }}"
+    sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" -e "s#\${CENTRAL_CONFIG_ENCRYPT_KEY}#${CENTRAL_CONFIG_ENCRYPT_KEY}#g" -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g" -e "s#\${USE_EXTERNAL_CENTRAL_CONFIG}#${USE_EXTERNAL_CENTRAL_CONFIG}#g" -e "s#\${CENTRAL_CONFIG_URL}#${CENTRAL_CONFIG_URL}#g" -e "s#\${HOSTNAME}#${HOSTNAME}#g" -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
+
+    echo "Done"
   fi
-
-  echo "... Generating {{ boot_conf }}"
-  sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g" -e "s#\${CENTRAL_CONFIG_ENCRYPT_KEY}#${CENTRAL_CONFIG_ENCRYPT_KEY}#g" -e "s#\${USE_EXTERNAL_CENTRAL_CONFIG}#${USE_EXTERNAL_CENTRAL_CONFIG}#g" -e "s#\${CENTRAL_CONFIG_URL}#${CENTRAL_CONFIG_URL}#g" -e "s#\${HOSTNAME}#${HOSTNAME}#g" -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
-
-  echo "Done"
 fi
