@@ -91,4 +91,9 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
 
     echo "Done"
   fi
+else
+ sed -i "s#xl.spring.cloud.external-config\=.*#xl.spring.cloud.external-config=${USE_EXTERNAL_CENTRAL_CONFIG}#" ${APP_HOME}/conf/{{ boot_conf }}
+ sed -i "s#xl.spring.cloud.uri\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+ echo xl.spring.cloud.uri=${CENTRAL_CONFIG_URL} >> ${APP_HOME}/conf/{{ boot_conf }}
 fi
+
