@@ -97,7 +97,7 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
   fi
 else
   echo "Found ${APP_HOME}/conf/{{ boot_conf }} file. Processing it for new properties"
-  if [ "${HOSTNAME}" != "" && "${HOSTNAME_SUFFIX}" != "" ]; then
+  if [[ "${HOSTNAME}" != "" && "${HOSTNAME_SUFFIX}" != "" ]]; then
     echo "Updating HOSTNAME & HOSTNAME_SUFFIX properties"
     sed -i "s#server.hostname\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     {
@@ -119,7 +119,7 @@ else
     } >> ${APP_HOME}/conf/{{ boot_conf }}
   fi
   if [ "${CENTRAL_CONFIG_ENCRYPT_KEY}" != "" ]; then
-    if grep -q xl.spring.cloud.encrypt.key ${APP_HOME}/conf/{{ boot_conf }}; then
+    if ! grep -q xl.spring.cloud.encrypt.key ${APP_HOME}/conf/{{ boot_conf }}; then
         echo "Updating CENTRAL_CONFIG_ENCRYPT_KEY property"
         sed -i "s#xl.spring.cloud.encrypt.key\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
         {
