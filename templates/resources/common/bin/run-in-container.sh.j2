@@ -41,6 +41,7 @@ function copy_db_driver {
 
   case ${XL_DB_URL} in
     jdbc:h2:*)
+      XL_DB_DRIVER="org.h2.Driver"
       cp ${APP_ROOT}/db-libs/h2* ${APP_HOME}/lib
       ;;
     jdbc:derby:*)
@@ -52,49 +53,29 @@ function copy_db_driver {
       echo "Derby jdbc driver is provided by default in the classpath"
       ;;
     jdbc:oracle:*)
+      XL_DB_DRIVER="oracle.jdbc.OracleDriver"
       echo "oracle jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       ;;
     jdbc:mysql:*)
+      XL_DB_DRIVER="com.mysql.jdbc.Driver"
       cp ${APP_ROOT}/db-libs/mysql* ${APP_HOME}/lib
       ;;
     jdbc:postgresql:*)
+      XL_DB_DRIVER="org.postgresql.Driver"
       cp ${APP_ROOT}/db-libs/postgresql* ${APP_HOME}/lib
       ;;
     jdbc:sqlserver:*)
+      XL_DB_DRIVER="com.microsoft.sqlserver.jdbc.SQLServerDriver"
       cp ${APP_ROOT}/db-libs/mssql* ${APP_HOME}/lib
       ;;
     jdbc:db2:*)
+      XL_DB_DRIVER="com.ibm.db2.jcc.DB2Driver"
       echo "db2 jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       ;;
     *)
         echo "Database type could not be inferred from url '${XL_REPO_DB_URL}', supported db types are 'h2', 'derby', 'oracle', 'mysql', 'postgresql', 'sqlserver', 'db2'"
         exit 1
         ;;
-  esac
-}
-
-function set_db_driver {
-  echo "Getting database driver classname"
-
-  case ${XL_DB_URL} in
-    jdbc:h2:*)
-      XL_DB_DRIVER="org.h2.Driver"
-      ;;
-    jdbc:oracle:*)
-      XL_DB_DRIVER="oracle.jdbc.OracleDriver"
-      ;;
-    jdbc:mysql:*)
-      XL_DB_DRIVER="com.mysql.jdbc.Driver"
-      ;;
-    jdbc:postgresql:*)
-      XL_DB_DRIVER="org.postgresql.Driver"
-      ;;
-    jdbc:sqlserver:*)
-      XL_DB_DRIVER="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-      ;;
-    jdbc:db2:*)
-      XL_DB_DRIVER="com.ibm.db2.jcc.DB2Driver"
-      ;;
   esac
 }
 
@@ -175,7 +156,7 @@ function generate_product_conf {
     {% for file in central_config_files %}
       if [[ ${GENERATE_XL_CONFIG,,} != "true" ]]; then
         echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
-      elif [[ -e ${APP_HOME}/central-conf/{{file}}.template && ! -f "${APP_HOME}/centralConfiguration/{{ file }}" ]]; then
+      elif [ -e ${APP_HOME}/central-conf/{{file}}.template ]; then
         echo "Generate configuration file {{ file }} from environment parameters"
         sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
             -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
@@ -239,8 +220,6 @@ function set_force_remove_missing_types {
 {% endif %}
 
 {% include 'includes/' + product + '-run-script.j2' %}
-
-set_db_driver
 
 {% if 'central-config' not in product %}
     check_eula
