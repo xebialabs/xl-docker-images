@@ -16,7 +16,6 @@ resources:
   - all
   - common
   - xl-deploy
-  - deploy-central-configuration
 context:
   license_server: https://download.xebialabs.com
   product: xl-deploy
@@ -88,6 +87,4 @@ context:
   - key: USE_EXTERNAL_CENTRAL_CONFIG
     value: "false"
   - key: CENTRAL_CONFIG_URL
-    value: ""
-  - key: CENTRAL_CONFIG_ENCRYPT_KEY
     value: ""
