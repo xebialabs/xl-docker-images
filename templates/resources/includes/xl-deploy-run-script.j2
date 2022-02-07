@@ -95,22 +95,4 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
 
     echo "Done"
   fi
-else
- sed -i "s#server.hostname\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
- sed -i "s#server.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
- sed -i "s#xl.spring.cloud.external-config\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
- sed -i "s#xl.spring.cloud.enabled\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
- sed -i "s#xl.spring.cloud.uri\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
- sed -i "s#xl.spring.cloud.encrypt.key\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
-
- {
-   echo server.hostname=${HOSTNAME}${HOSTNAME_SUFFIX}
-   echo server.port=8180
-   echo xl.spring.cloud.enabled=true
-   echo xl.spring.cloud.uri=${CENTRAL_CONFIG_URL}
-   echo xl.spring.cloud.external-config=${USE_EXTERNAL_CENTRAL_CONFIG}
-   echo xl.spring.cloud.encrypt.key=${CENTRAL_CONFIG_ENCRYPT_KEY}
- } >> ${APP_HOME}/conf/{{ boot_conf }}
-
- sed -i '/^$/d' ${APP_HOME}/conf/{{ boot_conf }}
 fi
