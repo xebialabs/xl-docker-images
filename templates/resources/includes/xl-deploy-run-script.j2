@@ -87,8 +87,26 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
     fi
 
     echo "... Generating {{ boot_conf }}"
-    sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g" ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
+    sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g"  "s#\${HOSTNAME}#${HOSTNAME}#g" -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
 
     echo "Done"
   fi
+else
+    echo "Found ${APP_HOME}/conf/{{ boot_conf }} file. Processing it for new properties"
+    if [[ "${HOSTNAME}" != "" && "${HOSTNAME_SUFFIX}" != "" ]]; then
+      echo "Updating HOSTNAME & HOSTNAME_SUFFIX properties"
+      sed -i "s#server.hostname\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+      {
+        echo server.hostname=${HOSTNAME}${HOSTNAME_SUFFIX}
+      } >> ${APP_HOME}/conf/{{ boot_conf }}
+    fi
+    echo "Updating server port and cloud enabled properties"
+    sed -i "s#server.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+    sed -i "s#xl.spring.cloud.enabled\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+    {
+      echo server.port=8180
+      echo xl.spring.cloud.enabled=true
+    } >> ${APP_HOME}/conf/{{ boot_conf }}
+
+    sed -i '/^$/d' ${APP_HOME}/conf/{{ boot_conf }}
 fi
