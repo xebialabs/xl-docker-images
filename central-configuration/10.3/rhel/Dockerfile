@@ -1,8 +1,37 @@
-FROM alpine:3.14.2 as installer
+FROM registry.access.redhat.com/rhel7/rhel-atomic
+
+MAINTAINER XebiaLabs Development <docker@xebialabs.com>
+
+LABEL name="xebialabs/central-configuration" \
+      maintainer="docker@xebialabs.com" \
+      vendor="XebiaLabs" \
+      version="10.3.8" \
+      release="1" \
+      summary="Central configuration" \
+      description="Enterprise-scale Application Release Automation for any environment" \
+      url="https://www.xebialabs.com/central-configuration"
+
+COPY resources/help.md /tmp/
+
+### add licenses to this directory
+COPY resources/licenses /licenses
 
 # Install dependencies
-RUN apk update
-RUN apk add --no-cache gawk unzip curl busybox-extras
+RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname shadow-utils which" && \
+    microdnf install --enablerepo=rhel-7-server-rpms --enablerepo=rhel-7-server-optional-rpms --nodocs ${INSTALL_PKGS} && \
+    microdnf update && \
+### help file markdown to man conversion
+    go-md2man -in /tmp/help.md -out /help.1 && \
+    microdnf clean all
+
+RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-11-openjdk-devel && \
+### Set the Java random source
+    echo "securerandom.source=file:/dev/urandom" >> /usr/lib/jvm/java/jre/lib/security/java.security && \
+    microdnf clean all
+
+### Install JQ
+RUN JQ_LOCATION="/usr/bin/jq" && \
+    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
 
 
     
@@ -12,10 +41,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/central-configuration-server
 
 # Install central-configuration from zip file
-COPY resources/central-configuration-22.0.1-server.zip /tmp
+COPY resources/central-configuration-10.3.8-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/central-configuration-22.0.1-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/central-configuration-22.0.1-server ${APP_HOME}
+    unzip /tmp/central-configuration-10.3.8-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/central-configuration-10.3.8-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -56,35 +85,9 @@ RUN chgrp -R 0 ${APP_ROOT} && \
 
 
 
-FROM centos:7
-
-MAINTAINER XebiaLabs Development <docker@xebialabs.com>
-
-LABEL name="xebialabs/central-configuration" \
-      maintainer="docker@xebialabs.com" \
-      vendor="XebiaLabs" \
-      version="22.0.1" \
-      release="1" \
-      summary="Central configuration" \
-      description="Enterprise-scale Application Release Automation for any environment" \
-      url="https://www.xebialabs.com/central-configuration"
 
 
-    # Set root folders
-ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
-ENV APP_HOME=${APP_ROOT}/central-configuration-server
-
-
-# Install dependencies
-RUN yum update -y && \
-    yum install -y epel-release telnet && \
-    yum install -y java-11-openjdk-devel curl jq unzip which && \
-    yum clean all -q
-
-# Copy installed Central configuration
-COPY --from=installer ${APP_ROOT} ${APP_ROOT}
-
-ENV OS=centos
+ENV OS=rhel
 
 
 
