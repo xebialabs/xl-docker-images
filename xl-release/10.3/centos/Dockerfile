@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-10.3.7-server.zip /tmp
+COPY resources/xl-release-10.3.8-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-10.3.7-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-10.3.7-server ${APP_HOME}
+    unzip /tmp/xl-release-10.3.8-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-10.3.8-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -77,7 +77,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="10.3.7" \
+      version="10.3.8" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -128,7 +128,8 @@ ENV XL_CLUSTER_MODE=default \
     XLR_TASK_QUEUE_NAME=xlr-tasks-queue \
     XLR_TASK_QUEUE_URL=amqp://localhost:61616 \
     XLR_TASK_QUEUE_USERNAME=mqadmin \
-    PLUGIN_SOURCE=database
+    PLUGIN_SOURCE=database \
+    FORCE_REMOVE_MISSING_TYPES=false
 
 
 # Don't run as root

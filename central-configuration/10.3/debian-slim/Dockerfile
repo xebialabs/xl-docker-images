@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/central-configuration-server
 
 # Install central-configuration from zip file
-COPY resources/central-configuration-22.0.1-server.zip /tmp
+COPY resources/central-configuration-10.3.8-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/central-configuration-22.0.1-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/central-configuration-22.0.1-server ${APP_HOME}
+    unzip /tmp/central-configuration-10.3.8-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/central-configuration-10.3.8-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -56,14 +56,14 @@ RUN chgrp -R 0 ${APP_ROOT} && \
 
 
 
-FROM centos:7
+FROM openjdk:11-jdk-slim-buster
 
 MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 
 LABEL name="xebialabs/central-configuration" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="22.0.1" \
+      version="10.3.8" \
       release="1" \
       summary="Central configuration" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -76,15 +76,15 @@ ENV APP_HOME=${APP_ROOT}/central-configuration-server
 
 
 # Install dependencies
-RUN yum update -y && \
-    yum install -y epel-release telnet && \
-    yum install -y java-11-openjdk-devel curl jq unzip which && \
-    yum clean all -q
+RUN apt-get update -y && \
+    apt-get install -y curl jq unzip apt-utils telnet && \
+    apt-get install -y fontconfig libfreetype6 && \
+    apt-get clean all -q
 
 # Copy installed Central configuration
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
-ENV OS=centos
+ENV OS=debian
 
 
 
