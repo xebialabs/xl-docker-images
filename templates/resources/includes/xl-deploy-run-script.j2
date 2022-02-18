@@ -117,7 +117,6 @@ else
   if [[ "${CENTRAL_CONFIG_ENCRYPT_KEY}" != "" ]]; then
     if ! grep -q xl.spring.cloud.encrypt.key ${APP_HOME}/conf/{{ boot_conf }}; then
         echo "Updating CENTRAL_CONFIG_ENCRYPT_KEY property"
-        sed -i "s#xl.spring.cloud.encrypt.key\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
         {
            echo xl.spring.cloud.encrypt.key=${CENTRAL_CONFIG_ENCRYPT_KEY}
         } >> ${APP_HOME}/conf/{{ boot_conf }}
