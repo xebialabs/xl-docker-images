@@ -100,21 +100,21 @@ else
        echo server.hostname=${HOSTNAME}${HOSTNAME_SUFFIX}
      } >> ${APP_HOME}/conf/{{ boot_conf }}
   fi
-  if [ "${USE_EXTERNAL_CENTRAL_CONFIG}" != "" ]; then
+  if [[ "${USE_EXTERNAL_CENTRAL_CONFIG}" != "" ]]; then
     echo "Updating USE_EXTERNAL_CENTRAL_CONFIG property"
     sed -i "s#xl.spring.cloud.external-config\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     {
        echo xl.spring.cloud.external-config=${USE_EXTERNAL_CENTRAL_CONFIG}
     } >> ${APP_HOME}/conf/{{ boot_conf }}
   fi
-  if [ "${CENTRAL_CONFIG_URL}" != "" ]; then
+  if [[ "${CENTRAL_CONFIG_URL}" != "" ]]; then
     echo "Updating CENTRAL_CONFIG_URL property"
     sed -i "s#xl.spring.cloud.uri\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     {
        echo xl.spring.cloud.uri=${CENTRAL_CONFIG_URL}
     } >> ${APP_HOME}/conf/{{ boot_conf }}
   fi
-  if [ "${CENTRAL_CONFIG_ENCRYPT_KEY}" != "" ]; then
+  if [[ "${CENTRAL_CONFIG_ENCRYPT_KEY}" != "" ]]; then
     if ! grep -q xl.spring.cloud.encrypt.key ${APP_HOME}/conf/{{ boot_conf }}; then
         echo "Updating CENTRAL_CONFIG_ENCRYPT_KEY property"
         sed -i "s#xl.spring.cloud.encrypt.key\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
