@@ -3,7 +3,7 @@
 {%- set xl_version_splitted = xl_version.split(".") %}
 {%- set xl_version_major_minor = xl_version_splitted[0] + "." + xl_version_splitted[1] %}
 {%- set central_configuration_enabled = product == "xl-deploy" and xl_version_major_minor|float() >= 10.2 %}
-{%- set new_derby = product == "xl-deploy" and xl_version_major_minor|float() > 10.3 %}
+{%- set new_derby = (product == "xl-deploy" or product == "central-configuration") and xl_version_major_minor|float() > 10.3 %}
 {%- set plugin_source_supported = xl_version_major_minor|float() > 10.3 %}
 
 function pwgen {
@@ -44,11 +44,6 @@ function copy_db_driver {
       cp ${APP_ROOT}/db-libs/h2* ${APP_HOME}/lib
       ;;
     jdbc:derby:*)
-      {% if new_derby %}
-		XL_DB_DRIVER="org.apache.derby.iapi.jdbc.AutoloadedDriver"
-      {% else %}
-        XL_DB_DRIVER="org.apache.derby.jdbc.AutoloadedDriver"
-      {% endif %}
       echo "Derby jdbc driver is provided by default in the classpath"
       ;;
     jdbc:oracle:*)
@@ -74,11 +69,18 @@ function copy_db_driver {
 }
 
 function set_db_driver {
-  echo "Getting database driver classname"
+  echo "Setting database driver classname"
 
   case ${XL_DB_URL} in
     jdbc:h2:*)
       XL_DB_DRIVER="org.h2.Driver"
+      ;;
+    jdbc:derby:*)
+      {% if new_derby %}
+        XL_DB_DRIVER="org.apache.derby.iapi.jdbc.AutoloadedDriver"
+      {% else %}
+        XL_DB_DRIVER="org.apache.derby.jdbc.AutoloadedDriver"
+      {% endif %}
       ;;
     jdbc:oracle:*)
       XL_DB_DRIVER="oracle.jdbc.OracleDriver"
