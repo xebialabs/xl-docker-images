@@ -96,19 +96,43 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
     echo "Done"
   fi
 else
-    echo "Found ${APP_HOME}/conf/{{ boot_conf }} file. Processing it for new properties"
-    if [[ "${HOSTNAME}" != "" && "${HOSTNAME_SUFFIX}" != "" ]]; then
-      echo "Updating HOSTNAME & HOSTNAME_SUFFIX properties"
-      sed -i "s#server.hostname\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
-      {
-        echo server.hostname=${HOSTNAME}${HOSTNAME_SUFFIX}
-      } >> ${APP_HOME}/conf/{{ boot_conf }}
-    fi
-    echo "Updating server port property"
-    sed -i "s#server.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+  echo "Found ${APP_HOME}/conf/{{ boot_conf }} file. Processing it for new properties"
+  if [[ "${HOSTNAME}" != "" && "${HOSTNAME_SUFFIX}" != "" ]]; then
+    echo "Updating HOSTNAME & HOSTNAME_SUFFIX properties"
+    sed -i "s#server.hostname\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     {
-      echo server.port=8180
+       echo server.hostname=${HOSTNAME}${HOSTNAME_SUFFIX}
+     } >> ${APP_HOME}/conf/{{ boot_conf }}
+  fi
+  if [[ "${USE_EXTERNAL_CENTRAL_CONFIG}" != "" ]]; then
+    echo "Updating USE_EXTERNAL_CENTRAL_CONFIG property"
+    sed -i "s#xl.spring.cloud.external-config\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+    {
+       echo xl.spring.cloud.external-config=${USE_EXTERNAL_CENTRAL_CONFIG}
     } >> ${APP_HOME}/conf/{{ boot_conf }}
+  fi
+  if [[ "${CENTRAL_CONFIG_URL}" != "" ]]; then
+    echo "Updating CENTRAL_CONFIG_URL property"
+    sed -i "s#xl.spring.cloud.uri\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+    {
+       echo xl.spring.cloud.uri=${CENTRAL_CONFIG_URL}
+    } >> ${APP_HOME}/conf/{{ boot_conf }}
+  fi
+  if [[ "${CENTRAL_CONFIG_ENCRYPT_KEY}" != "" ]]; then
+    if ! grep -q xl.spring.cloud.encrypt.key ${APP_HOME}/conf/{{ boot_conf }}; then
+        echo "Updating CENTRAL_CONFIG_ENCRYPT_KEY property"
+        {
+           echo xl.spring.cloud.encrypt.key=${CENTRAL_CONFIG_ENCRYPT_KEY}
+        } >> ${APP_HOME}/conf/{{ boot_conf }}
+    fi
+  fi
+ echo "Updating server port and cloud enabled properties"
+ sed -i "s#server.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+ sed -i "s#xl.spring.cloud.enabled\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+ {
+   echo server.port=8180
+   echo xl.spring.cloud.enabled=true
+ } >> ${APP_HOME}/conf/{{ boot_conf }}
 
-    sed -i '/^$/d' ${APP_HOME}/conf/{{ boot_conf }}
+ sed -i '/^$/d' ${APP_HOME}/conf/{{ boot_conf }}
 fi
