@@ -185,6 +185,16 @@ function check_force_upgrade {
      FORCE_UPGRADE_FLAG="-force-upgrades"
    fi
 }
+
+{% if 'xl-release' in product %}
+function set_force_remove_missing_types {
+    if [[ "${FORCE_REMOVE_MISSING_TYPES}" == "true" ]]
+    then
+        FORCE_REMOVE_MISSING_TYPES_FLAG="-force-remove-missing-types"
+    fi
+}
+{% endif %}
+
 {% include 'includes/' + product + '-run-script.j2' %}
 
 {% if 'central-config' not in product %}
@@ -198,6 +208,10 @@ generate_product_conf
 generate_node_conf
 check_force_upgrade
 
+{% if 'xl-release' in product %}
+  set_force_remove_missing_types
+{% endif %}
+
 # Start regular startup process
-exec ${APP_HOME}/bin/run.sh ${FORCE_UPGRADE_FLAG} "$@"
+exec ${APP_HOME}/bin/run.sh ${FORCE_UPGRADE_FLAG} "$@" ${FORCE_REMOVE_MISSING_TYPES_FLAG}
 
