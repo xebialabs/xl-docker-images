@@ -134,7 +134,8 @@ ENV XL_CLUSTER_MODE=default \
     XLR_TASK_QUEUE_PASSWORD=mqadmin \
     XLR_TASK_QUEUE_NAME=xlr-tasks-queue \
     XLR_TASK_QUEUE_URL=amqp://localhost:61616 \
-    XLR_TASK_QUEUE_USERNAME=mqadmin
+    XLR_TASK_QUEUE_USERNAME=mqadmin \
+    FORCE_REMOVE_MISSING_TYPES=false
 
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
