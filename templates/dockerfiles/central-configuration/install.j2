@@ -11,6 +11,9 @@ RUN mkdir -p ${APP_ROOT} && \
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
+# script to copy cc from embedded master to standalone cc
+COPY resources/bin/migrate-from-embedded-cc-to-standalone.sh ${APP_HOME}/bin/
+
 # Add jmx-exporter for prometheus
 COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
 
@@ -26,9 +29,7 @@ COPY resources/jmx-exporter/jmx-exporter.yaml ${APP_HOME}/default-conf/
 # Copy central configuration files
 RUN mkdir -p ${APP_HOME}/centralConfiguration
 COPY resources/central-conf ${APP_HOME}/central-conf
-RUN mv ${APP_HOME}/central-conf/boot.conf.template ${APP_HOME}/central-conf/{{ boot_conf }}.template
-RUN mv ${APP_HOME}/central-conf/{{ boot_conf }}.template ${APP_HOME}/default-conf/{{ boot_conf }}
-
+RUN mv ${APP_HOME}/central-conf/boot.conf.template ${APP_HOME}/default-conf/{{ boot_conf }}.template
 
 # Modify conf/{{ wrapper_conf }} to add node-conf to the classpath and to add container-specific VM options
 # ${APP_HOME}/node-conf will have first priority in classpath
