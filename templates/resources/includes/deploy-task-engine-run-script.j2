@@ -86,6 +86,9 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
       echo ${REPOSITORY_KEYSTORE} | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
     fi
 
+    if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
+       HOSTNAME=$(hostname -i)
+    fi
     echo "... Generating {{ boot_conf }}"
     sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g" -e "s#\${HOSTNAME}#${HOSTNAME}#g" -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
 
