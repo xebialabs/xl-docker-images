@@ -12,16 +12,16 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-22.0.1-server.zip /tmp
+COPY resources/xl-deploy-22.0.6-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-22.0.1-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-22.0.1-server ${APP_HOME}
+    unzip /tmp/xl-deploy-22.0.6-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-22.0.6-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
 # Add jmx-exporter for prometheus
-COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
+COPY resources/jmx-exporter/jmx_prometheus_javaagent-0.16.1.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
 COPY resources/bin/db-drivers.sh /tmp
@@ -80,7 +80,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="22.0.1" \
+      version="22.0.6" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -140,7 +140,8 @@ ENV XL_CLUSTER_MODE=default \
     ENABLE_SATELLITE=false \
     PLUGIN_SOURCE=database \
     USE_EXTERNAL_CENTRAL_CONFIG=false \
-    CENTRAL_CONFIG_URL=
+    CENTRAL_CONFIG_URL= \
+    CENTRAL_CONFIG_ENCRYPT_KEY=
 
 
 # Don't run as root
