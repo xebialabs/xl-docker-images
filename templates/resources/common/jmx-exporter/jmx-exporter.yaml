@@ -5,6 +5,5 @@
 ##                                                                                    ##
 
 # The host and port to connect to via remote JMX
-hostPort: localhost:9011
 rules:
 - pattern: ".*"
