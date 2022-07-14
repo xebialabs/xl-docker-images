@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/central-configuration-server
 
 # Install central-configuration from zip file
-COPY resources/central-configuration-22.0.6-server.zip /tmp
+COPY resources/central-configuration-22.0.7-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/central-configuration-22.0.6-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/central-configuration-22.0.6-server ${APP_HOME}
+    unzip /tmp/central-configuration-22.0.7-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/central-configuration-22.0.7-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -63,7 +63,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/central-configuration" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="22.0.6" \
+      version="22.0.7" \
       release="1" \
       summary="Central configuration" \
       description="Enterprise-scale Application Release Automation for any environment" \
