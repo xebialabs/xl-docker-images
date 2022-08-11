@@ -1,4 +1,4 @@
-FROM alpine:3.14.2 as installer
+FROM alpine:3.16 as installer
 
 # Install dependencies
 RUN apk update
@@ -12,16 +12,16 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-22.0.1.zip /tmp
+COPY resources/deploy-task-engine-22.0.8.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-22.0.1.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-22.0.1 ${APP_HOME}
+    unzip /tmp/deploy-task-engine-22.0.8.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-22.0.8 ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
 # Add jmx-exporter for prometheus
-COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
+COPY resources/jmx-exporter/jmx_prometheus_javaagent-0.17.0.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
 COPY resources/bin/db-drivers.sh /tmp
@@ -67,7 +67,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/deploy-task-engine" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="22.0.1" \
+      version="22.0.8" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -115,7 +115,10 @@ ENV XL_DB_URL=jdbc:derby:repository/db;create=true \
     XLD_TASK_QUEUE_URL= \
     XLD_TASK_QUEUE_USERNAME= \
     XLD_TASK_QUEUE_PASSWORD= \
-    PLUGIN_SOURCE=database
+    PLUGIN_SOURCE=database \
+    USE_EXTERNAL_CENTRAL_CONFIG=false \
+    CENTRAL_CONFIG_URL= \
+    CENTRAL_CONFIG_ENCRYPT_KEY=
 
 
 # Don't run as root
