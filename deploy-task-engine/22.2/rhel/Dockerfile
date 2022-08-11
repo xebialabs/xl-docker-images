@@ -5,7 +5,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/deploy-task-engine" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="22.2.0" \
+      version="22.2.2" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -41,16 +41,16 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-22.2.0.zip /tmp
+COPY resources/deploy-task-engine-22.2.2.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-22.2.0.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-22.2.0 ${APP_HOME}
+    unzip /tmp/deploy-task-engine-22.2.2.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-22.2.2 ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
 # Add jmx-exporter for prometheus
-COPY resources/jmx-exporter/jmx_prometheus_javaagent-0.16.1.jar ${APP_HOME}/lib/
+COPY resources/jmx-exporter/jmx_prometheus_javaagent-0.17.0.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
 COPY resources/bin/db-drivers.sh /tmp
