@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-MYSQL_VERSION="8.0.29"
-H2_VERSION="2.1.212"
-POSTGRESQL_VERSION="42.3.6"
-MSSQL_VERSION="10.2.1.jre11"
+MYSQL_VERSION="8.0.30"
+H2_VERSION="2.1.214"
+POSTGRESQL_VERSION="42.5.0"
+MSSQL_VERSION="11.2.1.jre11"
 
 echo "Downloading DB drivers to ${APP_ROOT}/db-libs"
 mkdir ${APP_ROOT}/db-libs
@@ -17,9 +17,9 @@ curl https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/${MSSQL_V
 echo "Downloading MQ drivers to ${APP_ROOT}/mq-libs"
 mkdir ${APP_ROOT}/mq-libs
 
-RABBIT_MQ_AMQP_VERSION="5.14.2"
-RABBIT_MQ_JMS_VERSION="2.4.0"
-ACTIVE_MQ_VERSION="5.17.1"
+RABBIT_MQ_AMQP_VERSION="5.16.0"
+RABBIT_MQ_JMS_VERSION="2.5.0"
+ACTIVE_MQ_VERSION="5.17.2"
 
 curl https://repo1.maven.org/maven2/com/rabbitmq/amqp-client/${RABBIT_MQ_AMQP_VERSION}/amqp-client-${RABBIT_MQ_AMQP_VERSION}.jar -o ${APP_ROOT}/mq-libs/amqp-client-${RABBIT_MQ_AMQP_VERSION}.jar -f
 curl https://repo1.maven.org/maven2/com/rabbitmq/jms/rabbitmq-jms/${RABBIT_MQ_JMS_VERSION}/rabbitmq-jms-${RABBIT_MQ_JMS_VERSION}.jar -o ${APP_ROOT}/mq-libs/rabbitmq-jms-${RABBIT_MQ_JMS_VERSION}.jar
