@@ -1,4 +1,4 @@
-FROM alpine:3.15 as installer
+FROM alpine:3.16 as installer
 
 # Install dependencies
 RUN apk update
@@ -12,16 +12,16 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-10.2.15-server.zip /tmp
+COPY resources/xl-deploy-10.2.20-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-10.2.15-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-10.2.15-server ${APP_HOME}
+    unzip /tmp/xl-deploy-10.2.20-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-10.2.20-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
 # Add jmx-exporter for prometheus
-COPY resources/jmx-exporter/jmx_prometheus_javaagent-0.16.1.jar ${APP_HOME}/lib/
+COPY resources/jmx-exporter/jmx_prometheus_javaagent-0.17.1.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
 COPY resources/bin/db-drivers.sh /tmp
@@ -80,7 +80,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="10.2.15" \
+      version="10.2.20" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
