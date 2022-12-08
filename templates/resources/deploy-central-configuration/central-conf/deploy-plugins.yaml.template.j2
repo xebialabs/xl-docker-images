@@ -1,0 +1,20 @@
+deploy.plugins:
+  repositories:
+    - name: xld-official
+      enabled: true
+      nexus-group-id: "com.xebialabs.xldeploy.plugins"
+      nexus-metadata-artifact:
+        artifact-id: "xld-plugins-metadata"
+        group-id: "com.xebialabs.xldeploy.plugins.metadata"
+      nexus-packaging-type: "xldp"
+      nexus-repository-id: "official-plugins"
+      repository-type: "nexus-by-group-id"
+      server-ref: "xebialabs-internal"
+      xl-component: "xl-deploy"
+  servers:
+    - name: xebialabs-internal
+      credentials:
+        password: "X1@6s_OP"
+        username: "official_public"
+      server-type: "nexus"
+      url: "https://nexus.xebialabs.com/nexus"
