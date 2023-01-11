@@ -33,6 +33,7 @@ context:
     - deploy-secret-complexity.yaml
     - deploy-server.yaml
     - deploy-task.yaml
+    - deploy-caches.yaml
   port: 8888
   volumes:
     - "${APP_HOME}/conf"
@@ -76,3 +77,5 @@ context:
       value: "false"
     - key: CENTRAL_CONFIG_ENCRYPT_KEY
       value: ""
+    - key: USE_CACHE
+      value: "false"
