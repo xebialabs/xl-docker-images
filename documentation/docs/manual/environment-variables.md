@@ -205,3 +205,8 @@ sidebar_position: 1
 - possible values: "valid URL"
 - default value: ""
 - example: "http://localhost:8888/centralConfiguration"
+
+##### `USE_CACHE`
+- Flag to disable/enable the use of application cache
+- possible values: "true,false"
+- default value: "false"
