@@ -210,3 +210,15 @@ sidebar_position: 1
 - Flag to disable/enable the use of application cache
 - possible values: "true,false"
 - default value: "false"
+
+##### `PROVIDER`
+- package name of the standalone cache
+- possible values: "valid cache provider package name"
+- default value: ""
+- example: ""
+
+##### `PROVIDER_CONFIGURATION_FILE`
+- configuration file path of the standalone cache provider
+- possible values: "provider property file path"
+- default value: ""
+- example: "infinispan-hotrod.properties"
