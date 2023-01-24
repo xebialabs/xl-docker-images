@@ -79,7 +79,3 @@ context:
       value: ""
     - key: USE_CACHE
       value: "false"
-    - key: PROVIDER
-      value: ""
-    - key: PROVIDER_CONFIGURATION_FILE
-      value: ""
