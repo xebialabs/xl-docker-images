@@ -44,5 +44,5 @@ END {
   printf("wrapper.java.additional.%d=-Dcom.sun.management.jmxremote.ssl=false\n", additionals + 5);
   printf("wrapper.java.additional.%d=-Dcom.sun.management.jmxremote.port=9011\n", additionals + 6);
   printf("wrapper.java.additional.%d=-Dcom.sun.management.jmxremote.rmi.port=9011\n", additionals + 7);
-  printf("wrapper.java.additional.%d=-javaagent:lib/jmx_prometheus_javaagent-0.16.1.jar=9100:conf/jmx-exporter.yaml\n", additionals + 8);
+  printf("wrapper.java.additional.%d=-javaagent:lib/jmx_prometheus_javaagent.jar=9100:conf/jmx-exporter.yaml\n", additionals + 8);
 }
