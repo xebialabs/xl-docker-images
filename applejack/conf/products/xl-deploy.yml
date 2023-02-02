@@ -34,6 +34,7 @@ context:
     - deploy-satellite.yaml
     - deploy-server.yaml
     - deploy-task.yaml
+    - deploy-caches.yaml
   port: 4516
   volumes:
     - "${APP_HOME}/centralConfiguration"
@@ -91,3 +92,5 @@ context:
     value: ""
   - key: CENTRAL_CONFIG_ENCRYPT_KEY
     value: ""
+  - key: USE_CACHE
+    value: "false"
