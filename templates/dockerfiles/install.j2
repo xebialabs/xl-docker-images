@@ -6,7 +6,7 @@
 COPY resources/{{ product }}-{{ xl_version }}-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
     unzip /tmp/{{ product }}-{{ xl_version }}-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/{{ product }}-{{ xl_version }}-server ${APP_HOME}
+    mv ${APP_ROOT}/{{ product }}-{{ xl_version }}-server/{{ product }}-{{ xl_version }}-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
