@@ -76,3 +76,5 @@ context:
     value: "database"
   - key: FORCE_REMOVE_MISSING_TYPES
     value: "false"
+  - key: XLR_HTTP2_ENABLED
+    value: "false"
