@@ -90,8 +90,25 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
       HOSTNAME=$(hostname -i)
     fi
 
+    if [[ -z "$SSL" ]]; then
+      SSL=false
+    fi
+
+    if [[ -z "$APP_PORT" ]]; then
+      APP_PORT={{ PORT }}
+    fi
+
     echo "... Generating {{ boot_conf }}"
-    sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" -e "s#\${CENTRAL_CONFIG_ENCRYPT_KEY}#${CENTRAL_CONFIG_ENCRYPT_KEY}#g" -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g" -e "s#\${USE_EXTERNAL_CENTRAL_CONFIG}#${USE_EXTERNAL_CENTRAL_CONFIG}#g" -e "s#\${CENTRAL_CONFIG_URL}#${CENTRAL_CONFIG_URL}#g" -e "s#\${HOSTNAME}#${HOSTNAME}#g" -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
+    sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" \
+      -e "s#\${CENTRAL_CONFIG_ENCRYPT_KEY}#${CENTRAL_CONFIG_ENCRYPT_KEY}#g" \
+      -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g" \
+      -e "s#\${USE_EXTERNAL_CENTRAL_CONFIG}#${USE_EXTERNAL_CENTRAL_CONFIG}#g" \
+      -e "s#\${CENTRAL_CONFIG_URL}#${CENTRAL_CONFIG_URL}#g" \
+      -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
+      -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
+      -e "s#\${SSL}#${SSL}#g" \
+      -e "s#\${APP_PORT}#${APP_PORT}#g" \
+      ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
 
     echo "Done"
   fi

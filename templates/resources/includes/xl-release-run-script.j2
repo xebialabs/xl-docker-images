@@ -79,10 +79,15 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
       SSL=false
     fi
 
+    if [[ -z "$APP_PORT" ]]; then
+      APP_PORT={{ PORT }}
+    fi
+
     echo "... Generating {{ boot_conf }}"
     sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" \
       -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g" \
       -e "s#\${SSL}#${SSL}#g" \
+      -e "s#\${APP_PORT}#${APP_PORT}#g" \
       ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
       
     if [ -n "${SERVER_URL}" ]; then

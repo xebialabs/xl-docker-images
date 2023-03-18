@@ -16,7 +16,7 @@ USER 10001
 
 VOLUME ["{{ volumes|join('", "') }}"]
 
-EXPOSE {{ port }}
+EXPOSE ${APP_PORT}
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
