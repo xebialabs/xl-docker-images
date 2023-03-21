@@ -95,7 +95,7 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
     fi
 
     if [[ -z "$APP_PORT" ]]; then
-      APP_PORT={{ PORT }}
+      APP_PORT={{ port }}
     fi
 
     echo "... Generating {{ boot_conf }}"
