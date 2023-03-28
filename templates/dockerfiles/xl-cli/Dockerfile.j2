@@ -1,5 +1,9 @@
 FROM alpine:3.16 as installer
 
+# Install dependencies
+RUN apk update
+RUN apk add --no-cache gawk unzip curl busybox-extras
+
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/{{ product }}
 
@@ -14,6 +18,28 @@ RUN mkdir -p ${APP_HOME} && \
 
 FROM alpine:3.16
 
+# Install dependencies
+RUN apk update
+
+# Install kubectl
+RUN apk add --no-cache curl && \
+    curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x kubectl && \
+    mv kubectl /usr/local/bin/ && \
+    apk del curl
+
+# Install keytool
+RUN apk add --no-cache openjdk8 && \
+    update-ca-certificates -f && \
+    keytool -genkey -noprompt -alias tomcat -dname "CN=localhost, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown" -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts -storepass changeit -keypass changeit
+
+# Install yq
+RUN apk add --no-cache yq
+
+# Add user
+RUN apk add --no-cache shadow && \
+    useradd -r -M -u 10001 -g 0 xebialabs
+
 {% include 'metadata.j2' %}
 
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
@@ -22,12 +48,20 @@ ENV APP_HOME=${APP_ROOT}/{{ product }}
 # Copy installed {{ product_name }}
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
-COPY resources/amd64/tini /opt
-RUN chmod ugo+x /opt/tini
+COPY resources/amd64/tini ${APP_ROOT}
+RUN chmod ugo+x ${APP_ROOT}/tini
 
 WORKDIR ${APP_HOME}
 
-# Don't run as root
-USER 10001
 
-ENTRYPOINT ["/opt/tini", "/opt/xebialabs/{{ product }}/xl"]
+{% for env in environment %}
+    {{- 'ENV ' if loop.first else '    ' -}}{{ [env['key'], env['value']]|join('=') }}{{ ' \\' if not loop.last else '' }}
+{% endfor %}
+
+# Don't run as root
+#USER 10001
+
+#VOLUME ["{{ volumes|join('", "') }}"]
+
+
+ENTRYPOINT ["/opt/xebialabs/{{ product }}/xl"]
