@@ -29,16 +29,29 @@ RUN apk add --no-cache curl && \
     apk del curl
 
 # Install keytool
-RUN apk add --no-cache openjdk8 && \
-    update-ca-certificates -f && \
-    keytool -genkey -noprompt -alias tomcat -dname "CN=localhost, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown" -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts -storepass changeit -keypass changeit
+RUN apk add --no-cache openjdk11-jre-headless ca-certificates
 
 # Install yq
-RUN apk add --no-cache yq
+RUN apk add --no-cache yq &&\
+    apk upgrade yq && \
+    yq --version
+
+
+# Install helm
+RUN apk add --no-cache curl tar && \
+    curl -LO https://get.helm.sh/helm-v3.7.0-linux-amd64.tar.gz && \
+    tar -xvf helm-v3.7.0-linux-amd64.tar.gz && \
+    mv linux-amd64/helm /usr/local/bin && \
+    rm -rf helm-v3.7.0-linux-amd64.tar.gz linux-amd64 && \
+    apk del curl
+
+# Install vim
+RUN apk update && apk add vim xclip
 
 # Add user
 RUN apk add --no-cache shadow && \
     useradd -r -M -u 10001 -g 0 xebialabs
+
 
 {% include 'metadata.j2' %}
 
@@ -51,8 +64,7 @@ COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 
-WORKDIR ${APP_HOME}
-
+WORKDIR ${APP_ROOT}
 
 {% for env in environment %}
     {{- 'ENV ' if loop.first else '    ' -}}{{ [env['key'], env['value']]|join('=') }}{{ ' \\' if not loop.last else '' }}
