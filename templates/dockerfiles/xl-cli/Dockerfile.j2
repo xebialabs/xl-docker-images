@@ -13,10 +13,16 @@ RUN mkdir -p ${APP_HOME} && \
     mv /tmp/{{ product }}-{{ xl_version }}-linux-amd64.bin ${APP_HOME}/xl && \
     chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
+    chown -R 10001:10001 ${APP_HOME} &&\
     chmod g+x ${APP_HOME}/xl
 
 
 FROM alpine:3.16
+
+{% include 'metadata.j2' %}
+
+ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
+ENV APP_HOME=${APP_ROOT}/{{ product }}
 
 # Install dependencies
 RUN apk update
@@ -36,7 +42,6 @@ RUN apk add --no-cache yq &&\
     apk upgrade yq && \
     yq --version
 
-
 # Install helm
 RUN apk add --no-cache curl tar && \
     curl -LO https://get.helm.sh/helm-v3.7.0-linux-amd64.tar.gz && \
@@ -50,13 +55,7 @@ RUN apk update && apk add vim xclip
 
 # Add user
 RUN apk add --no-cache shadow && \
-    useradd -r -M -u 10001 -g 0 xebialabs
-
-
-{% include 'metadata.j2' %}
-
-ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
-ENV APP_HOME=${APP_ROOT}/{{ product }}
+    useradd -d /opt/xebialabs -m -r -u 10001 -g 0 xebialabs
 
 # Copy installed {{ product_name }}
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
@@ -64,16 +63,17 @@ COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 
-WORKDIR ${APP_ROOT}
+# Set permissions
+RUN chmod g+x ${APP_ROOT}/tini
+
+WORKDIR ${APP_HOME}
 
 {% for env in environment %}
     {{- 'ENV ' if loop.first else '    ' -}}{{ [env['key'], env['value']]|join('=') }}{{ ' \\' if not loop.last else '' }}
 {% endfor %}
 
 # Don't run as root
-#USER 10001
-
-#VOLUME ["{{ volumes|join('", "') }}"]
+USER 10001
 
 
 ENTRYPOINT ["/opt/xebialabs/{{ product }}/xl"]
