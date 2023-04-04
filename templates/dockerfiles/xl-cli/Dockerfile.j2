@@ -37,8 +37,7 @@ RUN apk add --no-cache curl && \
 RUN apk add --no-cache openjdk11-jre-headless ca-certificates
 
 # Install yq
-RUN apk add --no-cache yq &&\
-    apk upgrade yq && \
+RUN apk add --no-cache yq && \    
     yq --version
 
 # Install helm
@@ -48,18 +47,18 @@ RUN apk add --no-cache curl tar && \
     chmod +x linux-amd64/helm && \
     mv linux-amd64/helm /usr/local/bin && \
     rm -rf helm-v3.7.0-linux-amd64.tar.gz linux-amd64 && \
-    apk del curl && \
+    apk del curl tar && \
     helm version
 
 # Install vim
-RUN apk update && apk add vim xclip
+RUN apk add --no-cache vim xclip
 
 # Install oc
-RUN apk add gcompat
+RUN apk add --no-cache gcompat
 RUN apk add --no-cache curl ca-certificates gettext git openssh-client openssl tar gzip && \
     curl -L https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz | tar zx && \
     mv oc /usr/local/bin && \
-    apk del curl && \
+    apk del curl tar gzip && \
     oc version --client
 
 # Add user
@@ -72,10 +71,8 @@ COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 # Install Tini
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static ${APP_ROOT}/tini
-RUN chmod +x ${APP_ROOT}/tini
-
-# Set permissions
-RUN chown -R 10001:10001 ${APP_ROOT}
+RUN chmod +x ${APP_ROOT}/tini && \
+    chown -R 10001:10001 ${APP_ROOT}
 
 WORKDIR ${APP_HOME}
 
