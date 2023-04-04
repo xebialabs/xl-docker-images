@@ -13,9 +13,7 @@ RUN mkdir -p ${APP_HOME} && \
     mv /tmp/{{ product }}-{{ xl_version }}-linux-amd64.bin ${APP_HOME}/xl && \
     chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
-    chown -R 10001:10001 ${APP_HOME} &&\
-    chmod g+x ${APP_HOME}/xl
-
+    chmod +x ${APP_HOME}/xl
 
 FROM alpine:3.16
 
@@ -32,7 +30,8 @@ RUN apk add --no-cache curl && \
     curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" && \
     chmod +x kubectl && \
     mv kubectl /usr/local/bin/ && \
-    apk del curl
+    apk del curl && \
+    kubectl version --client --output=yaml
 
 # Install keytool
 RUN apk add --no-cache openjdk11-jre-headless ca-certificates
@@ -46,12 +45,22 @@ RUN apk add --no-cache yq &&\
 RUN apk add --no-cache curl tar && \
     curl -LO https://get.helm.sh/helm-v3.7.0-linux-amd64.tar.gz && \
     tar -xvf helm-v3.7.0-linux-amd64.tar.gz && \
+    chmod +x linux-amd64/helm && \
     mv linux-amd64/helm /usr/local/bin && \
     rm -rf helm-v3.7.0-linux-amd64.tar.gz linux-amd64 && \
-    apk del curl
+    apk del curl && \
+    helm version
 
 # Install vim
 RUN apk update && apk add vim xclip
+
+# Install oc
+RUN apk add gcompat
+RUN apk add --no-cache curl ca-certificates gettext git openssh-client openssl tar gzip && \
+    curl -L https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz | tar zx && \
+    mv oc /usr/local/bin && \
+    apk del curl && \
+    oc version --client
 
 # Add user
 RUN apk add --no-cache shadow && \
@@ -60,20 +69,17 @@ RUN apk add --no-cache shadow && \
 # Copy installed {{ product_name }}
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
-COPY resources/amd64/tini ${APP_ROOT}
-RUN chmod ugo+x ${APP_ROOT}/tini
+# Install Tini
+ENV TINI_VERSION v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static ${APP_ROOT}/tini
+RUN chmod +x ${APP_ROOT}/tini
 
 # Set permissions
-RUN chmod g+x ${APP_ROOT}/tini
+RUN chown -R 10001:10001 ${APP_ROOT}
 
 WORKDIR ${APP_HOME}
-
-{% for env in environment %}
-    {{- 'ENV ' if loop.first else '    ' -}}{{ [env['key'], env['value']]|join('=') }}{{ ' \\' if not loop.last else '' }}
-{% endfor %}
 
 # Don't run as root
 USER 10001
 
-
-ENTRYPOINT ["/opt/xebialabs/{{ product }}/xl"]
+ENTRYPOINT ["/opt/xebialabs/tini", "-v", "--", "/opt/xebialabs/xl-client/xl"]
