@@ -68,8 +68,7 @@ RUN apk add --no-cache shadow && \
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 # Install Tini
-ENV TINI_VERSION v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static ${APP_ROOT}/tini
+ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static ${APP_ROOT}/tini
 RUN chmod +x ${APP_ROOT}/tini && \
     chown -R 10001:10001 ${APP_ROOT}
 
