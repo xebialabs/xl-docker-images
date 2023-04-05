@@ -67,6 +67,8 @@ RUN apk add --no-cache shadow && \
 # Copy installed {{ product_name }}
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
+ENV KUBECONFIG=/opt/xebialabs/.kube/config
+
 # Install Tini
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static ${APP_ROOT}/tini
 RUN chmod +x ${APP_ROOT}/tini && \
@@ -77,4 +79,4 @@ WORKDIR ${APP_HOME}
 # Don't run as root
 USER 10001
 
-ENTRYPOINT ["/opt/xebialabs/tini", "-v", "--", "/opt/xebialabs/xl-client/xl"]
+ENTRYPOINT ["/opt/xebialabs/tini", "--", "/opt/xebialabs/xl-client/xl"]
