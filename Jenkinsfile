@@ -6,6 +6,7 @@ import groovy.transform.Field
 
 def dte_LatestVersion = ""
 def xlr_LatestVersion = ""
+def xl_client_LatestVersion = ""
 def xld_LatestVersion = ""
 def cc_LatestVersion = ""
 
@@ -13,6 +14,14 @@ pipeline {
     agent none
 
     parameters {
+        booleanParam(
+                name: 'xl_client',
+                defaultValue: false,
+                description: 'Specifies if you want to generate Docker Image for XLClient')
+        string(
+                name: 'xl_client_version',
+                defaultValue: '',
+                description: "Version of XL Client you want to create Docker Images for")
         booleanParam(
                 name: 'xl_release',
                 defaultValue: false,
@@ -112,6 +121,19 @@ pipeline {
 
                         // Rendering and Committing changes
                         script {
+                            if (params.xl_client== true) {
+
+                                xl_client_LatestVersion = getLatestVersion("xl_client")
+
+                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xl-client_LatestVersion} --product xl-client --registry ${params.Registry} --commit"
+                                } else {
+                                    sh "pipenv run ./applejack.py render --xl-version ${xl_client_LatestVersion} --product xl-client --registry ${params.Registry}"
+                                }
+
+                                // Build Docker Image and push it
+                                sh "pipenv run ./applejack.py build --xl-version ${xl_client_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-client  --target-os alphine  --push --registry ${params.Registry}"
+                            }
 
                             if (params.xl_release == true) {
 
@@ -437,6 +459,25 @@ pipeline {
 
 def getLatestVersion(xl_product) {
     script {
+
+        if (xl_product == 'xl_client') {
+            if (params.xl_client_version == '') {
+
+                def xl_client_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlclient/xl-client/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
+
+                writeFile(file: "${env.WORKSPACE}/xl-client-latest", text: "${xl_client_Version}")
+                xl_client_LatestVersion = readFile "${env.WORKSPACE}/xl-client-latest"
+
+            } else {
+
+                writeFile(file: "${env.WORKSPACE}/xl-client-latest", text: "${params.xl_client_Version}")
+                xl_client_LatestVersion = readFile "${env.WORKSPACE}/xl-client-latest"
+
+            }
+            return xl_client_LatestVersion
+
+        }
+
         if (xl_product == 'xl_release') {
             if (params.xlr_version == '') {
 
