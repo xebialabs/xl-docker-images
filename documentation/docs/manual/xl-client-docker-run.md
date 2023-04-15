@@ -17,11 +17,10 @@ We need to volume mount the kube config file in order to access cluster in the d
 
 * You can run the official xl-client docker images from XebiaLabs using the `docker run` command as follows: 
 ```shell
-   docker run -it
-   --name xlclient
-   -v ~/.kube/config:/opt/xebialabs/.kube/config
-   -e KUBECONFIG=/opt/xebialabs/.kube/config
-   -v /home/ishwarya/Downloads/config:/opt/xebialabs/xl-client/config
+   docker run -it \
+   -v ~/.kube/config:/opt/xebialabs/.kube/config \
+   -e KUBECONFIG=/opt/xebialabs/.kube/config \
+   -v ~/Downloads/config:/opt/xebialabs/xl-client/config \
    xebialabsunsupported/xl-client:23.1.0-329.113 kube install
 
 ```
@@ -35,7 +34,7 @@ We need to volume mount the kube config file in order to access cluster in the d
 
 ### 1. Installing xl-release using xl-client kube install
 ```shell
-[ishwarya@worker01 xl-docker-images]* S-90011 $ docker run -it -v ~/.kube/config:/opt/xebialabs/.kube/config -e KUBECONFIG=/opt/xebialabs/.kube/config --name xlclient  -v /home/ishwarya/Downloads/config:/opt/xebialabs/xl-client/config xebialabsunsupported/xl-client:23.1.0-329.113 kube install
+[worker01 xl-docker-images]* S-90011 $ docker run -it -v ~/.kube/config:/opt/xebialabs/.kube/config -e KUBECONFIG=/opt/xebialabs/.kube/config -v ~/Downloads/config:/opt/xebialabs/xl-client/config xebialabsunsupported/xl-client:23.1.0-329.113 kube install
 [INFO  tini (1)] Spawned child process '/opt/xebialabs/xl-client/xl' with pid '7'
 ? Following kubectl context will be used during execution: `default/api-apollo-operator-raqx-p1-openshiftapps-com:6443/cluster-admin`? Yes
 ? Select the Kubernetes setup where the Digital.ai Devops Platform will be installed, updated or cleaned: Openshift [Openshift]
@@ -144,7 +143,7 @@ Install finished successfully!
 ### 2. Cleaning xl-release using xl-client kube clean
 ```shell
 
-[ishwarya@worker01 xl-docker-images]* S-90011 $ docker run -it -v ~/.kube/config:/opt/xebialabs/.kube/config -e KUBECONFIG=/opt/xebialabs/.kube/config --name xlclient -v /home/ishwarya/git/deploy/xlr-remote-runner:/opt/xebialabs/remoteRunner -v /home/ishwarya/Downloads/config:/opt/xebialabs/xl-client/config xebialabsunsupported/xl-client:23.1.0-329.113 kube clean
+[worker01 xl-docker-images]* S-90011 $ docker run -it -v ~/.kube/config:/opt/xebialabs/.kube/config -e KUBECONFIG=/opt/xebialabs/.kube/config -v ~/git/deploy/xlr-remote-runner:/opt/xebialabs/remoteRunner -v ~/Downloads/config:/opt/xebialabs/xl-client/config xebialabsunsupported/xl-client:23.1.0-329.113 kube clean
 [INFO  tini (1)] Spawned child process '/opt/xebialabs/xl-client/xl' with pid '6'
 ? Following kubectl context will be used during execution: `default/api-apollo-operator-raqx-p1-openshiftapps-com:6443/cluster-admin`? Yes
 ? Select the Kubernetes setup where the Digital.ai Devops Platform will be installed, updated or cleaned: Openshift [Openshift]
@@ -213,11 +212,10 @@ Clean finished successfully!
 ## Install remote runner in k8s cluster.
 
 ```shell
-   docker run -it
-   --name xlclient
-   -v ~/.kube/config:/opt/xebialabs/.kube/config
-   -e KUBECONFIG=/opt/xebialabs/.kube/config 
-   -v /home/ishwarya/git/deploy/xlr-remote-runner:/opt/xebialabs/remoteRunner
+   docker run -it \
+   -v ~/.kube/config:/opt/xebialabs/.kube/config \
+   -e KUBECONFIG=/opt/xebialabs/.kube/config \
+   -v ~/git/deploy/xlr-remote-runner:/opt/xebialabs/remoteRunner \
    xebialabsunsupported/xl-client:23.1.0-329.113 kube install
 
 ```
@@ -228,7 +226,7 @@ Clean finished successfully!
 
 ### 1. Installing remote-runner using xl-client kube install
 ```shell
-[ishwarya@worker01 xl-docker-images]* S-90011 $ docker run -it -v ~/.kube/config:/opt/xebialabs/.kube/config -e KUBECONFIG=/opt/xebialabs/.kube/config --name xlclient -v /home/ishwarya/git/deploy/xlr-remote-runner:/opt/xebialabs/remoteRunner xebialabsunsupported/xl-client:23.1.0-329.113 kube install
+[worker01 xl-docker-images]* S-90011 $ docker run -it -v ~/.kube/config:/opt/xebialabs/.kube/config -e KUBECONFIG=/opt/xebialabs/.kube/config -v ~/git/deploy/xlr-remote-runner:/opt/xebialabs/remoteRunner xebialabsunsupported/xl-client:23.1.0-329.113 kube install
 [INFO  tini (1)] Spawned child process '/opt/xebialabs/xl-client/xl' with pid '7'
 ? Following kubectl context will be used during execution: `default/api-apollo-operator-raqx-p1-openshiftapps-com:6443/cluster-admin`? Yes
 ? Select the Kubernetes setup where the Digital.ai Devops Platform will be installed, updated or cleaned: Openshift [Openshift]
@@ -281,7 +279,7 @@ Installed helm chart remote-runner to namespace digitalai
 ### 2. Cleaning remote-runner using xl-client kube clean
 ```shell
 
-[ishwarya@worker01 xl-docker-images]* S-90011 $ docker run -it -v ~/.kube/config:/opt/xebialabs/.kube/config -e KUBECONFIG=/opt/xebialabs/.kube/config --name xlclient -v /home/ishwarya/git/deploy/xlr-remote-runner:/opt/xebialabs/remoteRunner -v /home/ishwarya/Downloads/config:/opt/xebialabs/xl-client/config xebialabsunsupported/xl-client:23.1.0-329.113 kube clean
+[worker01 xl-docker-images]* S-90011 $ docker run -it -v ~/.kube/config:/opt/xebialabs/.kube/config -e KUBECONFIG=/opt/xebialabs/.kube/config -v ~/git/deploy/xlr-remote-runner:/opt/xebialabs/remoteRunner -v ~/Downloads/config:/opt/xebialabs/xl-client/config xebialabsunsupported/xl-client:23.1.0-329.113 kube clean
 [INFO  tini (1)] Spawned child process '/opt/xebialabs/xl-client/xl' with pid '7'
 ? Following kubectl context will be used during execution: `default/api-apollo-operator-raqx-p1-openshiftapps-com:6443/cluster-admin`? Yes
 ? Select the Kubernetes setup where the Digital.ai Devops Platform will be installed, updated or cleaned: Openshift [Openshift]
@@ -325,7 +323,7 @@ services:
     image: xebialabsunsupported/xl-client:23.1.0-329.113
     container_name: xl-client
     volumes:
-      - /home/ishwarya/Downloads/config:/opt/xebialabs/xl-client/config
+      - ~/Downloads/config:/opt/xebialabs/xl-client/config
       - ~/.kube/config:/opt/xebialabs/.kube/config
     command: ["kube", "install"]  
 ```
@@ -334,7 +332,7 @@ services:
 
 ```shell
 
-[ishwarya@worker01 Downloads] $ docker-compose -f xlclient.yaml run xl-client
+[worker01 Downloads] $ docker-compose -f xlclient.yaml run xl-client
 Creating downloads_xl-client_run ... done
 ? Following kubectl context will be used during execution: `xl-cli-cluster`? Yes
 ? Select the Kubernetes setup where the Digital.ai Devops Platform will be installed, updated or cleaned: AzureAKS [Azure AKS]
@@ -454,7 +452,7 @@ services:
    # stdin_open: true
    # tty: true
     volumes:
-      - /home/ishwarya/Downloads/config:/opt/xebialabs/xl-client/config
+      - ~/Downloads/config:/opt/xebialabs/xl-client/config
       - ~/.kube/config:/opt/xebialabs/.kube/config      
     environment:
       - KUBECONFIG=/opt/xebialabs/.kube/config
@@ -464,7 +462,7 @@ services:
 * Save the above content to a file named `docker-compose-xlclient.yaml` in a folder and run `docker-compose -f docker-compose-xlclient.yaml run xl-client` from the same folder.
 ```shell
 
-[ishwarya@worker01 Downloads] $ docker-compose -f xlclient.yaml run xl-client
+[worker01 Downloads] $ docker-compose -f xlclient.yaml run xl-client
 Creating downloads_xl-client_run ... done
 ? Following kubectl context will be used during execution: `xl-cli-cluster`? Yes
 ? Select the Kubernetes setup where the Digital.ai Devops Platform will be installed, updated or cleaned: AzureAKS [Azure AKS]
