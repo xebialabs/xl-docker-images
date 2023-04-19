@@ -44,6 +44,8 @@ context:
     value: sa
   - key: XL_DB_PASSWORD
     value: "123"
+  - key: XL_DB_MAX_POOL_SIZE
+    value: "10"
   - key: XL_METRICS_ENABLED
     value: "false"
   - key: XL_CLUSTER_MODE
@@ -56,6 +58,8 @@ context:
     value: "\\${xl.database.db-username}"
   - key: XL_REPORT_DB_PASSWORD
     value: "\\${xl.database.db-password}"
+  - key: XL_REPORT_DB_MAX_POOL_SIZE
+    value: "10"
   - key: XL_LICENSE_KIND
     value: byol
   - key: GENERATE_XL_CONFIG
