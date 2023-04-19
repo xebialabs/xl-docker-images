@@ -89,10 +89,10 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
       -e "s#\${SSL}#${SSL}#g" \
       -e "s#\${APP_PORT}#${APP_PORT}#g" \
       ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
-      
+
     if [ -n "${SERVER_URL}" ]; then
       echo "Setting custom server URL: ${SERVER_URL}"
-      echo -e "\nserver.url=${SERVER_URL}" >> ${APP_HOME}/conf/{{ boot_conf }}
+      echo -e "\nserver.url=${SERVER_URL}" | sed -e "s#\${APP_PORT}#${APP_PORT}#g" >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
 
     if [ -n "$HTTP_SSL_KEYSTORE_PATH" ]; then
