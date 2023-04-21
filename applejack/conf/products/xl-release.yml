@@ -51,7 +51,7 @@ context:
   - key: XL_CLUSTER_MODE
     value: default
   - key: SERVER_URL
-    value: "http://localhost:5516/"
+    value: "http://localhost:\\${APP_PORT}/"
   - key: XL_REPORT_DB_URL
     value: "jdbc:h2:file:${APP_HOME}/repository/xl-release-report"
   - key: XL_REPORT_DB_USERNAME
