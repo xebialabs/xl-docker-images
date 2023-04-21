@@ -7,11 +7,24 @@ sidebar_position: 9
 If you want to run an instance of XL Release, Remote Runner, or XL Deploy in K8s using the xl-client docker image, follow these steps.
 
 :::important
-We need to volume mount the kube config file in order to access cluster in the docker container.
+* We need to volume mount the kube config file in order to access cluster in the docker container.
+   - Default kube config path /opt/xebialabs/.kube/config in the docker container.
 
-**Note:**
-* Default kube config path /opt/xebialabs/.kube/config in the docker container.
+* For GCP installation we may need to volume mount the gcloud config from our host system and change the permission of the ~/.config/gcloud directory to 10001:0 to be accessible by the docker container.
+*  sudo chown 10001:0  ~/.config/gcloud
+```shell
+            docker run -it 
+            --name xlclient 
+            -v ~/.kube/config:/opt/xebialabs/.kube/config 
+            -v ~/Downloads/config:/opt/xebialabs/xl-client/config 
+            -v ~/git/deploy/xl-op-blueprints:/opt/xebialabs/xl-op-blueprint 
+            -v ~/.config/gcloud:/opt/xebialabs/.config/gcloud 
+            xebialabsunsupported/xl-client:23.1 
+            kube install
+            --local-repo /opt/xebialabs/xl-op-blueprint
+```
 :::
+
 
 ##  Install xl-release in the k8s cluster.
 

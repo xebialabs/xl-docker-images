@@ -60,6 +60,19 @@ RUN apk add --no-cache gcompat curl ca-certificates tar gzip && \
     apk del curl tar gzip && \
     oc version --client
 
+# Install gcloud dependencies
+RUN apk add --no-cache curl python3 py3-crcmod py3-openssl ca-certificates
+RUN curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz -o /tmp/google-cloud-sdk.tar.gz && \
+     tar xzf /tmp/google-cloud-sdk.tar.gz -C /opt && \
+     rm /tmp/google-cloud-sdk.tar.gz && \
+     apk del curl tar gzip
+
+ENV PATH="/opt/google-cloud-sdk/bin:${PATH}"
+
+# Install gcloud auth plugin
+RUN gcloud components install beta && \
+    gcloud components install  gke-gcloud-auth-plugin
+
 # Add user
 RUN apk add --no-cache shadow && \
     useradd -d /opt/xebialabs -m -r -u 10001 -g 0 xebialabs
@@ -69,10 +82,13 @@ COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 ENV KUBECONFIG=/opt/xebialabs/.kube/config
 
+# Set up gcloud config folder
+RUN mkdir -p ${APP_ROOT}/.config/gcloud
+
 # Install Tini
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static ${APP_ROOT}/tini
 RUN chmod +x ${APP_ROOT}/tini && \
-    chown -R 10001:10001 ${APP_ROOT}
+    chown -R 10001:0 ${APP_ROOT}
 
 WORKDIR ${APP_HOME}
 
