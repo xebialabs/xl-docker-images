@@ -73,6 +73,16 @@ ENV PATH="/opt/google-cloud-sdk/bin:${PATH}"
 RUN gcloud components install beta && \
     gcloud components install  gke-gcloud-auth-plugin
 
+# git installation needed for krew
+RUN apk add --no-cache git
+
+# Install aws dependencies.
+RUN apk update && \
+    apk add python3 py3-pip
+
+RUN pip3 install awscli
+RUN aws --version
+
 # Add user
 RUN apk add --no-cache shadow && \
     useradd -d /opt/xebialabs -m -r -u 10001 -g 0 xebialabs
@@ -80,10 +90,12 @@ RUN apk add --no-cache shadow && \
 # Copy installed {{ product_name }}
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
-ENV KUBECONFIG=/opt/xebialabs/.kube/config
+# Set up gcloud config, aws config and kube config folder
+RUN mkdir -p ${APP_ROOT}/.config/gcloud && \
+    mkdir -p ${APP_ROOT}/.kube && \
+    mkdir -p ${APP_ROOT}/.aws
 
-# Set up gcloud config folder
-RUN mkdir -p ${APP_ROOT}/.config/gcloud
+ENV KUBECONFIG=${APP_ROOT}/.kube/config
 
 # Install Tini
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static ${APP_ROOT}/tini
@@ -94,5 +106,17 @@ WORKDIR ${APP_HOME}
 
 # Don't run as root
 USER 10001
+
+# Install Krew
+RUN cd /tmp \
+  && wget -O krew-linux_amd64.tar.gz https://github.com/kubernetes-sigs/krew/releases/download/v0.4.3/krew-linux_amd64.tar.gz \
+  && tar zxvf krew-linux_amd64.tar.gz \
+  && ./krew-linux_amd64 install krew && \
+  rm -rf /tmp/krew*
+
+# Set up Krew
+ENV PATH="${APP_ROOT}/.krew/bin:${PATH}"
+
+RUN kubectl krew install oidc-login
 
 ENTRYPOINT ["/opt/xebialabs/tini", "--", "/opt/xebialabs/xl-client/xl"]
