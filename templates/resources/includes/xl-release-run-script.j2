@@ -102,7 +102,7 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
       echo -e "\nkeystore.password=${HTTP_SSL_KEYSTORE_PASSWORD}" >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
     if [ -n "$HTTP_SSL_KEYSTORE_KEYPASSWORD" ]; then
-      echo -e "\nkeystore.keypassowrd=${HTTP_SSL_KEYSTORE_KEYPASSWORD}" >> ${APP_HOME}/conf/{{ boot_conf }}
+      echo -e "\nkeystore.keypassword=${HTTP_SSL_KEYSTORE_KEYPASSWORD}" >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
 
     echo "Done"
