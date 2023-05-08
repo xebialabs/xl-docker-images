@@ -70,10 +70,6 @@ pipeline {
                 name: 'Registry',
                 choices: ['xl-docker.xebialabs.com', 'xebialabs', 'xebialabsunsupported', 'xebialabsearlyaccess'],
                 description: "Docker Registry you want to push non RHEL Docker Images to")
-        booleanParam(
-                name: 'TestXLUP',
-                defaultValue: false,
-                description: 'Specifies if We need to test new docker images with xlup or not')
     }
 
     options {
@@ -411,31 +407,6 @@ pipeline {
                         }
                     }
                 }
-
-                stage('Test XLUP with New Docker Images for debian-slim') {
-                    when {
-                        expression {
-                            params.Linux == true && params.TestXLUP == true
-                        }
-                    }
-                    agent {
-                        label 'docker_minikube'
-                    }
-                    steps {
-                        // Clean old workspace
-                        step([$class: 'WsCleanup'])
-                        checkout scm
-
-                        script {
-
-                            runXlUpOnMiniKube()
-
-                        }
-                        script {
-                            cleanWs()
-                        }
-                    }
-                }
             }
         }
     }
@@ -547,68 +518,4 @@ def getLatestVersion(xl_product) {
             return dte_LatestVersion
         }
     }
-}
-
-def runXlUpOnMiniKube() {
-
-    sh "git clone git@github.com:xebialabs/xl-up-blueprint.git"
-
-    sh """
-        sudo cat  /root/.minikube/client.crt > xlup/k8sClientCert-minikube-tmp.crt
-        sudo tr ' ' '\\n' < xlup/k8sClientCert-minikube-tmp.crt > xlup/k8sClientCert-minikube-tmp2.crt
-        sudo tr '%' ' ' < xlup/k8sClientCert-minikube-tmp2.crt > xlup/k8sClientCert-minikube.crt
-        sudo rm -f xlup/k8sClientCert-minikube-tmp.crt | rm -f xlup/k8sClientCert-minikube-tmp2.crt
-    """
-
-    sh """
-        sudo cat  /root/.minikube/client.key > xlup/k8sClientCert-minikube-tmp.key
-        sudo tr ' ' '\\n' < xlup/k8sClientCert-minikube-tmp.key > xlup/k8sClientCert-minikube-tmp2.key
-        sudo tr '%' ' ' < xlup/k8sClientCert-minikube-tmp2.key > xlup/k8sClientCert-minikube.key
-        sudo rm -f xlup/k8sClientCert-minikube-tmp.key | rm -f xlup/k8sClientCert-minikube-tmp2.key
-    """
-
-    def minikube_host = sh(script: 'hostname -f', returnStdout: true).trim()
-
-    sh "sed -ie 's@k8s.com@${minikube_host}@g' xlup/xl_generated_answers.yaml"
-    sh "sed -ie 's@K8sClientCertFile: cert-temp-file@K8sClientCertFile: xlup/k8sClientCert-minikube.crt@g' xlup/xl_generated_answers.yaml"
-    sh "sed -ie 's@K8sClientKeyFile: key-temp-file@K8sClientKeyFile: xlup/k8sClientCert-minikube.key@g' xlup/xl_generated_answers.yaml"
-    sh "sed -ie 's@XlKeyStore: repository-keystore-temp@XlKeyStore: xlup/repository-keystore.jceks@g' xlup/xl_generated_answers.yaml"
-    // create empty files for lic as answer file always validate it.
-    sh "touch xlrelease-temp-license  xldeploy-temp-license"
-
-    if ((params.xl_release == true) && (params.xl_deploy == false)) {
-
-        sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/xl-release-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-release.lic"
-        sh "sed -ie 's@InstallXLR: false@InstallXLR: true@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XlrLic: xlrelease-temp-license@XlrLic: xlup/xl-release.lic@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XlrVersion: xl-release:0.0.0@XlrVersion: xl-release:${xlr_LatestVersion}@g' xlup/xl_generated_answers.yaml"
-
-    }
-
-    if ((params.xl_release == false) && (params.xl_deploy == true)) {
-
-        sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/deployit-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-deploy.lic"
-        sh "sed -ie 's@InstallXLD: false@InstallXLD: true@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XldLic: xldeploy-temp-license@XldLic: xlup/xl-deploy.lic@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XldVersion: xl-deploy:0.0.0@XldVersion: xl-deploy:${xld_LatestVersion}@g' xlup/xl_generated_answers.yaml"
-
-    }
-
-    if ((params.xl_release == true) && (params.xl_deploy == true)) {
-
-        sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/xl-release-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-release.lic"
-        sh "sed -ie 's@InstallXLR: false@InstallXLR: true@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XlrLic: xlrelease-temp-license@XlrLic: xlup/xl-release.lic@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XlrVersion: xl-release:0.0.0@XlrVersion: xl-release:${xlr_LatestVersion}@g' xlup/xl_generated_answers.yaml"
-
-        sh "curl https://dist.xebialabs.com/customer/licenses/download/v3/deployit-license.lic -u ${DIST_SERVER_CRED} -o xlup/xl-deploy.lic"
-        sh "sed -ie 's@InstallXLD: false@InstallXLD: true@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XldLic: xldeploy-temp-license@XldLic: xlup/xl-deploy.lic@g' xlup/xl_generated_answers.yaml"
-        sh "sed -ie 's@XldVersion: xl-deploy:0.0.0@XldVersion: xl-deploy:${xld_LatestVersion}@g' xlup/xl_generated_answers.yaml"
-
-    }
-
-    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version ${SEED_VERSION} --undeploy --skip-prompts"
-    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version ${SEED_VERSION} --skip-prompts"
-    sh "sudo /opt/xl up -a xlup/xl_generated_answers.yaml -b xl-infra -l xl-up-blueprint --seed-version ${SEED_VERSION} --undeploy --skip-prompts"
 }
