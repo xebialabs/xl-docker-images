@@ -12,16 +12,16 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-23.1.0-beta.6-server.zip /tmp
+COPY resources/xl-deploy-23.1.0-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-23.1.0-beta.6-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-23.1.0-beta.6-server ${APP_HOME}
+    unzip /tmp/xl-deploy-23.1.0-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-23.1.0-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
 
 # Add jmx-exporter for prometheus
-COPY resources/jmx-exporter/jmx_prometheus_javaagent-0.17.1.jar ${APP_HOME}/lib/
+COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
 COPY resources/bin/db-drivers.sh /tmp
@@ -80,7 +80,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="23.1.0-beta.6" \
+      version="23.1.0" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -141,7 +141,8 @@ ENV XL_CLUSTER_MODE=default \
     PLUGIN_SOURCE=database \
     USE_EXTERNAL_CENTRAL_CONFIG=false \
     CENTRAL_CONFIG_URL= \
-    CENTRAL_CONFIG_ENCRYPT_KEY=
+    CENTRAL_CONFIG_ENCRYPT_KEY= \
+    USE_CACHE=false
 
 
 # Don't run as root
@@ -150,7 +151,7 @@ USER 10001
 
 VOLUME ["${APP_HOME}/centralConfiguration", "${APP_HOME}/conf", "${APP_HOME}/export", "${APP_HOME}/ext", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/importablePackages", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/work"]
 
-EXPOSE 4516
+EXPOSE ${APP_PORT}
 
 # Environment variables are not expanded when using the exec form of the ENTRYPOINT command. They are
 # expanded when using the shell form, but that results in tini running with a PID higher than 1.
