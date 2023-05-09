@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-23.1.0-beta.10-server.zip /tmp
+COPY resources/xl-release-23.1.0-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-23.1.0-beta.10-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-23.1.0-beta.10-server ${APP_HOME}
+    unzip /tmp/xl-release-23.1.0-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-23.1.0-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -77,7 +77,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="23.1.0-beta.10" \
+      version="23.1.0" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -115,7 +115,7 @@ ENV XL_CLUSTER_MODE=default \
     XL_DB_PASSWORD=123 \
     XL_METRICS_ENABLED=false \
     XL_CLUSTER_MODE=default \
-    SERVER_URL=http://localhost:5516/ \
+    SERVER_URL=http://localhost:\${APP_PORT}/ \
     XL_REPORT_DB_URL=jdbc:h2:file:${APP_HOME}/repository/xl-release-report \
     XL_REPORT_DB_USERNAME=\${xl.database.db-username} \
     XL_REPORT_DB_PASSWORD=\${xl.database.db-password} \
