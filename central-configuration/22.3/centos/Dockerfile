@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/central-configuration-server
 
 # Install central-configuration from zip file
-COPY resources/central-configuration-22.3.9-server.zip /tmp
+COPY resources/central-configuration-22.3.10-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/central-configuration-22.3.9-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/central-configuration-22.3.9-server ${APP_HOME}
+    unzip /tmp/central-configuration-22.3.10-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/central-configuration-22.3.10-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -64,7 +64,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/central-configuration" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="22.3.9" \
+      version="22.3.10" \
       release="1" \
       summary="Central configuration" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -94,6 +94,8 @@ RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(read
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
+
+
 
 WORKDIR ${APP_HOME}
 
