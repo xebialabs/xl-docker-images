@@ -5,7 +5,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="22.3.9" \
+      version="22.3.10" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -41,10 +41,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-22.3.9-server.zip /tmp
+COPY resources/xl-deploy-22.3.10-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-22.3.9-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-22.3.9-server ${APP_HOME}
+    unzip /tmp/xl-deploy-22.3.10-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-22.3.10-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -120,6 +120,8 @@ RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(read
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
+
+
 
 WORKDIR ${APP_HOME}
 
