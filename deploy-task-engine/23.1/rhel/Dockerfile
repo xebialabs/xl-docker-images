@@ -5,7 +5,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/deploy-task-engine" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="23.1.0" \
+      version="23.1.1" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -41,10 +41,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-23.1.0.zip /tmp
+COPY resources/deploy-task-engine-23.1.1.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-23.1.0.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-23.1.0 ${APP_HOME}
+    unzip /tmp/deploy-task-engine-23.1.1.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-23.1.1 ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -111,6 +111,8 @@ RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(read
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
+
+
 
 WORKDIR ${APP_HOME}
 
