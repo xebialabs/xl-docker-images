@@ -1,2 +1,0 @@
-deploy.metrics:
-  enabled: ${XL_METRICS_ENABLED}

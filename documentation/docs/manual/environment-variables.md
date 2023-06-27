@@ -143,11 +143,6 @@ sidebar_position: 1
 
 ### Specific for XLDeploy docker images:-
 
-##### `APP_PORT`
- - HTTP Port of the master 
- - possible values: 4516
-- default value: 4516
-  
 ##### `XLD_IN_PROCESS`
 - Used to control whether the internal in-process worker should be used or not. If you need to use external workers then this needs to be set to false.
 - possible values: "true", "false"
@@ -215,23 +210,3 @@ sidebar_position: 1
 - Flag to disable/enable the use of application cache
 - possible values: "true,false"
 - default value: "false"
-
-##### `OVERRIDE_HOSTNAME`
-- Override HOSTNAME by this value. If the HOSTNAME_SUFFIX is not set in that case only this value will be used to generate the full hostname of the container.
-- possible value: "test.com"
-- no default value
-
-##### `SERVER_PORT`
-- Canonical port for the Akka remoting in the master-worker communication. 
-- possible value: 8180
-- default value: 8180
-
-##### `CLUSTER_NODE_HOSTNAME_SUFFIX`
-- Adds a string suffix to your master hostname to which other masters will connect in the cluster remoting setup.
-- possible value: ".test.com"
-- no default value
-
-##### `CLUSTER_NODE_PORT`
-- Canonical port for the Akka remoting that will be used in the cluster remoting setup.
-- possible value: 25520
-- default value: 25520
