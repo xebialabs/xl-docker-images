@@ -1,0 +1,2 @@
+http.port=8888
+xl.spring.cloud.encrypt.key=${CENTRAL_CONFIG_ENCRYPT_KEY}
