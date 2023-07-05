@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-22.1.16.zip /tmp
+COPY resources/deploy-task-engine-22.1.17.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-22.1.16.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-22.1.16 ${APP_HOME}
+    unzip /tmp/deploy-task-engine-22.1.17.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-22.1.17 ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -67,7 +67,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/deploy-task-engine" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="22.1.16" \
+      version="22.1.17" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
