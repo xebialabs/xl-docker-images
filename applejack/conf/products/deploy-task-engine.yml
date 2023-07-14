@@ -33,6 +33,8 @@ context:
     - "${APP_HOME}/plugins"
     - "${APP_HOME}/work"
   environment:
+    - key: APP_PORT
+      value: 4516
     - key: XL_DB_URL
       value: "jdbc:derby:repository/db;create=true"
     - key: XLD_TASK_QUEUE_NAME
