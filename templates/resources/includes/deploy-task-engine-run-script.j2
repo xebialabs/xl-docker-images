@@ -93,6 +93,10 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
       echo ${REPOSITORY_KEYSTORE} | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
     fi
 
+    if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
+      HOSTNAME=$(hostname -i)
+    fi
+
     if [[ -z "$OVERRIDE_HOSTNAME" ]]; then
       HOSTNAME=$(hostname)
       if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
@@ -165,7 +169,7 @@ else
     echo "Updating server port and cloud enabled properties"
     grep "server.port=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#server.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     grep "xl.spring.cloud.enabled=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#xl.spring.cloud.enabled\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
-    grep "http.port=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+    grep "http.port="${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     {
       echo server.port=${SERVER_PORT}
       echo xl.spring.cloud.enabled=true

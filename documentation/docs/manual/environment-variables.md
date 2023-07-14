@@ -71,28 +71,11 @@ sidebar_position: 1
 - default value: "123"
 - example: "xl_P@ssw0rd01"
 
-##### `XL_METRICS_ENABLED`
-- Flag to expose internal and system metrics over Java Management Extensions (JMX). This is to enable the use of monitoring systems that can read JMX data, with XL Products.
-- possible values: "true","false"
-- default value: "false"
-
-##### `GENERATE_XL_CONFIG`
-- Used to generate configuration from environment parameters passed, and volumes mounted with custom changes. If set to false, a default config will be used and all environment variables and volumes added will be ignored.
-- possible values: "true","false"
-- default value: "true"
-
-##### `USE_IP_AS_HOSTNAME`
-- Used to set IP address of the container as the hostname for the instance. If set to true then IP will be used instead of the container ID. This is useful when deploying XL Deploy as active-active cluster using docker compose as Akka cannot resolve aliases within the docker network.
-- possible values: "true","false"
-- default value: "false"
-
-### Specific for XLRelease docker images:-
-
-##### `SERVER_URL`
-- This is used for setting a custom server URL instead of a hostname where XL Products are installed. This can be useful in email notifications where you need users to connect directly to URLs such as a reverse proxy.
-- possible values: "url-string-value"
-- default value: `http://localhost:5516/`
-- example `http://xl-release.company.com`
+##### `XL_DB_MAX_POOL_SIZE`
+- Max size of the main DB pool.
+- possible values: any positive number 
+- default value: 10
+- example: 10
 
 ##### `XL_REPORT_DB_URL`
 - Sets the value for the URL used to connect to the reporting database.
@@ -111,6 +94,40 @@ sidebar_position: 1
 - possible values: "password-value"
 - default value: none
 - example: "rep_P@ssw0rd01"
+
+##### `XL_REPORT_DB_MAX_POOL_SIZE`
+- Max size of the report DB pool.
+- possible values: any positive number
+- default value: 10
+- example: 10
+
+##### `XL_METRICS_ENABLED`
+- Flag to expose internal and system metrics over Java Management Extensions (JMX). This is to enable the use of monitoring systems that can read JMX data, with XL Products.
+- possible values: "true","false"
+- default value: "false"
+
+##### `GENERATE_XL_CONFIG`
+- Used to generate configuration from environment parameters passed, and volumes mounted with custom changes. If set to false, a default config will be used and all environment variables and volumes added will be ignored.
+- possible values: "true","false"
+- default value: "true"
+
+##### `USE_IP_AS_HOSTNAME`
+- Used to set IP address of the container as the hostname for the instance. If set to true then IP will be used instead of the container ID. This is useful when deploying XL Deploy as active-active cluster using docker compose as Akka cannot resolve aliases within the docker network.
+- possible values: "true","false"
+- default value: "false"
+
+### Specific for XLRelease docker images:-
+
+##### `APP_PORT`
+- HTTP Port of the master
+- possible values: 5516
+- default value: 5516
+
+##### `SERVER_URL`
+- This is used for setting a custom server URL instead of a hostname where XL Products are installed. This can be useful in email notifications where you need users to connect directly to URLs such as a reverse proxy.
+- possible values: "url-string-value"
+- default value: `http://localhost:5516/`
+- example `http://xl-release.company.com`
 
 ##### `ENABLE_EMBEDDED_QUEUE`
 - Flag to expose external messaging queue. If set to true, a default embedded-queue will be used and all environment variables will be ignored.
@@ -143,6 +160,11 @@ sidebar_position: 1
 
 ### Specific for XLDeploy docker images:-
 
+##### `APP_PORT`
+- HTTP Port of the master 
+- possible values: 4516
+- default value: 4516
+  
 ##### `XLD_IN_PROCESS`
 - Used to control whether the internal in-process worker should be used or not. If you need to use external workers then this needs to be set to false.
 - possible values: "true", "false"
@@ -210,3 +232,24 @@ sidebar_position: 1
 - Flag to disable/enable the use of application cache
 - possible values: "true,false"
 - default value: "false"
+
+##### `OVERRIDE_HOSTNAME`
+- Override HOSTNAME by this value. If the HOSTNAME_SUFFIX is not set in that case only this value will be used to generate the full hostname of the container.
+- possible value: "test.com"
+- no default value
+
+##### `SERVER_PORT`
+- Canonical port for the Akka remoting in the master-worker communication. 
+- possible value: 8180
+- default value: 8180
+
+##### `CLUSTER_NODE_HOSTNAME_SUFFIX`
+- Adds a string suffix to your master hostname to which other masters will connect in the cluster remoting setup.
+- possible value: ".test.com"
+- no default value
+
+##### `CLUSTER_NODE_PORT`
+- Canonical port for the Akka remoting that will be used in the cluster remoting setup.
+- possible value: 25520
+- default value: 25520
+
