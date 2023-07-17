@@ -100,9 +100,13 @@ function store_license {
 
 function generate_product_conf {
 
-    HOSTNAME=$(hostname)
-    if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
-      HOSTNAME=$(hostname -i)
+    if [[ -z "$OVERRIDE_HOSTNAME" ]]; then
+      HOSTNAME=$(hostname)
+      if [[ ${USE_IP_AS_HOSTNAME,,} == "true" ]]; then
+        HOSTNAME=$(hostname -i)
+      fi
+    else
+      HOSTNAME=$OVERRIDE_HOSTNAME
     fi
     IP_ADDRESS=$(hostname -i)
 
