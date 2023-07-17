@@ -141,6 +141,7 @@ else
       echo "Updating server.hostname with HOSTNAME & HOSTNAME_SUFFIX properties"
       grep "server.hostname=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#server.hostname\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
       {
+        echo ""
         echo server.hostname=${HOSTNAME}${HOSTNAME_SUFFIX}
       } >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
@@ -148,6 +149,7 @@ else
       echo "Updating xl.spring.cloud.external-config with USE_EXTERNAL_CENTRAL_CONFIG property"
       grep "xl.spring.cloud.external-config=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#xl.spring.cloud.external-config\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
       {
+        echo ""
         echo xl.spring.cloud.external-config=${USE_EXTERNAL_CENTRAL_CONFIG}
       } >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
@@ -155,6 +157,7 @@ else
       echo "Updating xl.spring.cloud.uri with CENTRAL_CONFIG_URL property"
       grep "xl.spring.cloud.uri=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#xl.spring.cloud.uri\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
       {
+        echo ""
         echo xl.spring.cloud.uri=${CENTRAL_CONFIG_URL}
       } >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
@@ -162,6 +165,7 @@ else
       if ! grep -q xl.spring.cloud.encrypt.key ${APP_HOME}/conf/{{ boot_conf }}; then
         echo "Updating xl.spring.cloud.encrypt.key with CENTRAL_CONFIG_ENCRYPT_KEY property"
         {
+          echo ""
           echo xl.spring.cloud.encrypt.key=${CENTRAL_CONFIG_ENCRYPT_KEY}
         } >> ${APP_HOME}/conf/{{ boot_conf }}
       fi
@@ -171,6 +175,7 @@ else
     grep "xl.spring.cloud.enabled=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#xl.spring.cloud.enabled\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     grep "http.port="${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     {
+      echo ""
       echo server.port=${SERVER_PORT}
       echo xl.spring.cloud.enabled=true
       echo http.port=${APP_PORT}
