@@ -1,5 +1,5 @@
 #!groovy
-@Library('jenkins-pipeline-libs@master')
+@Library('jenkins-pipeline-libs@S-83937')
 import java.lang.Object
 import com.xebialabs.pipeline.utils.Branches
 import groovy.transform.Field
