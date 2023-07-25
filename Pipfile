@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-certifi = "==2018.4.16"
+certifi = "==2023.7.22"
 chardet = "==3.0.4"
 docker = "==3.4.1"
 docker-pycreds = "==0.3.0"
