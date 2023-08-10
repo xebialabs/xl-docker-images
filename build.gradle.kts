@@ -4,9 +4,9 @@ import java.time.format.DateTimeFormatter
 
 
 plugins {
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.8.10"
 
-    id("com.github.node-gradle.node") version "3.1.0"
+    id("com.github.node-gradle.node") version "4.0.0"
     id("idea")
 }
 
@@ -45,35 +45,6 @@ tasks.named<Test>("test") {
 }
 
 tasks {
-    named<YarnTask>("yarn_install") {
-        args.set(listOf("--mutex", "network"))
-        workingDir.set(file("${rootDir}/documentation"))
-    }
-
-    register<YarnTask>("yarnRunStart") {
-        dependsOn(named("yarn_install"))
-        args.set(listOf("run", "start"))
-        workingDir.set(file("${rootDir}/documentation"))
-    }
-
-    register<YarnTask>("yarnRunBuild") {
-        dependsOn(named("yarn_install"))
-        args.set(listOf("run", "build"))
-        workingDir.set(file("${rootDir}/documentation"))
-    }
-
-    register<Delete>("docCleanUp") {
-        delete(file("${rootDir}/docs"))
-        delete(file("${rootDir}/documentation/build"))
-        delete(file("${rootDir}/documentation/.docusaurus"))
-        delete(file("${rootDir}/documentation/node_modules"))
-    }
-
-    register<Copy>("docBuild") {
-        dependsOn(named("yarnRunBuild"), named("docCleanUp"))
-        from(file("${rootDir}/documentation/build"))
-        into(file("${rootDir}/docs"))
-    }
 
     compileKotlin {
         kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
@@ -82,6 +53,45 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
     }
+
+    named<YarnTask>("yarn_install") {
+        group = "doc"
+        args.set(listOf("--mutex", "network"))
+        workingDir.set(file("${rootDir}/documentation"))
+    }
+
+    register<YarnTask>("yarnRunStart") {
+        group = "doc"
+        dependsOn(named("yarn_install"))
+        args.set(listOf("run", "start"))
+        workingDir.set(file("${rootDir}/documentation"))
+    }
+
+    register<YarnTask>("yarnRunBuild") {
+        group = "doc"
+        dependsOn(named("yarn_install"))
+        args.set(listOf("run", "build"))
+        workingDir.set(file("${rootDir}/documentation"))
+    }
+
+    register<Delete>("docCleanUp") {
+        group = "doc"
+        delete(file("${rootDir}/docs"))
+        delete(file("${rootDir}/documentation/build"))
+        delete(file("${rootDir}/documentation/.docusaurus"))
+        delete(file("${rootDir}/documentation/node_modules"))
+    }
+
+    register<Copy>("docBuild") {
+        group = "doc"
+        dependsOn(named("yarnRunBuild"), named("docCleanUp"))
+        from(file("${rootDir}/documentation/build"))
+        into(file("${rootDir}/docs"))
+    }
+}
+
+tasks.named("build") {
+    dependsOn("docBuild")
 }
 
 node {
