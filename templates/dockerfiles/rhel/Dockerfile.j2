@@ -15,7 +15,7 @@ RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname shadow-utils wh
     go-md2man -in /tmp/help.md -out /help.1 && \
     microdnf clean all
 
-RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-11-openjdk-devel && \
+RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-17-openjdk && \
 ### Set the Java random source
     echo "securerandom.source=file:/dev/urandom" >> /usr/lib/jvm/java/jre/lib/security/java.security && \
     microdnf clean all
