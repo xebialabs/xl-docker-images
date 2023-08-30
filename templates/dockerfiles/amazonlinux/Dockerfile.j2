@@ -24,7 +24,7 @@ FROM amazonlinux:2
 
 # Install dependencies
 RUN yum update -y && \
-    yum install -y java-11-amazon-corretto curl jq shadow-utils.x86_64 hostname unzip which telnet && \
+    yum install -y java-17-amazon-corretto curl jq shadow-utils.x86_64 hostname unzip which telnet && \
     yum clean all -q
 
 # Copy installed {{ product_name }}

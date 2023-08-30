@@ -12,7 +12,7 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
     {% include 'install.j2' %}
 {% endif %}
 
-FROM openjdk:11-jdk-slim-buster
+FROM openjdk:17-jdk-slim-buster
 
 {% include 'metadata.j2' %}
 
