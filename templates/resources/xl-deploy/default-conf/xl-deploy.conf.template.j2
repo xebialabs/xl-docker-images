@@ -23,7 +23,7 @@ xl {
   }
 
   server {
-    port = 8180
+    port = ${SERVER_PORT}
   }
 
   license {
@@ -40,7 +40,7 @@ xl {
       db-password="${XL_DB_PASSWORD}"
       db-url="${XL_DB_URL}"
       db-username=${XL_DB_USERNAME}
-      max-pool-size=10
+      max-pool-size=${XL_DB_MAX_POOL_SIZE}
     }
   }
 
