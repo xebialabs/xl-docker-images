@@ -235,7 +235,7 @@ else
     echo server.port=${SERVER_PORT}
     echo xl.spring.cloud.enabled=true
     echo http.port=${APP_PORT}
-      echo http.context.root=${APP_CONTEXT_ROOT}
+    echo http.context.root=${APP_CONTEXT_ROOT}
   } >> ${APP_HOME}/conf/{{ boot_conf }}
 
   sed -i '/^$/d' ${APP_HOME}/conf/{{ boot_conf }}
