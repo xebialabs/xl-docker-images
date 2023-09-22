@@ -27,6 +27,7 @@ context:
   central_config_files:
     - deploy-cluster.yaml
     - deploy-metrics.yaml
+    - deploy-oidc.yaml
     - deploy-plugins.yaml
     - deploy-repository.yaml
     - deploy-reporting.yaml

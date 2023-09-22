@@ -10,7 +10,8 @@ deploy.task:
       jms-driver-classname: "${XLD_TASK_QUEUE_DRIVER_CLASS_NAME}"
       jms-url: "${XLD_TASK_QUEUE_URL}"
       jms-username: "${XLD_TASK_QUEUE_USERNAME}"
-      jms-password: "${XLD_TASK_QUEUE_PASSWORD}"
+      jms-password: |-
+        ${XLD_TASK_QUEUE_PASSWORD}
 akka:
   io:
     dns:
