@@ -26,16 +26,15 @@ xl {
 
   database {
     db-driver-classname="${XL_DB_DRIVER}"
-    db-password="${XL_DB_PASSWORD}"
+    db-password="""${XL_DB_PASSWORD}"""
     db-url="${XL_DB_URL}"
     db-username=${XL_DB_USERNAME}
     max-pool-size=${XL_DB_MAX_POOL_SIZE}
   }
 
-  # TODO XLR does not support (H2) running in one schema.
   reporting {
     db-driver-classname="${XL_DB_DRIVER}"
-    db-password="${XL_REPORT_DB_PASSWORD}"
+    db-password="""${XL_REPORT_DB_PASSWORD}"""
     db-url="${XL_REPORT_DB_URL}"
     db-username=${XL_REPORT_DB_USERNAME}
     max-pool-size=${XL_REPORT_DB_MAX_POOL_SIZE}
@@ -44,7 +43,7 @@ xl {
   # Task queue
   queue {
     embedded=${ENABLE_EMBEDDED_QUEUE}
-    password="${XLR_TASK_QUEUE_PASSWORD}"
+    password="""${XLR_TASK_QUEUE_PASSWORD}"""
     queueName="${XLR_TASK_QUEUE_NAME}"
     url="${XLR_TASK_QUEUE_URL}"
     username="${XLR_TASK_QUEUE_USERNAME}"
