@@ -5,6 +5,8 @@ deploy.cluster:
     heartbeat: "10 seconds"
     ttl: "60 seconds"
     jdbc:
+      driver-classname: "${XL_DB_DRIVER}"
       url: "${XL_DB_URL}"
       username: ${XL_DB_USERNAME}
-      password: "${XL_DB_PASSWORD}"
+      password: |-
+        ${XL_DB_PASSWORD}
