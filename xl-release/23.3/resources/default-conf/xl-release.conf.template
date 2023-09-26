@@ -1,0 +1,55 @@
+xl {
+  cluster {
+    # mode: "default", "hot-standby", "full"
+    mode = ${XL_CLUSTER_MODE}
+    name = "xl-release_cluster"
+    akka {
+      loglevel = "INFO"
+      actor.debug.receive = off
+      remote {
+        log-received-messages = off
+        log-sent-messages = off
+      }
+    }
+  }
+
+  server {
+    http2 {
+      enabled = ${XLR_HTTP2_ENABLED}
+    }
+  }
+
+  license {
+    kind = ${XL_LICENSE_KIND}
+    product = "xl-release"
+  }
+
+  database {
+    db-driver-classname="${XL_DB_DRIVER}"
+    db-password="""${XL_DB_PASSWORD}"""
+    db-url="${XL_DB_URL}"
+    db-username=${XL_DB_USERNAME}
+    max-pool-size=${XL_DB_MAX_POOL_SIZE}
+  }
+
+  reporting {
+    db-driver-classname="${XL_DB_DRIVER}"
+    db-password="""${XL_REPORT_DB_PASSWORD}"""
+    db-url="${XL_REPORT_DB_URL}"
+    db-username=${XL_REPORT_DB_USERNAME}
+    max-pool-size=${XL_REPORT_DB_MAX_POOL_SIZE}
+  }
+
+  # Task queue
+  queue {
+    embedded=${ENABLE_EMBEDDED_QUEUE}
+    password="""${XLR_TASK_QUEUE_PASSWORD}"""
+    queueName="${XLR_TASK_QUEUE_NAME}"
+    url="${XLR_TASK_QUEUE_URL}"
+    username="${XLR_TASK_QUEUE_USERNAME}"
+  }
+
+  metrics {
+    enabled = ${XL_METRICS_ENABLED}
+  }
+}

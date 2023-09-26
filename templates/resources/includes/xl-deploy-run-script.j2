@@ -225,7 +225,7 @@ else
         } >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
   fi
-  echo "Updating http port, server port, and cloud enabled properties"
+  echo "Updating http port, context root, server port, and cloud enabled properties"
   grep "server.port=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#server.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
   grep "xl.spring.cloud.enabled=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#xl.spring.cloud.enabled\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
   grep "http.port=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
