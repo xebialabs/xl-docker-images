@@ -62,6 +62,10 @@ if [[ -z "$APP_PORT" ]]; then
   APP_PORT={{ port }}
 fi
 
+if [[ -z "$APP_CONTEXT_ROOT" ]]; then
+  APP_CONTEXT_ROOT="/"
+fi
+
 if [[ -z "$SERVER_PORT" ]]; then
   SERVER_PORT=8180
 fi
@@ -126,6 +130,7 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
       -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
       -e "s#\${SSL}#${SSL}#g" \
       -e "s#\${APP_PORT}#${APP_PORT}#g" \
+      -e "s#\${APP_CONTEXT_ROOT}#${APP_CONTEXT_ROOT}#g" \
       -e "s#\${SERVER_PORT}#${SERVER_PORT}#g" \
       ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
 
@@ -220,15 +225,17 @@ else
         } >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
   fi
-  echo "Updating http port, server port, and cloud enabled properties"
+  echo "Updating http port, context root, server port, and cloud enabled properties"
   grep "server.port=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#server.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
   grep "xl.spring.cloud.enabled=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#xl.spring.cloud.enabled\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
   grep "http.port=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+  grep "http.context.root=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.context.root\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
   {
     echo ""
     echo server.port=${SERVER_PORT}
     echo xl.spring.cloud.enabled=true
     echo http.port=${APP_PORT}
+    echo http.context.root=${APP_CONTEXT_ROOT}
   } >> ${APP_HOME}/conf/{{ boot_conf }}
 
   sed -i '/^$/d' ${APP_HOME}/conf/{{ boot_conf }}

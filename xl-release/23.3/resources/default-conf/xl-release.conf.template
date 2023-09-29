@@ -2,7 +2,7 @@ xl {
   cluster {
     # mode: "default", "hot-standby", "full"
     mode = ${XL_CLUSTER_MODE}
-    name = "{{ product }}_cluster"
+    name = "xl-release_cluster"
     akka {
       loglevel = "INFO"
       actor.debug.receive = off
