@@ -2,7 +2,7 @@
 if [ -z "$(ls -A ${APP_HOME}/plugins)" ]; then
   echo "Empty ${APP_HOME}/plugins directory detected:"
 fi
-  
+
 echo "... Copying default plugins from ${APP_HOME}/default-plugins to ${APP_HOME}/plugins when a plugin is missing"
 
 cd ${APP_HOME}/default-plugins
@@ -47,6 +47,14 @@ done
 cd ${APP_HOME}
 echo "Done copying default configurations"
 
+if [[ -z "$SSL" ]]; then
+  SSL=false
+fi
+
+if [[ -z "$APP_PORT" ]]; then
+  APP_PORT={{ port }}
+fi
+
 # Set up new installation
 if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
   echo "No ${APP_HOME}/conf/{{ boot_conf }} file detected:"
@@ -73,14 +81,6 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
         exit 1
       fi
       echo "${REPOSITORY_KEYSTORE}" | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
-    fi
-
-    if [[ -z "$SSL" ]]; then
-      SSL=false
-    fi
-
-    if [[ -z "$APP_PORT" ]]; then
-      APP_PORT={{ port }}
     fi
 
     echo "... Generating {{ boot_conf }}"
