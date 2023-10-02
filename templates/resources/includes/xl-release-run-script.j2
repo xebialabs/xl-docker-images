@@ -47,6 +47,18 @@ done
 cd ${APP_HOME}
 echo "Done copying default configurations"
 
+if [[ -z "$SSL" ]]; then
+  SSL=false
+fi
+
+if [[ -z "$APP_PORT" ]]; then
+  APP_PORT={{ port }}
+fi
+
+if [[ -z "$APP_CONTEXT_ROOT" ]]; then
+  APP_CONTEXT_ROOT="/"
+fi
+
 # Set up new installation
 if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
   echo "No ${APP_HOME}/conf/{{ boot_conf }} file detected:"
@@ -73,18 +85,6 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
         exit 1
       fi
       echo "${REPOSITORY_KEYSTORE}" | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
-    fi
-
-    if [[ -z "$SSL" ]]; then
-      SSL=false
-    fi
-
-    if [[ -z "$APP_PORT" ]]; then
-      APP_PORT={{ port }}
-    fi
-
-    if [[ -z "$APP_CONTEXT_ROOT" ]]; then
-      APP_CONTEXT_ROOT="/"
     fi
 
     echo "... Generating {{ boot_conf }}"
