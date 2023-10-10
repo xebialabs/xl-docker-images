@@ -12,7 +12,8 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
     {% include 'install.j2' %}
 {% endif %}
 
-FROM openjdk:11-jdk-slim-buster
+#FROM openjdk:11-jdk-slim-buster
+FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:11-jdk
 
 {% include 'metadata.j2' %}
 
