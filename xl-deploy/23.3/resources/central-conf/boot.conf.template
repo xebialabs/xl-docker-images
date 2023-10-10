@@ -1,0 +1,11 @@
+# Template for non-HOCON XL Deploy configuration file
+#
+admin.password=${ADMIN_PASSWORD}
+http.bind.address=0.0.0.0
+http.context.root=/
+http.port=${APP_PORT}
+repository.keystore.password=${REPOSITORY_KEYSTORE_PASSPHRASE}
+ssl.mutual=false
+ssl=false
+threads.max=150
+threads.min=30

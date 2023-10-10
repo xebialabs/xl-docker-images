@@ -1,0 +1,20 @@
+deploy.caches:
+  enabled: ${USE_CACHE}
+  provider-configuration:
+    provider:
+    provider-configuration-file:
+  license-cache-configuration:
+    enabled: true
+    management-enabled: true
+    statistics-enabled: true
+    ttl-minutes: 1440
+  ci-pk-cache-configuration:
+    enabled: true
+    management-enabled: true
+    statistics-enabled: true
+    ttl-minutes: 60
+  ci-path-cache-configuration:
+    enabled: true
+    management-enabled: true
+    statistics-enabled: true
+    ttl-minutes: 60
