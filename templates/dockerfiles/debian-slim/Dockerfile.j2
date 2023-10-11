@@ -14,6 +14,7 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
 
 # FROM openjdk:11-jdk-slim-buster
 FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:11-jdk
+USER 0
 
 {% include 'metadata.j2' %}
 
