@@ -24,6 +24,9 @@ USER 0
     {% include 'variables.j2' %}
 {% endif %}
 
+#ADDING MISSING PUBLIC KEYS
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C
+
 # Install dependencies
 RUN apt-get update -y && \
     apt-get install -y curl jq unzip apt-utils telnet && \
