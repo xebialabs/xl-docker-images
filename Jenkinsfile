@@ -93,7 +93,7 @@ pipeline {
 
         stage('Rendering and Build Docker Images for XLProducts') {
             parallel {
-                stage('Rendering and Build Docker Images for debian-slim centos amazonlinux') {
+                stage('Rendering and Build Docker Images for debian-slim centos ubuntu amazonlinux') {
                     when {
                         expression { params.Linux == true }
                     }
@@ -142,7 +142,7 @@ pipeline {
                                 }
 
                                 // Build Docker Image and push it
-                                sh "pipenv run ./applejack.py build --xl-version ${xlr_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-release  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
+                                sh "pipenv run ./applejack.py build --xl-version ${xlr_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-release  --target-os debian-slim --target-os ubuntu --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
                             }
 
                             if (params.xl_deploy == true) {
@@ -156,7 +156,7 @@ pipeline {
                                 }
 
                                 // Build Docker Image and push it
-                                sh "pipenv run ./applejack.py build --xl-version ${xld_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-deploy  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
+                                sh "pipenv run ./applejack.py build --xl-version ${xld_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-deploy  --target-os debian-slim --target-os ubuntu --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
                             }
                             if (params.central_configuration == true) {
 
@@ -169,7 +169,7 @@ pipeline {
                                 }
 
                                 // Build Docker Image and push it
-                                sh "pipenv run ./applejack.py build --xl-version ${cc_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product central-configuration  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
+                                sh "pipenv run ./applejack.py build --xl-version ${cc_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product central-configuration  --target-os debian-slim --target-os ubuntu --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
                             }
                             if (params.deploy_task_engine == true) {
 
@@ -182,7 +182,7 @@ pipeline {
                                 }
 
                                 // Build Docker Image and push it
-                                sh "pipenv run ./applejack.py build --xl-version ${dte_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product deploy-task-engine  --target-os debian-slim --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
+                                sh "pipenv run ./applejack.py build --xl-version ${dte_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product deploy-task-engine  --target-os debian-slim --target-os ubuntu --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
                             }
                         }
                         script {

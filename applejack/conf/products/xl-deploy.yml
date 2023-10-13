@@ -6,6 +6,7 @@ dockerfiles:
     debian-slim: debian-slim/Dockerfile.j2
     centos: centos/Dockerfile.j2
     amazonlinux: amazonlinux/Dockerfile.j2
+    ubuntu: ubuntu/Dockerfile.j2
 repositories:
   nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/{product}-{version}-server-trial-edition.zip'
   dist: 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/{product}-{version}-server.zip'

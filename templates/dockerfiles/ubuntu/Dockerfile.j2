@@ -1,0 +1,41 @@
+FROM alpine:3.16 as installer
+
+# Install dependencies
+RUN apk update
+RUN apk add --no-cache gawk unzip curl busybox-extras
+
+{% if 'deploy-task-engine' in product %}
+    {% include './deploy-task-engine/install.j2' %}
+{% elif 'central-config' in product %}
+    {% include './central-configuration/install.j2' %}
+{% else %}
+    {% include 'install.j2' %}
+{% endif %}
+
+FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:11-jdk
+USER root
+
+{% include 'metadata.j2' %}
+
+{% if 'deploy-task-engine' in product %}
+    {% include './deploy-task-engine/variables.j2' %}
+{% else %}
+    {% include 'variables.j2' %}
+{% endif %}
+
+# Install dependencies
+RUN apt-get update -y && \
+    apt-get install -y curl jq unzip apt-utils telnet && \
+    apt-get install -y fontconfig libfreetype6 && \
+    apt-get clean all -q
+
+# Copy installed {{ product_name }}
+COPY --from=installer ${APP_ROOT} ${APP_ROOT}
+
+ENV OS=ubuntu
+
+{% if 'deploy' in product %}
+    {% include 'terraform.j2' %}
+{% endif %}
+
+{% include 'runtime.j2' %}
