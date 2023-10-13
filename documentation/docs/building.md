@@ -23,11 +23,12 @@ By default the images are generated with 3 different target operating systems:
 - Centos 7
 - Debian Slim
 - Amazon Linux
+- ubuntu
 
 If you only want to build a Docker image for a specific target operating system, use the following command:
 
 ```shell
-$ ./applejack.py build --xl-version <version> --target-os rhel --target-os centos --target-os debian-slim
+$ ./applejack.py build --xl-version <version> --target-os rhel --target-os centos --target-os debian-slim --target-os ubuntu
 ```
 Note: For rhel images you will need to build it in RedHat OS with valid RHEL subscription.
 
