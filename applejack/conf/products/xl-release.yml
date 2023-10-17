@@ -1,6 +1,6 @@
 name: xl-release
 dockerfiles:
-  default: 'ubuntu'
+  default: 'centos'
   os:
     rhel: rhel/Dockerfile.j2
     debian-slim: debian-slim/Dockerfile.j2
