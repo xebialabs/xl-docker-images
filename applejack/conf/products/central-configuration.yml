@@ -6,6 +6,7 @@ dockerfiles:
     centos: centos/Dockerfile.j2
     amazonlinux: amazonlinux/Dockerfile.j2
     rhel: rhel/Dockerfile.j2
+    ubuntu: ubuntu/Dockerfile.j2
 repositories:
   nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/ai/digital/config/central-configuration-server/{version}/{product}-server-{version}.zip'
   dist: 'https://dist.xebialabs.com/customer/central-configuration-server/product/{version}/{product}-server-{version}.zip'
