@@ -6,6 +6,7 @@ dockerfiles:
     centos: centos/Dockerfile.j2
     amazonlinux: amazonlinux/Dockerfile.j2
     rhel: rhel/Dockerfile.j2
+    ubuntu: ubuntu/Dockerfile.j2
 repositories:
   nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/ai/digital/config/central-configuration-server/{version}/{product}-server-{version}.zip'
   dist: 'https://dist.xebialabs.com/customer/central-configuration-server/product/{version}/{product}-server-{version}.zip'
@@ -27,8 +28,10 @@ context:
   central_config_files:
     - deploy-cluster.yaml
     - deploy-metrics.yaml
+    - deploy-oidc.yaml
     - deploy-plugins.yaml
     - deploy-repository.yaml
+    - deploy-reporting.yaml
     - deploy-satellite.yaml
     - deploy-secret-complexity.yaml
     - deploy-server.yaml
@@ -47,6 +50,16 @@ context:
       value: sa
     - key: XL_DB_PASSWORD
       value: "123"
+    - key: XL_DB_MAX_POOL_SIZE
+      value: 10
+    - key: XL_REPORT_DB_URL
+      value: "jdbc:derby:repository/db-report;create=true"
+    - key: XL_REPORT_DB_USERNAME
+      value: sa
+    - key: XL_REPORT_DB_PASSWORD
+      value: "123"
+    - key: XL_REPORT_DB_MAX_POOL_SIZE
+      value: 10
     - key: XL_METRICS_ENABLED
       value: "false"
     - key: XLD_IN_PROCESS

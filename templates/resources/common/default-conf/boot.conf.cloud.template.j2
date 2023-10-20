@@ -3,7 +3,7 @@
 admin.password=${ADMIN_PASSWORD}
 hide.internals=false
 http.bind.address=0.0.0.0
-http.context.root=/
+http.context.root=${APP_CONTEXT_ROOT}
 http.port=${APP_PORT}
 repository.keystore.password=${REPOSITORY_KEYSTORE_PASSPHRASE}
 ssl.mutual=${SSL}
@@ -12,7 +12,7 @@ threads.max=150
 threads.min=30
 xl.spring.cloud.enabled=true
 server.hostname=${HOSTNAME}${HOSTNAME_SUFFIX}
-server.port=8180
+server.port=${SERVER_PORT}
 xl.spring.cloud.uri=${CENTRAL_CONFIG_URL}
 xl.spring.cloud.external-config=${USE_EXTERNAL_CENTRAL_CONFIG}
 xl.spring.cloud.encrypt.key=${CENTRAL_CONFIG_ENCRYPT_KEY}

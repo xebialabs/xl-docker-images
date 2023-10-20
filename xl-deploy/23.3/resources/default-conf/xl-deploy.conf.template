@@ -1,0 +1,81 @@
+xl {
+  cluster {
+    # mode: "default", "hot-standby", "full"
+    mode = ${XL_CLUSTER_MODE}
+    name = "xl-deploy_cluster"
+
+    membership {
+      jdbc {
+        url = "${XL_DB_URL}"
+        username = ${XL_DB_USERNAME}
+        password = "${XL_DB_PASSWORD}"
+      }
+    }
+
+    akka {
+      loglevel = "INFO"
+      actor.debug.receive = off
+      remote {
+        log-received-messages = off
+        log-sent-messages = off
+      }
+    }
+  }
+
+  server {
+    port = ${SERVER_PORT}
+  }
+
+  license {
+    kind = ${XL_LICENSE_KIND}
+    product = "xl-deploy"
+  }
+
+  repository {
+    artifacts {
+      type = "db"
+    }
+    database {
+      db-driver-classname="${XL_DB_DRIVER}"
+      db-password="${XL_DB_PASSWORD}"
+      db-url="${XL_DB_URL}"
+      db-username=${XL_DB_USERNAME}
+      max-pool-size=${XL_DB_MAX_POOL_SIZE}
+    }
+  }
+
+  metrics {
+    enabled = ${XL_METRICS_ENABLED}
+  }
+
+  deploy {
+    license {
+      daysBeforeWarning = 10
+    }
+  }
+
+  task {
+      in-process-worker=${XLD_IN_PROCESS}
+      recovery-dir = work
+      step {
+          retry-delay = 5 seconds
+          execution-threads = 32
+      }
+      queue {
+          name = ${XLD_TASK_QUEUE_NAME}
+          in-process {
+            maxDiskUsage = ${XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE}
+            shutdownTimeout = ${XLD_TASK_QUEUE_IN_PROCESS_SHUTDOWN_TIMEOUT}
+          }
+          external {
+              jms-driver-classname="${XLD_TASK_QUEUE_DRIVER_CLASS_NAME}"
+              jms-password="${XLD_TASK_QUEUE_PASSWORD}"
+              jms-url="${XLD_TASK_QUEUE_URL}"
+              jms-username="${XLD_TASK_QUEUE_USERNAME}"
+          }
+      }
+  }
+  satellite {
+      enabled="${ENABLE_SATELLITE}"
+  }
+}

@@ -13,6 +13,11 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
 {% endif %}
 
 FROM openjdk:17-jdk-slim-buster
+# We need to update this with jdk17
+# FROM openjdk:11-jdk-slim-buster
+# FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:11-jdk
+# USER 0
+
 
 {% include 'metadata.j2' %}
 

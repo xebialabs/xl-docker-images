@@ -2,7 +2,7 @@
 if [ -z "$(ls -A ${APP_HOME}/plugins)" ]; then
   echo "Empty ${APP_HOME}/plugins directory detected:"
 fi
-  
+
 echo "... Copying default plugins from ${APP_HOME}/default-plugins to ${APP_HOME}/plugins when a plugin is missing"
 
 cd ${APP_HOME}/default-plugins
@@ -47,6 +47,18 @@ done
 cd ${APP_HOME}
 echo "Done copying default configurations"
 
+if [[ -z "$SSL" ]]; then
+  SSL=false
+fi
+
+if [[ -z "$APP_PORT" ]]; then
+  APP_PORT={{ port }}
+fi
+
+if [[ -z "$APP_CONTEXT_ROOT" ]]; then
+  APP_CONTEXT_ROOT="/"
+fi
+
 # Set up new installation
 if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
   echo "No ${APP_HOME}/conf/{{ boot_conf }} file detected:"
@@ -75,19 +87,12 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
       echo "${REPOSITORY_KEYSTORE}" | base64 -d > ${APP_HOME}/conf/repository-keystore.jceks
     fi
 
-    if [[ -z "$SSL" ]]; then
-      SSL=false
-    fi
-
-    if [[ -z "$APP_PORT" ]]; then
-      APP_PORT={{ port }}
-    fi
-
     echo "... Generating {{ boot_conf }}"
     sed -e "s#\${ADMIN_PASSWORD}#${ADMIN_PASSWORD}#g" \
       -e "s#\${REPOSITORY_KEYSTORE_PASSPHRASE}#${REPOSITORY_KEYSTORE_PASSPHRASE}#g" \
       -e "s#\${SSL}#${SSL}#g" \
       -e "s#\${APP_PORT}#${APP_PORT}#g" \
+      -e "s#\${APP_CONTEXT_ROOT}#${APP_CONTEXT_ROOT}#g" \
       ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
 
     if [ -n "${SERVER_URL}" ]; then
@@ -107,6 +112,19 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
 
     echo "Done"
   fi
+else
+  echo "Found ${APP_HOME}/conf/{{ boot_conf }} file. Processing it for new properties"
+
+  echo "Updating http port and context root properties"
+  grep "http.port=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+  grep "http.context.root=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.context.root\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+  {
+    echo ""
+    echo http.port=${APP_PORT}
+    echo http.context.root=${APP_CONTEXT_ROOT}
+  } >> ${APP_HOME}/conf/{{ boot_conf }}
+
+  sed -i '/^$/d' ${APP_HOME}/conf/{{ boot_conf }}
 fi
 
 # Fix OpenJDK SSL issue

@@ -21,7 +21,7 @@ then
     rm -f $TARGET_DIR/conf/deployit.conf
     touch $TARGET_DIR/conf/deployit.conf
     {
-      echo http.port=8888
+      echo http.port=$APP_PORT
       sed -n '/xl.spring.cloud.encrypt.key\=/p' $SOURCE_DIR/conf/deployit.conf
       sed -n '/repository.keystore.password\=/p' $SOURCE_DIR/conf/deployit.conf
     } >> $TARGET_DIR/conf/deployit.conf
