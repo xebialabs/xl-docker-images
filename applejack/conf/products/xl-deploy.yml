@@ -6,6 +6,7 @@ dockerfiles:
     debian-slim: debian-slim/Dockerfile.j2
     centos: centos/Dockerfile.j2
     amazonlinux: amazonlinux/Dockerfile.j2
+    ubuntu: ubuntu/Dockerfile.j2
 repositories:
   nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/com/xebialabs/deployit/xl-deploy/{version}/{product}-{version}-server-trial-edition.zip'
   dist: 'https://dist.xebialabs.com/customer/xl-deploy/product/{version}/{product}-{version}-server.zip'
@@ -62,15 +63,15 @@ context:
   - key: XL_DB_PASSWORD
     value: "123"
   - key: XL_DB_MAX_POOL_SIZE
-    value: "10"
+    value: 10
   - key: XL_REPORT_DB_URL
-    value: "$XL_DB_URL"
+    value: "jdbc:derby:repository/db-report;create=true"
   - key: XL_REPORT_DB_USERNAME
-    value: "$XL_DB_USERNAME"
+    value: sa
   - key: XL_REPORT_DB_PASSWORD
-    value: "$XL_DB_PASSWORD"
+    value: "123"
   - key: XL_REPORT_DB_MAX_POOL_SIZE
-    value: "$XL_DB_MAX_POOL_SIZE"
+    value: 10
   - key: XL_METRICS_ENABLED
     value: "false"
   - key: XLD_IN_PROCESS

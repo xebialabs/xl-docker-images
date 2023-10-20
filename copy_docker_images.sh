@@ -48,7 +48,7 @@ while getopts ":hd:v:p:s:" arg; do
   esac
 done
 
-for tag in $version $version-'centos' $version-'amazonlinux' $version-'debian-slim'
+for tag in $version $version-'centos' $version-'amazonlinux' $version-'ubuntu' $version-'debian-slim'
 do
 	pull_push $tag
 done

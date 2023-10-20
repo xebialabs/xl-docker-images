@@ -12,12 +12,8 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
     {% include 'install.j2' %}
 {% endif %}
 
-FROM openjdk:17-jdk-slim-buster
-# We need to update this with jdk17
-# FROM openjdk:11-jdk-slim-buster
-# FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:11-jdk
-# USER 0
-
+FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:11-jdk
+USER root
 
 {% include 'metadata.j2' %}
 
@@ -36,7 +32,7 @@ RUN apt-get update -y && \
 # Copy installed {{ product_name }}
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
-ENV OS=debian
+ENV OS=ubuntu
 
 {% if 'deploy' in product %}
     {% include 'terraform.j2' %}
