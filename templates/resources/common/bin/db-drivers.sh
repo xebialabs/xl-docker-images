@@ -23,4 +23,4 @@ ACTIVE_MQ_VERSION="5.18.2"
 
 curl https://repo1.maven.org/maven2/com/rabbitmq/amqp-client/${RABBIT_MQ_AMQP_VERSION}/amqp-client-${RABBIT_MQ_AMQP_VERSION}.jar -o ${APP_ROOT}/mq-libs/amqp-client-${RABBIT_MQ_AMQP_VERSION}.jar -f
 curl https://repo1.maven.org/maven2/com/rabbitmq/jms/rabbitmq-jms/${RABBIT_MQ_JMS_VERSION}/rabbitmq-jms-${RABBIT_MQ_JMS_VERSION}.jar -o ${APP_ROOT}/mq-libs/rabbitmq-jms-${RABBIT_MQ_JMS_VERSION}.jar
-curl https://repo1.maven.org/maven2/org/apache/activemq/activemq-all/${ACTIVE_MQ_VERSION}/activemq-all-${ACTIVE_MQ_VERSION}.jar -o ${APP_ROOT}/mq-libs/activemq-all-${ACTIVE_MQ_VERSION}.jar
+curl https://repo1.maven.org/maven2/org/apache/activemq/activemq-client-jakarta/${ACTIVE_MQ_VERSION}/activemq-client-jakarta-${ACTIVE_MQ_VERSION}.jar -o ${APP_ROOT}/mq-libs/activemq-client-jakarta-${ACTIVE_MQ_VERSION}.jar
