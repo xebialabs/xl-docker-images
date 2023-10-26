@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-23.3.0-925.113-server.zip /tmp
+COPY resources/xl-release-23.3.0-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-23.3.0-925.113-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-23.3.0-925.113-server ${APP_HOME}
+    unzip /tmp/xl-release-23.3.0-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-23.3.0-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -70,14 +70,15 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
 
 
-FROM openjdk:11-jdk-slim-buster
+#FROM openjdk:11-jdk-slim-buster
+FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:11-jdk
 
 MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="23.3.0-925.113" \
+      version="23.3.0" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \

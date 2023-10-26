@@ -1,37 +1,8 @@
-FROM registry.access.redhat.com/rhel7/rhel-atomic
-
-MAINTAINER XebiaLabs Development <docker@xebialabs.com>
-
-LABEL name="xebialabs/xl-release" \
-      maintainer="docker@xebialabs.com" \
-      vendor="XebiaLabs" \
-      version="23.3.0" \
-      release="1" \
-      summary="XL Release" \
-      description="Enterprise-scale Application Release Automation for any environment" \
-      url="https://www.xebialabs.com/xl-release"
-
-COPY resources/help.md /tmp/
-
-### add licenses to this directory
-COPY resources/licenses /licenses
+FROM alpine:3.16 as installer
 
 # Install dependencies
-RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname shadow-utils which" && \
-    microdnf install --enablerepo=rhel-7-server-rpms --enablerepo=rhel-7-server-optional-rpms --nodocs ${INSTALL_PKGS} && \
-    microdnf update && \
-### help file markdown to man conversion
-    go-md2man -in /tmp/help.md -out /help.1 && \
-    microdnf clean all
-
-RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-11-openjdk-devel && \
-### Set the Java random source
-    echo "securerandom.source=file:/dev/urandom" >> /usr/lib/jvm/java/jre/lib/security/java.security && \
-    microdnf clean all
-
-### Install JQ
-RUN JQ_LOCATION="/usr/bin/jq" && \
-    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
+RUN apk update
+RUN apk add --no-cache gawk unzip curl busybox-extras
 
 
     
@@ -99,9 +70,36 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
 
 
+FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:11-jdk
+USER root
+
+MAINTAINER XebiaLabs Development <docker@xebialabs.com>
+
+LABEL name="xebialabs/xl-release" \
+      maintainer="docker@xebialabs.com" \
+      vendor="XebiaLabs" \
+      version="23.3.0" \
+      release="1" \
+      summary="XL Release" \
+      description="Enterprise-scale Application Release Automation for any environment" \
+      url="https://www.xebialabs.com/xl-release"
 
 
-ENV OS=rhel
+    # Set root folders
+ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
+ENV APP_HOME=${APP_ROOT}/xl-release-server
+
+
+# Install dependencies
+RUN apt-get update -y && \
+    apt-get install -y curl jq unzip apt-utils telnet && \
+    apt-get install -y fontconfig libfreetype6 && \
+    apt-get clean all -q
+
+# Copy installed XL Release
+COPY --from=installer ${APP_ROOT} ${APP_ROOT}
+
+ENV OS=ubuntu
 
 
 
