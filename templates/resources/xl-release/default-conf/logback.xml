@@ -1,4 +1,4 @@
-<configuration>
+<configuration scan="${SCAN_ENABLED}" scanPeriod="${SCAN_PERIOD}">
 
     <jmxConfigurator />
     <contextName>XL Release</contextName>
@@ -10,7 +10,7 @@
         </encoder>
     </appender>
 
-    <root level="info">
+    <root level="${GLOBAL_LOGGING_LEVEL}">
         <appender-ref ref="STDOUT" />
     </root>
 
