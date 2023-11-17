@@ -1,3 +1,10 @@
 deploy.server:
   license:
     daysBeforeWarning: 10
+pekko:
+  io:
+    dns:
+      resolver: "${DNS_RESOLVER}"
+  # loggers:
+  #  - "org.apache.pekko.event.slf4j.Slf4jLogger"
+  loglevel: "INFO"
