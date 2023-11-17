@@ -10,3 +10,15 @@ deploy.cluster:
       username: ${XL_DB_USERNAME}
       password: |-
         ${XL_DB_PASSWORD}
+  pekko:
+    actor:
+      provider: "org.apache.pekko.cluster.ClusterActorRefProvider"
+      loggers:
+        - "org.apache.pekko.event.slf4j.Slf4jLogger"
+      loglevel: "INFO"
+    cluster:
+      downing-provider-class:
+      custom-downing:
+        stable-after: "10s"
+        down-removal-margin: "10s"
+        

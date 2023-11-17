@@ -35,6 +35,7 @@
     <logger name="de.schlichtherle.truezip" level="warn" />
     <logger name="com.google.inject.internal.util" level="error"/>
     <logger name="org.springframework.beans.factory.support.DefaultListableBeanFactory" level="error"/>
+    <logger name="org.springframework.jms.listener.DefaultMessageListenerContainer" level="debug" />
     <logger name="liquibase" level="warn"/>
     <logger name="org.springframework.web.socket.adapter.jetty.JettyWebSocketHandlerAdapter" level="off"/>
 
