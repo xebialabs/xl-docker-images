@@ -25,11 +25,14 @@
     <logger name="net.schmizz.sshj" level="error" />
     <logger name="org.springframework" level="warn"/>
     <logger name="com.zaxxer" level="warn"/>
-    <logger name="com.typesafe.akka.extension.quartz" level="warn" />
+    <logger name="org.apache.pekko.extension.quartz" level="warn" />
     <logger name="org.quartz" level="warn" />
     <logger name="org.terracotta.quartz" level="off" />
     <logger name="com.atomikos" level="warn" />
     <logger name="org.crsh" level="warn" />
+    <logger name="liquibase" level="warn" />
+    <logger name="liquibase.changelog.visitor.UpdateVisitor" level="debug" />
+    <logger name="liquibase.changelog.ChangeSet" level="info" />
 
     <!--  Audit logging -->
     <appender name="AUDIT" class="ch.qos.logback.core.ConsoleAppender">

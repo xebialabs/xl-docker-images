@@ -3,7 +3,7 @@ xl {
     # mode: "default", "hot-standby", "full"
     mode = ${XL_CLUSTER_MODE}
     name = "{{ product }}_cluster"
-    akka {
+    pekko {
       loglevel = "INFO"
       actor.debug.receive = off
       remote {
