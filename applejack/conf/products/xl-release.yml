@@ -88,4 +88,4 @@ context:
   - key: LOGBACK_SCAN_ENABLED
     value: "true"
   - key: LOGBACK_SCAN_PERIOD
-    value: "30 seconds"
+    value: "30seconds"
