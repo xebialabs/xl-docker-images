@@ -83,3 +83,9 @@ context:
     value: "false"
   - key: XLR_HTTP2_ENABLED
     value: "false"
+  - key: LOGBACK_GLOBAL_LOGGING_LEVEL
+    value: "info"
+  - key: LOGBACK_SCAN_ENABLED
+    value: "true"
+  - key: LOGBACK_SCAN_PERIOD
+    value: "30seconds"
