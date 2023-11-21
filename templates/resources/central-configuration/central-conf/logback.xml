@@ -1,7 +1,7 @@
 <!--
     Note: If you modify this file, you must restart the XL Config server.
 -->
-<configuration>
+<configuration scan="${LOGBACK_SCAN_ENABLED}" scanPeriod="${LOGBACK_SCAN_PERIOD}">
 
     <!-- removing this listener may cause performance issues-->
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
@@ -30,7 +30,7 @@
         </encoder>
     </appender>
 
-    <root level="info">
+    <root level="${LOGBACK_GLOBAL_LOGGING_LEVEL}">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </root>
