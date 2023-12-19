@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/central-configuration-server
 
 # Install central-configuration from zip file
-COPY resources/central-configuration-23.3.1-server.zip /tmp
+COPY resources/central-configuration-23.3.2-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/central-configuration-23.3.1-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/central-configuration-23.3.1-server ${APP_HOME}
+    unzip /tmp/central-configuration-23.3.2-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/central-configuration-23.3.2-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -65,7 +65,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/central-configuration" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="23.3.1" \
+      version="23.3.2" \
       release="1" \
       summary="Central configuration" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -124,7 +124,10 @@ ENV XL_CLUSTER_MODE=default \
     USE_IP_AS_HOSTNAME=false \
     ENABLE_SATELLITE=false \
     CENTRAL_CONFIG_ENCRYPT_KEY= \
-    USE_CACHE=false
+    USE_CACHE=false \
+    LOGBACK_GLOBAL_LOGGING_LEVEL=info \
+    LOGBACK_SCAN_ENABLED=true \
+    LOGBACK_SCAN_PERIOD=30seconds
 
 
 # Don't run as root
