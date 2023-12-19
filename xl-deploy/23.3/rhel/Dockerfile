@@ -5,7 +5,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-deploy" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="23.3.1" \
+      version="23.3.2" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -41,10 +41,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-23.3.1-server.zip /tmp
+COPY resources/xl-deploy-23.3.2-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-23.3.1-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-23.3.1-server ${APP_HOME}
+    unzip /tmp/xl-deploy-23.3.2-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-23.3.2-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -153,7 +153,10 @@ ENV SERVER_PORT=8180 \
     USE_EXTERNAL_CENTRAL_CONFIG=false \
     CENTRAL_CONFIG_URL= \
     CENTRAL_CONFIG_ENCRYPT_KEY= \
-    USE_CACHE=false
+    USE_CACHE=false \
+    LOGBACK_GLOBAL_LOGGING_LEVEL=info \
+    LOGBACK_SCAN_ENABLED=true \
+    LOGBACK_SCAN_PERIOD=30seconds
 
 
 # Don't run as root
