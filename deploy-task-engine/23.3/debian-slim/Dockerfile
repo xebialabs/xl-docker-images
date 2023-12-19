@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-23.3.1.zip /tmp
+COPY resources/deploy-task-engine-23.3.2.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-23.3.1.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-23.3.1 ${APP_HOME}
+    unzip /tmp/deploy-task-engine-23.3.2.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-23.3.2 ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -68,7 +68,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/deploy-task-engine" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="23.3.1" \
+      version="23.3.2" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -122,7 +122,10 @@ ENV APP_PORT=4516 \
     PLUGIN_SOURCE=database \
     USE_EXTERNAL_CENTRAL_CONFIG=false \
     CENTRAL_CONFIG_URL= \
-    CENTRAL_CONFIG_ENCRYPT_KEY=
+    CENTRAL_CONFIG_ENCRYPT_KEY= \
+    LOGBACK_GLOBAL_LOGGING_LEVEL=info \
+    LOGBACK_SCAN_ENABLED=true \
+    LOGBACK_SCAN_PERIOD=30seconds
 
 
 # Don't run as root
