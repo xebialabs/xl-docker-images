@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-24.1.0-1219.193-server.zip /tmp
+COPY resources/xl-release-24.1.0-1219.113-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-24.1.0-1219.193-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-24.1.0-1219.193-server ${APP_HOME}
+    unzip /tmp/xl-release-24.1.0-1219.113-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-24.1.0-1219.113-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -78,7 +78,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="24.1.0-1219.193" \
+      version="24.1.0-1219.113" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
