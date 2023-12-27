@@ -116,6 +116,39 @@ sidebar_position: 1
 - possible values: "true","false"
 - default value: "false"
 
+##### `APP_CONTEXT_ROOT`
+- Context root for the application server.
+- possible values: any string, it needs to start with /
+- default value: /
+- example: /release or /deploy
+
+##### `SSL`
+- Set to true to enable the HTTP SSL setup for the application server. If it is true you need to set other env variables: HTTP_SSL_KEYSTORE_PATH, HTTP_SSL_KEYSTORE_PASSWORD, HTTP_SSL_KEYSTORE_KEYPASSWORD and HTTP_SSL_KEYSTORE_TYPE.
+- possible values: "true","false"
+- default value: false
+- example: true or false
+
+##### `HTTP_SSL_KEYSTORE_PATH`
+- Path in the container where the HTTP SSL keystore will be stored. The keystore will contain the key that will be used for the HTTP SSL traffic. The file needs to be readable by appplication process. The keystore needs to be encoded according to type set in the HTTP_SSL_KEYSTORE_TYPE. The keystore is protected with password set in the HTTP_SSL_KEYSTORE_PASSWORD and key is protected with password set in the HTTP_SSL_KEYSTORE_KEYPASSWORD.
+- possible values: absolute path to the keystore file
+- default value: none
+- example: /opt/xebialabs/xl-release/conf/app-keystore.pkcs12
+
+##### `HTTP_SSL_KEYSTORE_PASSWORD`
+- The password that was set for the keystore under path: HTTP_SSL_KEYSTORE_PATH
+- possible values: any string
+- default value: none
+
+##### `HTTP_SSL_KEYSTORE_KEYPASSWORD`
+- The password that was set for the key in the keystore under path: HTTP_SSL_KEYSTORE_PATH
+- possible values: any string
+- default value: none
+
+##### `HTTP_SSL_KEYSTORE_TYPE`
+- Type of the keystore file.
+- possible values: pkcs12 or jks
+- default value: pkcs12
+
 ### Specific for XLRelease docker images:-
 
 ##### `APP_PORT`
