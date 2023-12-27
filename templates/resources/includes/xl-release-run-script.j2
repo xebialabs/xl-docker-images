@@ -101,13 +101,20 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
     fi
 
     if [ -n "$HTTP_SSL_KEYSTORE_PATH" ]; then
+      echo "Setting SSL keystore path with HTTP_SSL_KEYSTORE_PATH property"
       echo -e "\nkeystore.path=${HTTP_SSL_KEYSTORE_PATH}" >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
     if [ -n "$HTTP_SSL_KEYSTORE_PASSWORD" ]; then
+      echo "Setting SSL keystore password with HTTP_SSL_KEYSTORE_PASSWORD property"
       echo -e "\nkeystore.password=${HTTP_SSL_KEYSTORE_PASSWORD}" >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
     if [ -n "$HTTP_SSL_KEYSTORE_KEYPASSWORD" ]; then
+      echo "Setting SSL keystore key password with HTTP_SSL_KEYSTORE_KEYPASSWORD property"
       echo -e "\nkeystore.keypassword=${HTTP_SSL_KEYSTORE_KEYPASSWORD}" >> ${APP_HOME}/conf/{{ boot_conf }}
+    fi
+    if [ -n "$HTTP_SSL_KEYSTORE_TYPE" ]; then
+      echo "Setting SSL keystore type with HTTP_SSL_KEYSTORE_TYPE property"
+      echo -e "\nkeystore.type=${HTTP_SSL_KEYSTORE_TYPE}" >> ${APP_HOME}/conf/{{ boot_conf }}
     fi
 
     echo "Done"
@@ -115,13 +122,55 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
 else
   echo "Found ${APP_HOME}/conf/{{ boot_conf }} file. Processing it for new properties"
 
-  echo "Updating http port and context root properties"
+  if [[ "${HTTP_SSL_KEYSTORE_PATH}" != "" ]]; then
+    if ! grep -q keystore.path ${APP_HOME}/conf/{{ boot_conf }}; then
+      echo "Updating keystore.path with HTTP_SSL_KEYSTORE_PATH property"
+      {
+        echo ""
+        echo keystore.path=${HTTP_SSL_KEYSTORE_PATH}
+      } >> ${APP_HOME}/conf/{{ boot_conf }}
+    fi
+  fi
+
+  if [[ "${HTTP_SSL_KEYSTORE_PASSWORD}" != "" ]]; then
+    if ! grep -q keystore.password ${APP_HOME}/conf/{{ boot_conf }}; then
+      echo "Updating keystore.password with HTTP_SSL_KEYSTORE_PASSWORD property"
+      {
+        echo ""
+        echo keystore.password=${HTTP_SSL_KEYSTORE_PASSWORD}
+      } >> ${APP_HOME}/conf/{{ boot_conf }}
+    fi
+  fi
+
+  if [[ "${HTTP_SSL_KEYSTORE_KEYPASSWORD}" != "" ]]; then
+    if ! grep -q keystore.keypassword ${APP_HOME}/conf/{{ boot_conf }}; then
+      echo "Updating keystore.keypassword with HTTP_SSL_KEYSTORE_KEYPASSWORD property"
+      {
+        echo ""
+        echo keystore.keypassword=${HTTP_SSL_KEYSTORE_KEYPASSWORD}
+      } >> ${APP_HOME}/conf/{{ boot_conf }}
+    fi
+  fi
+
+  if [[ "${HTTP_SSL_KEYSTORE_TYPE}" != "" ]]; then
+    if ! grep -q keystore.type ${APP_HOME}/conf/{{ boot_conf }}; then
+      echo "Updating keystore.type with HTTP_SSL_KEYSTORE_TYPE property"
+      {
+        echo ""
+        echo keystore.type=${HTTP_SSL_KEYSTORE_TYPE}
+      } >> ${APP_HOME}/conf/{{ boot_conf }}
+    fi
+  fi
+
+  echo "Updating http port, context root, and ssl properties"
   grep "http.port=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
   grep "http.context.root=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.context.root\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+  grep "ssl=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#ssl\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
   {
     echo ""
     echo http.port=${APP_PORT}
     echo http.context.root=${APP_CONTEXT_ROOT}
+    echo ssl=${SSL}
   } >> ${APP_HOME}/conf/{{ boot_conf }}
 
   sed -i '/^$/d' ${APP_HOME}/conf/{{ boot_conf }}
