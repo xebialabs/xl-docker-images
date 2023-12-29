@@ -127,6 +127,23 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
       -e "s#\${APP_CONTEXT_ROOT}#${APP_CONTEXT_ROOT}#g" \
       ${APP_HOME}/default-conf/{{ boot_conf }}.template > ${APP_HOME}/conf/{{ boot_conf }}
 
+    if [ -n "$HTTP_SSL_KEYSTORE_PATH" ]; then
+      echo "Setting SSL keystore path with HTTP_SSL_KEYSTORE_PATH property"
+      echo -e "\nkeystore.path=${HTTP_SSL_KEYSTORE_PATH}" >> ${APP_HOME}/conf/{{ boot_conf }}
+    fi
+    if [ -n "$HTTP_SSL_KEYSTORE_PASSWORD" ]; then
+      echo "Setting SSL keystore password with HTTP_SSL_KEYSTORE_PASSWORD property"
+      echo -e "\nkeystore.password=${HTTP_SSL_KEYSTORE_PASSWORD}" >> ${APP_HOME}/conf/{{ boot_conf }}
+    fi
+    if [ -n "$HTTP_SSL_KEYSTORE_KEYPASSWORD" ]; then
+      echo "Setting SSL keystore key password with HTTP_SSL_KEYSTORE_KEYPASSWORD property"
+      echo -e "\nkeystore.keypassword=${HTTP_SSL_KEYSTORE_KEYPASSWORD}" >> ${APP_HOME}/conf/{{ boot_conf }}
+    fi
+    if [ -n "$HTTP_SSL_KEYSTORE_TYPE" ]; then
+      echo "Setting SSL keystore type with HTTP_SSL_KEYSTORE_TYPE property"
+      echo -e "\nkeystore.type=${HTTP_SSL_KEYSTORE_TYPE}" >> ${APP_HOME}/conf/{{ boot_conf }}
+    fi
+
     echo "Done"
   fi
 else
@@ -174,17 +191,60 @@ else
         } >> ${APP_HOME}/conf/{{ boot_conf }}
       fi
     fi
-    echo "Updating server port, context root and cloud enabled properties"
+    
+    if [[ "${HTTP_SSL_KEYSTORE_PATH}" != "" ]]; then
+      if ! grep -q keystore.path ${APP_HOME}/conf/{{ boot_conf }}; then
+        echo "Updating keystore.path with HTTP_SSL_KEYSTORE_PATH property"
+        {
+          echo ""
+          echo keystore.path=${HTTP_SSL_KEYSTORE_PATH}
+        } >> ${APP_HOME}/conf/{{ boot_conf }}
+      fi
+    fi
+
+    if [[ "${HTTP_SSL_KEYSTORE_PASSWORD}" != "" ]]; then
+      if ! grep -q keystore.password ${APP_HOME}/conf/{{ boot_conf }}; then
+        echo "Updating keystore.password with HTTP_SSL_KEYSTORE_PASSWORD property"
+        {
+          echo ""
+          echo keystore.password=${HTTP_SSL_KEYSTORE_PASSWORD}
+        } >> ${APP_HOME}/conf/{{ boot_conf }}
+      fi
+    fi
+
+    if [[ "${HTTP_SSL_KEYSTORE_KEYPASSWORD}" != "" ]]; then
+      if ! grep -q keystore.keypassword ${APP_HOME}/conf/{{ boot_conf }}; then
+        echo "Updating keystore.keypassword with HTTP_SSL_KEYSTORE_KEYPASSWORD property"
+        {
+          echo ""
+          echo keystore.keypassword=${HTTP_SSL_KEYSTORE_KEYPASSWORD}
+        } >> ${APP_HOME}/conf/{{ boot_conf }}
+      fi
+    fi
+
+    if [[ "${HTTP_SSL_KEYSTORE_TYPE}" != "" ]]; then
+      if ! grep -q keystore.type ${APP_HOME}/conf/{{ boot_conf }}; then
+        echo "Updating keystore.type with HTTP_SSL_KEYSTORE_TYPE property"
+        {
+          echo ""
+          echo keystore.type=${HTTP_SSL_KEYSTORE_TYPE}
+        } >> ${APP_HOME}/conf/{{ boot_conf }}
+      fi
+    fi
+
+    echo "Updating server port, context root, ssl, and cloud enabled properties"
     grep "server.port=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#server.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     grep "xl.spring.cloud.enabled=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#xl.spring.cloud.enabled\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     grep "http.port=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.port\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     grep "http.context.root=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#http.context.root\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
+    grep "ssl=" ${APP_HOME}/conf/{{ boot_conf }} && sed -i "s#ssl\=.*##" ${APP_HOME}/conf/{{ boot_conf }}
     {
       echo ""
       echo server.port=${SERVER_PORT}
       echo xl.spring.cloud.enabled=true
       echo http.port=${APP_PORT}
       echo http.context.root=${APP_CONTEXT_ROOT}
+      echo ssl=${SSL}
     } >> ${APP_HOME}/conf/{{ boot_conf }}
 
     sed -i '/^$/d' ${APP_HOME}/conf/{{ boot_conf }}
