@@ -18,7 +18,8 @@ WORKDIR ${APP_HOME}
 {% endfor %}
 
 # Don't run as root
-RUN useradd -r -M -u 10001 -g 0 xebialabs
+RUN groupadd -r -g 10001 xebialabs
+RUN useradd -r -M -u 10001 -g 0 -G xebialabs xebialabs
 USER 10001
 
 VOLUME ["{{ volumes|join('", "') }}"]
