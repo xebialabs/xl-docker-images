@@ -4,12 +4,14 @@ RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(read
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 
-{% if 'xl-release' in product %}
+# Don't run as root
+RUN groupadd -r -g 10001 xebialabs
+RUN useradd -r -M -u 10001 -g 0 -G xebialabs xebialabs
+
 # Set permissions
 RUN chown -R 10001 ${APP_ROOT} && \
     chmod u+x ${APP_HOME}/bin/*.sh &&\
     chmod -R g=u ${APP_ROOT}
-{% endif %}
 
 WORKDIR ${APP_HOME}
 
@@ -17,8 +19,6 @@ WORKDIR ${APP_HOME}
     {{- 'ENV ' if loop.first else '    ' -}}{{ [env['key'], env['value']]|join('=') }}{{ ' \\' if not loop.last else '' }}
 {% endfor %}
 
-# Don't run as root
-RUN useradd -r -M -u 10001 -g 0 xebialabs
 USER 10001
 
 VOLUME ["{{ volumes|join('", "') }}"]
