@@ -46,6 +46,7 @@ RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
 RUN mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
 
 # Set permissions
-RUN chgrp -R 0 ${APP_ROOT} && \
+RUN addgroup -S -g 10001 xebialabs
+RUN chgrp -R 10001 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
