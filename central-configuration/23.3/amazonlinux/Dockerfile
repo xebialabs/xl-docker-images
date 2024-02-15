@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/central-configuration-server
 
 # Install central-configuration from zip file
-COPY resources/central-configuration-23.3.3-server.zip /tmp
+COPY resources/central-configuration-23.3.4-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/central-configuration-23.3.3-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/central-configuration-23.3.3-server ${APP_HOME}
+    unzip /tmp/central-configuration-23.3.4-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/central-configuration-23.3.4-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -50,7 +50,8 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
 
 
 # Set permissions
-RUN chgrp -R 0 ${APP_ROOT} && \
+RUN addgroup -S -g 10001 xebialabs
+RUN chgrp -R 10001 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh && \
     chmod a+rwx ${APP_HOME}/centralConfiguration
@@ -64,7 +65,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/central-configuration" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="23.3.3" \
+      version="23.3.4" \
       release="1" \
       summary="Central configuration" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -94,7 +95,14 @@ RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(read
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 
+# Don't run as root
+RUN groupadd -r -g 10001 xebialabs
+RUN useradd -r -M -u 10001 -g 0 -G xebialabs xebialabs
 
+# Set permissions
+RUN chown -R 10001 ${APP_ROOT} && \
+    chmod u+x ${APP_HOME}/bin/*.sh &&\
+    chmod -R g=u ${APP_ROOT}
 
 WORKDIR ${APP_HOME}
 
@@ -128,8 +136,6 @@ ENV XL_CLUSTER_MODE=default \
     LOGBACK_SCAN_PERIOD=30seconds
 
 
-# Don't run as root
-RUN useradd -r -M -u 10001 -g 0 xebialabs
 USER 10001
 
 VOLUME ["${APP_HOME}/conf", "${APP_HOME}/centralConfiguration"]
