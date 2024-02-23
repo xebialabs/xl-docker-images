@@ -1,4 +1,4 @@
-FROM alpine:3.16 as installer
+FROM alpine:3.19 as installer
 
 # Install dependencies
 RUN apk update
@@ -6,6 +6,7 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
 
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/{{ product }}
+ENV XL_OP_BLUEPRINTS_HOME=${APP_ROOT}/xl-op-blueprints
 
 COPY resources/{{ product }}-{{ xl_version }}-linux-amd64.bin /tmp
 
@@ -15,7 +16,13 @@ RUN mkdir -p ${APP_HOME} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod +x ${APP_HOME}/xl
 
-FROM alpine:3.16
+RUN mkdir -p ${XL_OP_BLUEPRINTS_HOME} && \
+    wget -O /tmp/xl-op-blueprints-{{ xl_version }}.zip https://nexus.xebialabs.com/nexus/content/repositories/digitalai-public/ai/digital/xlclient/blueprints/xl-op-blueprints/{{ xl_version }}/xl-op-blueprints-{{ xl_version }}.zip && \
+    unzip -o /tmp/xl-op-blueprints-{{ xl_version }}.zip -d ${XL_OP_BLUEPRINTS_HOME} && \
+    chgrp -R 0 ${XL_OP_BLUEPRINTS_HOME} && \
+    chmod -R g=u ${XL_OP_BLUEPRINTS_HOME}
+
+FROM alpine:3.19
 
 {% include 'metadata.j2' %}
 
@@ -53,6 +60,8 @@ RUN apk add --no-cache curl tar && \
 # Install vim
 RUN apk add --no-cache vim xclip
 
+{% if xl_version.endswith('-all') %}
+
 # Install oc
 RUN apk add --no-cache gcompat curl ca-certificates tar gzip && \
     curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.8.11/openshift-client-linux.tar.gz | tar zx && \
@@ -83,29 +92,9 @@ RUN apk update && \
 RUN pip3 install awscli
 RUN aws --version
 
-# Add user
-RUN apk add --no-cache shadow && \
-    useradd -d /opt/xebialabs -m -r -u 10001 -g 0 xebialabs
-
-# Copy installed {{ product_name }}
-COPY --from=installer ${APP_ROOT} ${APP_ROOT}
-
-# Set up gcloud config, aws config and kube config folder
+# Set up gcloud config, aws config
 RUN mkdir -p ${APP_ROOT}/.config/gcloud && \
-    mkdir -p ${APP_ROOT}/.kube && \
     mkdir -p ${APP_ROOT}/.aws
-
-ENV KUBECONFIG=${APP_ROOT}/.kube/config
-
-# Install Tini
-ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static ${APP_ROOT}/tini
-RUN chmod +x ${APP_ROOT}/tini && \
-    chown -R 10001:0 ${APP_ROOT}
-
-WORKDIR ${APP_HOME}
-
-# Don't run as root
-USER 10001
 
 # Install Krew
 RUN cd /tmp \
@@ -118,5 +107,27 @@ RUN cd /tmp \
 ENV PATH="${APP_ROOT}/.krew/bin:${PATH}"
 
 RUN kubectl krew install oidc-login
+
+{% endif %}
+
+# Add user
+RUN apk add --no-cache shadow && \
+    useradd -d /opt/xebialabs -m -r -u 10001 -g 0 xebialabs
+
+# Copy installed {{ product_name }}
+COPY --from=installer ${APP_ROOT} ${APP_ROOT}
+
+# Set up kube config folder
+RUN mkdir -p ${APP_ROOT}/.kube
+
+# Install Tini
+ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini-static ${APP_ROOT}/tini
+RUN chmod +x ${APP_ROOT}/tini && \
+    chown -R 10001:0 ${APP_ROOT}
+
+WORKDIR ${APP_HOME}
+
+# Don't run as root
+USER 10001
 
 ENTRYPOINT ["/opt/xebialabs/tini", "--", "/opt/xebialabs/xl-client/xl"]
