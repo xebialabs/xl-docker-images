@@ -3,7 +3,7 @@ set -e
 
 MYSQL_VERSION="8.1.0"
 H2_VERSION="2.2.224"
-POSTGRESQL_VERSION="42.6.0"
+POSTGRESQL_VERSION="42.6.1"
 MSSQL_VERSION="11.2.3.jre17"
 
 echo "Downloading DB drivers to ${APP_ROOT}/db-libs"
