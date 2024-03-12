@@ -52,6 +52,8 @@ context:
       value: ""
     - key: XLD_TASK_QUEUE_PASSWORD
       value: ""
+    - key: XLD_TASK_QUEUE_IS_QUORUM
+      value: "false"      
     - key: PLUGIN_SOURCE
       value: "database"
     - key: USE_EXTERNAL_CENTRAL_CONFIG
