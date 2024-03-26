@@ -78,6 +78,8 @@ context:
       value: ""
     - key: XLD_TASK_QUEUE_PASSWORD
       value: ""
+    - key: XLD_TASK_QUEUE_IS_QUORUM
+      value: "false"          
     - key: HOSTNAME_SUFFIX
       value: ""
     - key: XL_LICENSE_KIND

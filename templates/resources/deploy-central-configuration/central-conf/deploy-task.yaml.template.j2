@@ -12,3 +12,5 @@ deploy.task:
       jms-username: "${XLD_TASK_QUEUE_USERNAME}"
       jms-password: |-
         ${XLD_TASK_QUEUE_PASSWORD}
+      rabbitmq:
+        quorum-queue: ${XLD_TASK_QUEUE_IS_QUORUM}
