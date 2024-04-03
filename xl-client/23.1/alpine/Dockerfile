@@ -7,10 +7,10 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
 ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-client
 
-COPY resources/xl-client-23.1.12-linux-amd64.bin /tmp
+COPY resources/xl-client-23.1.13-linux-amd64.bin /tmp
 
 RUN mkdir -p ${APP_HOME} && \
-    mv /tmp/xl-client-23.1.12-linux-amd64.bin ${APP_HOME}/xl && \
+    mv /tmp/xl-client-23.1.13-linux-amd64.bin ${APP_HOME}/xl && \
     chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod +x ${APP_HOME}/xl
@@ -22,7 +22,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-client" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="23.1.12" \
+      version="23.1.13" \
       release="1" \
       summary="XL Client" \
       description="Enterprise-scale Application Release Automation for any environment" \
