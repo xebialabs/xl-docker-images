@@ -17,8 +17,8 @@ curl https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/${MSSQL_V
 echo "Downloading MQ drivers to ${APP_ROOT}/mq-libs"
 mkdir ${APP_ROOT}/mq-libs
 
-RABBIT_MQ_AMQP_VERSION="5.18.0"
-RABBIT_MQ_JMS_VERSION="3.1.0"
+RABBIT_MQ_AMQP_VERSION="5.20.0"
+RABBIT_MQ_JMS_VERSION="3.2.0"
 ACTIVE_MQ_VERSION="5.18.2"
 
 curl https://repo1.maven.org/maven2/com/rabbitmq/amqp-client/${RABBIT_MQ_AMQP_VERSION}/amqp-client-${RABBIT_MQ_AMQP_VERSION}.jar -o ${APP_ROOT}/mq-libs/amqp-client-${RABBIT_MQ_AMQP_VERSION}.jar -f

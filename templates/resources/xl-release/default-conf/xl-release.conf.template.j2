@@ -43,11 +43,12 @@ xl {
   # Task queue
   queue {
     embedded=${ENABLE_EMBEDDED_QUEUE}
+    connector="${XLR_TASK_QUEUE_CONNECTOR_TYPE}"
     password="""${XLR_TASK_QUEUE_PASSWORD}"""
     queueName="${XLR_TASK_QUEUE_NAME}"
     url="${XLR_TASK_QUEUE_URL}"
     username="${XLR_TASK_QUEUE_USERNAME}"
-    queueType = "${XLR_TASK_QUEUE_TYPE}"
+    queueType="${XLR_TASK_QUEUE_TYPE}"
   }
 
   metrics {
