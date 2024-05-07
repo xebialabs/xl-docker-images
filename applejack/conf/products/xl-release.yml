@@ -3,6 +3,7 @@ dockerfiles:
   default: 'ubuntu'
   os:
     rhel: rhel/Dockerfile.j2
+    redhat: redhat/Dockerfile.j2
     debian-slim: debian-slim/Dockerfile.j2
     centos: centos/Dockerfile.j2
     amazonlinux: amazonlinux/Dockerfile.j2
@@ -20,10 +21,12 @@ context:
   license_server: https://download.xebialabs.com
   product: xl-release
   product_name: XL Release
+  product_info_url: https://digital.ai/products/release/
   product_description: Automate, orchestrate and get visibility into your release pipelines — at enterprise scale
   license_file: xl-release-license.lic
   boot_conf: xl-release-server.conf
   wrapper_conf: xlr-wrapper-linux.conf
+  skip_vulnerable_libs: false
   conf_files:
   - xl-release.conf
   port: 5516

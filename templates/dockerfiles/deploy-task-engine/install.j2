@@ -6,7 +6,11 @@
 COPY resources/{{ product }}-{{ xl_version }}.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
     unzip /tmp/{{ product }}-{{ xl_version }}.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/{{ product }}-{{ xl_version }} ${APP_HOME}
+    mv ${APP_ROOT}/{{ product }}-{{ xl_version }} ${APP_HOME} && \
+{% if skip_vulnerable_libs %}
+    rm ${APP_HOME}/lib/derby*.jar && \
+{% endif %}
+    true
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -40,13 +44,17 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
 
 # Move plugins directory to default-plugins, so that when no external plugins are loaded we can use the default
 RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
-    mkdir ${APP_HOME}/plugins
-
-# Create empty 'repository', 'work', 'export', 'archive' and 'reports' directory
-RUN mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
+    mkdir ${APP_HOME}/plugins && \
+    # Create empty 'repository', 'work', 'export', 'archive' and 'reports' directory
+    mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
 
 # Set permissions
-RUN addgroup -S -g 10001 xebialabs
-RUN chgrp -R 10001 ${APP_ROOT} && \
+{%- if target_os == "redhat" %}
+RUN groupadd -r -g 10001 xebialabs && \
+{%- else %}
+RUN addgroup -S -g 10001 xebialabs && \
+{%- endif %}
+    chown -R 10001:10001 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
+    chmod u+x ${APP_HOME}/bin/*.sh && \
     chmod g+x ${APP_HOME}/bin/*.sh

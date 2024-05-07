@@ -6,7 +6,12 @@
 COPY resources/{{ product }}-{{ xl_version }}-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
     unzip /tmp/{{ product }}-{{ xl_version }}-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/{{ product }}-{{ xl_version }}-server ${APP_HOME}
+    mv ${APP_ROOT}/{{ product }}-{{ xl_version }}-server ${APP_HOME} && \
+{%- if skip_vulnerable_libs %}
+    rm ${APP_HOME}/lib/derby*.jar && \
+    rm -fr ${APP_HOME}/derbyns/ && \
+{%- endif %}
+    true
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -17,10 +22,9 @@ COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
 # Add (and run) Database driver download script
 COPY resources/bin/db-drivers.sh /tmp
 RUN chmod ugo+x /tmp/db-drivers.sh && \
-    /bin/sh /tmp/db-drivers.sh
-
-# Modify bin/run.sh so that java becomes a child process of dumb-init
-RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
+    /bin/sh /tmp/db-drivers.sh && \
+    # Modify bin/run.sh so that java becomes a child process of dumb-init
+    sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
 {% if commons.central_configuration_enabled %}
 
@@ -55,23 +59,26 @@ COPY resources/modify-wrapper-linux-conf.gawk /tmp
 RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     /tmp/modify-wrapper-linux-conf.gawk ${APP_HOME}/default-conf/{{ wrapper_conf }} > /tmp/{{ wrapper_conf}} && \
     mv /tmp/{{ wrapper_conf }} ${APP_HOME}/default-conf/{{ wrapper_conf }} && \
-    rm /tmp/modify-wrapper-linux-conf.gawk
-
-# Create node-specific conf directory and add template for node-specific {{ product }}.conf file
-# The node-specific {{ product }}.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the
-# ${APP_HOME}/conf/{{ product }}.conf file by the xl-platform
-RUN mkdir ${APP_HOME}/node-conf
+    rm /tmp/modify-wrapper-linux-conf.gawk && \
+    # Create node-specific conf directory and add template for node-specific {{ product }}.conf file
+    # The node-specific {{ product }}.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the
+    # ${APP_HOME}/conf/{{ product }}.conf file by the xl-platform
+    mkdir ${APP_HOME}/node-conf
 COPY resources/node-conf ${APP_HOME}/node-conf
 
 # Move plugins directory to default-plugins, so that when no external plugins are loaded we can use the default
 RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
-    mkdir ${APP_HOME}/plugins
-
-# Create empty 'repository', 'work', 'export', 'archive' and 'reports' directory
-RUN mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
+    mkdir ${APP_HOME}/plugins && \
+    # Create empty 'repository', 'work', 'export', 'archive' and 'reports' directory
+    mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
 
 # Set permissions
-RUN addgroup -S -g 10001 xebialabs
-RUN chgrp -R 10001 ${APP_ROOT} && \
+{%- if target_os == "redhat" %}
+RUN groupadd -r -g 10001 xebialabs && \
+{%- else %}
+RUN addgroup -S -g 10001 xebialabs && \
+{%- endif %}
+    chown -R 10001:10001 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
+    chmod u+x ${APP_HOME}/bin/*.sh && \
     chmod g+x ${APP_HOME}/bin/*.sh

@@ -6,6 +6,7 @@ dockerfiles:
     centos: centos/Dockerfile.j2
     amazonlinux: amazonlinux/Dockerfile.j2
     rhel: rhel/Dockerfile.j2
+    redhat: redhat/Dockerfile.j2
     ubuntu: ubuntu/Dockerfile.j2
 repositories:
   nexus: 'https://nexus.xebialabs.com/nexus/service/local/repositories/{repo}/content/ai/digital/config/central-configuration-server/{version}/{product}-server-{version}.zip'
@@ -22,9 +23,11 @@ context:
   license_server: https://download.xebialabs.com
   product: central-configuration
   product_name: Central configuration
+  product_info_url: https://digital.ai/products/deploy/
   product_description: Enterprise-scale Application Release Automation for any environment
   boot_conf: deployit.conf
   wrapper_conf: xlc-wrapper.conf.common
+  skip_vulnerable_libs: false
   central_config_files:
     - deploy-cluster.yaml
     - deploy-metrics.yaml

@@ -1,0 +1,83 @@
+
+EULA Artifacts Digital.ai, Version 1.0
+
+1. Other Agreement.
+
+  This EULA applies to Your Use of the Artifacts.
+  However, it's possible that You have entered into a separate written
+  agreement with Us in respect of the Artifacts which is intended to
+  supersede this EULA. In that case, such separate written agreement will
+  govern Your Use of the Artifacts.
+
+2. Definitions.
+
+  "License" means the license defined in article 3 below. "Artifacts" means
+  the object code versions of software made available by Us under this EULA.
+  "Use" means use of the Artifacts by You for Your own internal business
+  purposes only. "We", "Our" and "Us" means Digital.ai Inc., a corporation
+  with its principal place of business at 555 Fayetteville St, Raleigh, NC 
+  27601, United States of America. "You" and "Your" means
+  you, the person or legal entity who is granted a License to Use the
+  Artifacts under these terms and conditions.
+
+3. License.
+
+  We grant You free of charge a non-exclusive, non-transferrable, non-sub
+  licensable right to Use the Artifacts within your legal entity and under
+  these terms and conditions. The License does not include the right to
+  copy, reproduce, resale, distribute, lease, rent, sublicense or otherwise
+  make the Artifacts available to any third party without Our prior written
+  approval. The License does not include the right to reverse-engineer,
+  decompile, disassemble or otherwise attempt to determine source code or
+  protocols from the Artifacts. You shall not create or attempt to create
+  any derivative works from the Artifacts, or use the Artifacts in any way
+  to create products and/or services that compete with Our products and/or
+  services. We retain all rights not expressly granted to You under these
+  terms and conditions.
+
+4. Warranty and Liability.
+
+  We warrant that We are entitled to license the Artifacts to You. We do
+  not warrant that operation of the Artifacts shall be uninterrupted or
+  "bug" free. EXCEPT FOR THE FOREGOING WARRANTIES, THE ARTIFACTS ARE
+  PROVIDED WITHOUT ANY IMPLIED OR OTHER EXPRESS WARRANTIES, INCLUDING BUT
+  NOT LIMITED TO WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE AND
+  MERCHANTABILITY. Our liability for damages concerning the performance or
+  non-performance by Us in relation to these terms and conditions, and
+  regardless of whether the claim for such damages is based in contract,
+  tort, strict liability, or otherwise, is limited to an amount of $ 100
+  USD. In no event shall We be liable for any indirect, incidental,
+  special, punitive or consequential damages, lost data, or lost profits,
+  even if We has been advised to the possibility of such damages.
+
+5. Intellectual Property.
+
+  Title, ownership rights and all intellectual property rights in and to the
+  Artifacts shall remain the sole and exclusive property and that of Us and
+  Our licensors. If a third party claims that Your use of the Artifacts
+  infringes any patent, copyright, trademark or trade secret, You shall
+  promptly notify Us thereof. We shall have no liability for any third
+  party claim of infringement based upon Your use of the Artifacts under
+  these terms and conditions. You shall not remove any of the logos,
+  product names or trademarks applied in or on the Artifacts and
+  Documentation. You shall have no right to use any logos, product names or
+  trademarks without the prior written consent of Us or Our licensors.
+
+6. Miscellaneous.
+
+  You shall comply with any export control laws. None of these terms and
+  conditions are enforceable by any person or entity who is not a party to
+  it. These terms and conditions constitute the entire agreement between Us
+  and You regarding the Artifacts and Documentation and no amendment to
+  these terms and conditions will be effective unless in writing and signed
+  by both parties hereto. The provisions of these terms and conditions are
+  to be considered separately, and if any provision hereof should be found
+  by any court or competent jurisdiction to be invalid or unenforceable,
+  these terms and conditions will be deemed to have effect as if such
+  invalid or unenforceable provision were severed from these terms and
+  conditions. These terms and conditions are governed by the laws of the
+  North Carolina, excluding its conflict of law rules and the
+  UN Convention for the International Sale of Goods (CISG). Any dispute
+  regarding these terms and conditions, or disputes arising from these terms
+  and conditions, shall be subject to the exclusive jurisdiction of the
+  court of the Commonwealth of Massachusetts.

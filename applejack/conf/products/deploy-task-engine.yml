@@ -3,6 +3,7 @@ dockerfiles:
   default: 'ubuntu'
   os:
     rhel: rhel/Dockerfile.j2
+    redhat: redhat/Dockerfile.j2
     debian-slim: debian-slim/Dockerfile.j2
     centos: centos/Dockerfile.j2
     amazonlinux: amazonlinux/Dockerfile.j2
@@ -21,10 +22,12 @@ context:
   license_server: https://download.xebialabs.com
   product: deploy-task-engine
   product_name: Deploy Worker
+  product_info_url: https://digital.ai/products/deploy/
   boot_conf: deployit.conf
   product_description: Enterprise-scale Application Release Automation for any environment
   license_file: deployit-license.lic
   wrapper_conf: xld-wrapper.conf.common
+  skip_vulnerable_libs: false
   port: 8180
   volumes:
     - "${APP_HOME}/conf"
