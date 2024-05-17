@@ -8,17 +8,17 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-client
 ENV XL_OP_BLUEPRINTS_HOME=${APP_ROOT}/xl-op-blueprints
 
-COPY resources/xl-client-24.1.1-linux-amd64.bin /tmp
+COPY resources/xl-client-24.1.2-rc.1-linux-amd64.bin /tmp
 
 RUN mkdir -p ${APP_HOME} && \
-    mv /tmp/xl-client-24.1.1-linux-amd64.bin ${APP_HOME}/xl && \
+    mv /tmp/xl-client-24.1.2-rc.1-linux-amd64.bin ${APP_HOME}/xl && \
     chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod +x ${APP_HOME}/xl
 
 RUN mkdir -p ${XL_OP_BLUEPRINTS_HOME} && \
-    wget -O /tmp/xl-op-blueprints-24.1.1.zip https://nexus.xebialabs.com/nexus/content/repositories/digitalai-public/ai/digital/xlclient/blueprints/xl-op-blueprints/24.1.1/xl-op-blueprints-24.1.1.zip && \
-    unzip -o /tmp/xl-op-blueprints-24.1.1.zip -d ${XL_OP_BLUEPRINTS_HOME} && \
+    wget -O /tmp/xl-op-blueprints-24.1.2-rc.1.zip https://nexus.xebialabs.com/nexus/content/repositories/digitalai-public/ai/digital/xlclient/blueprints/xl-op-blueprints/24.1.2-rc.1/xl-op-blueprints-24.1.2-rc.1.zip && \
+    unzip -o /tmp/xl-op-blueprints-24.1.2-rc.1.zip -d ${XL_OP_BLUEPRINTS_HOME} && \
     chgrp -R 0 ${XL_OP_BLUEPRINTS_HOME} && \
     chmod -R g=u ${XL_OP_BLUEPRINTS_HOME}
 
@@ -29,7 +29,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-client" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="24.1.1" \
+      version="24.1.2-rc.1" \
       release="1" \
       summary="XL Client" \
       description="Enterprise-scale Application Release Automation for any environment" \
