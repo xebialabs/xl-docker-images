@@ -5,7 +5,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="24.1.0-1219.113" \
+      version="24.1.2" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -41,10 +41,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-24.1.0-1219.113-server.zip /tmp
+COPY resources/xl-release-24.1.2-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-24.1.0-1219.113-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-24.1.0-1219.113-server ${APP_HOME}
+    unzip /tmp/xl-release-24.1.2-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-24.1.2-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -94,7 +94,8 @@ RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
 RUN mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
 
 # Set permissions
-RUN chgrp -R 0 ${APP_ROOT} && \
+RUN addgroup -S -g 10001 xebialabs
+RUN chgrp -R 10001 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
 
@@ -106,17 +107,19 @@ ENV OS=rhel
 
 
 # Set ttl for DNS cache
-RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/lib/security/java.security
+RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=30' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/conf/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 
+# Don't run as root
+RUN groupadd -r -g 10001 xebialabs
+RUN useradd -r -M -u 10001 -g 0 -G xebialabs xebialabs
 
 # Set permissions
 RUN chown -R 10001 ${APP_ROOT} && \
     chmod u+x ${APP_HOME}/bin/*.sh &&\
     chmod -R g=u ${APP_ROOT}
-
 
 WORKDIR ${APP_HOME}
 
@@ -140,6 +143,8 @@ ENV XL_CLUSTER_MODE=default \
     XLR_TASK_QUEUE_NAME=xlr-tasks-queue \
     XLR_TASK_QUEUE_URL=amqp://localhost:61616 \
     XLR_TASK_QUEUE_USERNAME=mqadmin \
+    XLR_TASK_QUEUE_TYPE=classic \
+    XLR_TASK_QUEUE_CONNECTOR_TYPE=rabbitmq-jms \
     PLUGIN_SOURCE=database \
     FORCE_REMOVE_MISSING_TYPES=false \
     XLR_HTTP2_ENABLED=false \
@@ -148,8 +153,6 @@ ENV XL_CLUSTER_MODE=default \
     LOGBACK_SCAN_PERIOD=30seconds
 
 
-# Don't run as root
-RUN useradd -r -M -u 10001 -g 0 xebialabs
 USER 10001
 
 VOLUME ["${APP_ROOT}/bootstrap", "${APP_HOME}/archive", "${APP_HOME}/conf", "${APP_HOME}/hotfix", "${APP_HOME}/ext", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/reports"]
