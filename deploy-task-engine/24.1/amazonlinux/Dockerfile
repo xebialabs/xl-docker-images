@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-24.1.0-1219.113.zip /tmp
+COPY resources/deploy-task-engine-24.1.2.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-24.1.0-1219.113.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-24.1.0-1219.113 ${APP_HOME}
+    unzip /tmp/deploy-task-engine-24.1.2.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-24.1.2 ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -55,7 +55,8 @@ RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
 RUN mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
 
 # Set permissions
-RUN chgrp -R 0 ${APP_ROOT} && \
+RUN addgroup -S -g 10001 xebialabs
+RUN chgrp -R 10001 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod g+x ${APP_HOME}/bin/*.sh
 
@@ -67,7 +68,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/deploy-task-engine" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="24.1.0-1219.113" \
+      version="24.1.2" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -99,12 +100,19 @@ RUN curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TERRAF
 
 
 # Set ttl for DNS cache
-RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=10' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/lib/security/java.security
+RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=30' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/conf/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 
+# Don't run as root
+RUN groupadd -r -g 10001 xebialabs
+RUN useradd -r -M -u 10001 -g 0 -G xebialabs xebialabs
 
+# Set permissions
+RUN chown -R 10001 ${APP_ROOT} && \
+    chmod u+x ${APP_HOME}/bin/*.sh &&\
+    chmod -R g=u ${APP_ROOT}
 
 WORKDIR ${APP_HOME}
 
@@ -117,6 +125,7 @@ ENV APP_PORT=4516 \
     XLD_TASK_QUEUE_URL= \
     XLD_TASK_QUEUE_USERNAME= \
     XLD_TASK_QUEUE_PASSWORD= \
+    XLD_TASK_QUEUE_IS_QUORUM=false \
     PLUGIN_SOURCE=database \
     USE_EXTERNAL_CENTRAL_CONFIG=false \
     CENTRAL_CONFIG_URL= \
@@ -126,8 +135,6 @@ ENV APP_PORT=4516 \
     LOGBACK_SCAN_PERIOD=30seconds
 
 
-# Don't run as root
-RUN useradd -r -M -u 10001 -g 0 xebialabs
 USER 10001
 
 VOLUME ["${APP_HOME}/conf", "${APP_HOME}/ext", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/plugins", "${APP_HOME}/work"]
