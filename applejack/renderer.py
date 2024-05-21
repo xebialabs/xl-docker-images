@@ -11,6 +11,7 @@ class Renderer(object):
         self.commit = commandline_args['commit']
         self.registry = commandline_args['registry']
         self.version = commandline_args['xl_version']
+        self.skip_vulnerable_libs = commandline_args['skip_vulnerable_libs']
         self.image_version = image_version(commandline_args['xl_version'], commandline_args['suffix'])
 
     def __render_jinja_template(self, templates_path, template_file, target_file, context):
@@ -24,23 +25,26 @@ class Renderer(object):
     def render(self, target_os, product_conf):
         self.__generate_dockerfile(target_os, product_conf)
         for dir in product_conf['resources']['dirs']:
-            self.__copy_render_resources(dir, product_conf)
+            self.__copy_render_resources(dir, product_conf, target_os)
 
     def __generate_dockerfile(self, target_os, product_conf):
         target_path = self.__get_target_path(target_os, product_conf['name'])
-        context = self.__build_render_context(product_conf)
+        context = self.__build_render_context(product_conf, target_os)
         self.__render_jinja_template(Path('templates') / 'dockerfiles', product_conf['dockerfiles']['os'][target_os], target_path / 'Dockerfile', context)
         print("Dockerfile template for '%s' rendered" % target_os)
 
-    def __build_render_context(self, product_conf):
+    def __build_render_context(self, product_conf, target_os):
         context = dict(product_conf['context'])
         context['image_version'] = self.image_version
         context['xl_version'] = self.version
         context['registry'] = self.registry
+        if self.skip_vulnerable_libs:
+            context['skip_vulnerable_libs'] = self.skip_vulnerable_libs
+        context['target_os'] = target_os
         context['today'] = datetime.now().strftime('%Y-%m-%d')
         return context
 
-    def __copy_render_resources(self, source_dir, product_conf):
+    def __copy_render_resources(self, source_dir, product_conf, target_os):
         template_path = Path('templates') / 'resources'
         source_path = template_path / source_dir
         dest_path = target_path(product_conf['name'], self.version) / 'resources'
@@ -56,7 +60,7 @@ class Renderer(object):
             elif p.is_file() and '.j2' in p.suffixes:
                 # Render J2 template
                 render_dest = dest_path / relative.parent / relative.stem
-                context = self.__build_render_context(product_conf)
+                context = self.__build_render_context(product_conf, target_os)
                 self.__render_jinja_template(template_path, Path(source_dir) / relative, render_dest, context)
             elif p.is_file():
                 p.copy(dest_path / relative)

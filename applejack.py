@@ -43,6 +43,7 @@ def applejack():
 @applejack.command(help="Render the templates")
 @shared_opts
 @click.option('--commit', '-c', is_flag=True, help="Commit and tag the generated Dockerfiles.")
+@click.option('--skip_vulnerable_libs', '-s', is_flag=True, help="Remove from the image vulnerable libraries.")
 def render(**kwargs):
     renderer = Renderer(kwargs)
     for product in (kwargs['product'] or all_product_configs()):

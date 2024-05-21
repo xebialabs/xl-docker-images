@@ -3,6 +3,7 @@ dockerfiles:
   default: 'ubuntu'
   os:
     rhel: rhel/Dockerfile.j2
+    redhat: redhat/Dockerfile.j2
     debian-slim: debian-slim/Dockerfile.j2
     centos: centos/Dockerfile.j2
     amazonlinux: amazonlinux/Dockerfile.j2
@@ -22,10 +23,12 @@ context:
   license_server: https://download.xebialabs.com
   product: xl-deploy
   product_name: XL Deploy
+  product_info_url: https://digital.ai/products/deploy/
   product_description: Enterprise-scale Application Release Automation for any environment
   license_file: deployit-license.lic
   boot_conf: deployit.conf
   wrapper_conf: xld-wrapper.conf.common
+  skip_vulnerable_libs: false
   conf_files:
     - xl-deploy.conf
   central_config_files:

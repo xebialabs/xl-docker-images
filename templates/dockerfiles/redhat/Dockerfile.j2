@@ -1,0 +1,51 @@
+FROM registry.access.redhat.com/ubi8/openjdk-17:latest as installer
+
+# Install dependencies
+USER root
+RUN microdnf update -y && rm -rf /var/cache/yum && \
+   INSTALL_PKGS="curl hostname shadow-utils which unzip gawk" && \
+   microdnf install --nodocs ${INSTALL_PKGS} && \
+   ### Install JQ
+   JQ_LOCATION="/usr/bin/jq" && \
+   curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
+   microdnf clean all
+
+{% if 'deploy-task-engine' in product %}
+    {% include './deploy-task-engine/install.j2' %}
+{% elif 'central-config' in product %}
+    {% include './central-configuration/install.j2' %}
+{% else %}
+    {% include 'install.j2' %}
+{% endif %}
+
+FROM registry.access.redhat.com/ubi8/openjdk-17:latest
+
+{% include 'metadata.j2' %}
+
+### add licenses to this directory
+COPY resources/licenses /licenses
+
+{% if 'deploy-task-engine' in product %}
+    {% include './deploy-task-engine/variables.j2' %}
+{% else %}
+    {% include 'variables.j2' %}
+{% endif %}
+
+# Copy installed {{ product_name }}
+COPY --from=installer ${APP_ROOT} ${APP_ROOT}
+
+ENV OS=redhat
+USER root
+
+RUN microdnf update -y && rm -rf /var/cache/yum && \
+   INSTALL_PKGS="curl hostname shadow-utils which unzip nc" && \
+   microdnf install --nodocs ${INSTALL_PKGS} && \
+   JQ_LOCATION="/usr/bin/jq" && \
+   curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
+   microdnf clean all
+
+{% if 'deploy' in product %}
+    {% include 'terraform.j2' %}
+{% endif %}
+
+{% include 'runtime.j2' %}

@@ -39,11 +39,14 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     mv /tmp/{{ wrapper_conf }} ${APP_HOME}/default-conf/{{ wrapper_conf }} && \
     rm /tmp/modify-wrapper-linux-conf.gawk
 
-
 # Set permissions
-RUN addgroup -S -g 10001 xebialabs
-RUN chgrp -R 10001 ${APP_ROOT} && \
+{%- if target_os == "redhat" %}
+RUN groupadd -r -g 10001 xebialabs && \
+{%- else %}
+RUN addgroup -S -g 10001 xebialabs && \
+{%- endif %}
+    chown -R 10001:10001 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
+    chmod u+x ${APP_HOME}/bin/*.sh && \
     chmod g+x ${APP_HOME}/bin/*.sh && \
     chmod a+rwx ${APP_HOME}/centralConfiguration
-
