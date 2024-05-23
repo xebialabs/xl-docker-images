@@ -40,11 +40,7 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     rm /tmp/modify-wrapper-linux-conf.gawk
 
 # Set permissions
-{%- if target_os == "redhat" %}
-RUN groupadd -r -g 10001 xebialabs && \
-{%- else %}
-RUN addgroup -S -g 10001 xebialabs && \
-{%- endif %}
+RUN chgrp -R 0 ${APP_ROOT} && \
     chown -R 10001:10001 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod u+x ${APP_HOME}/bin/*.sh && \
