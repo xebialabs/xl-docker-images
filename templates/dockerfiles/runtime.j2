@@ -9,9 +9,6 @@ RUN chmod ugo+x ${APP_ROOT}/tini
 RUN groupadd -r -g 10001 xebialabs && \
     useradd -r -u 10001 -g xebialabs xebialabs
 
-# Ensure all necessary directories are writable
-RUN chmod -R u+rwx ${APP_HOME}
-
 WORKDIR ${APP_HOME}
 
 {% for env in environment %}
