@@ -40,9 +40,9 @@ for f in *; do
     continue
   fi
   if [ -f ${APP_HOME}/centralConfiguration/$f ]; then
-    echo "... Not copying $f because it already exists in the conf directory"
+    echo "... Not copying $f because it already exists in the centralConfiguration directory"
   else
-    echo "... Copying $f to the conf directory"
+    echo "... Copying $f to the centralConfiguration directory"
     cp -R $f ${APP_HOME}/centralConfiguration/
   fi
 done
