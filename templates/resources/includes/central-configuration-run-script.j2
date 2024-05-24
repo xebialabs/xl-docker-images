@@ -15,7 +15,7 @@ if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
   echo "Done"
 fi
 
-# copy default configurations
+# copy default configurations default-conf
 echo "... Copying default configuration from ${APP_HOME}/default-conf"
 
 for f in *; do
@@ -29,5 +29,23 @@ for f in *; do
     cp -R $f ${APP_HOME}/conf/
   fi
 done
+
+# copy default configurations central-conf
+echo "... Copying default configuration from ${APP_HOME}/central-conf"
+
+cd ${APP_HOME}/central-conf
+
+for f in *; do
+  if [[ $f == *.template ]]; then
+    continue
+  fi
+  if [ -f ${APP_HOME}/centralConfiguration/$f ]; then
+    echo "... Not copying $f because it already exists in the conf directory"
+  else
+    echo "... Copying $f to the conf directory"
+    cp -R $f ${APP_HOME}/centralConfiguration/
+  fi
+done
+
 cd ${APP_HOME}
 echo "Done copying default configurations"
