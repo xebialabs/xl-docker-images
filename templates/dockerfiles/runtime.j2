@@ -3,10 +3,11 @@
 RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=30' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/conf/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
-# Don't run as root and set permissions
-RUN chmod ugo+x ${APP_ROOT}/tini && \
-    groupadd -f -r -g 10001 xebialabs && \
-    useradd -r -M -u 10001 -g 0 -G xebialabs xebialabs
+RUN chmod ugo+x ${APP_ROOT}/tini
+
+# Add xebialabs user but do not switch to it
+RUN groupadd -r -g 10001 xebialabs && \
+    useradd -r -u 10001 -g xebialabs xebialabs
 
 WORKDIR ${APP_HOME}
 
