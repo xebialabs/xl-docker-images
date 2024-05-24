@@ -50,7 +50,6 @@ RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
 
 # Set permissions
 RUN chgrp -R 0 ${APP_ROOT} && \
-    chown -R 10001:10001 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod u+x ${APP_HOME}/bin/*.sh && \
     chmod g+x ${APP_HOME}/bin/*.sh
