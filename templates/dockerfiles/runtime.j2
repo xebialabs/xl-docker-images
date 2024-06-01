@@ -7,7 +7,7 @@ RUN chmod ugo+x ${APP_ROOT}/tini
 
 # Add xebialabs user but do not switch to it
 RUN groupadd -r -g 10001 xebialabs && \
-    useradd -r -u 10001 -g xebialabs xebialabs
+    useradd -r -u 10001 -g 0 -G xebialabs xebialabs
 
 WORKDIR ${APP_HOME}
 
