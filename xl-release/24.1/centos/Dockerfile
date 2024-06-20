@@ -8,14 +8,15 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
     
 
 # Set root folders
-ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
-ENV APP_HOME=${APP_ROOT}/xl-release-server
+ENV APP_ROOT=/opt/xebialabs \
+    APP_HOME=/opt/xebialabs/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-24.1.2-server.zip /tmp
+COPY resources/xl-release-24.1.3-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-24.1.2-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-24.1.2-server ${APP_HOME}
+    unzip /tmp/xl-release-24.1.3-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-24.1.3-server ${APP_HOME} && \
+    true
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -26,10 +27,9 @@ COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
 # Add (and run) Database driver download script
 COPY resources/bin/db-drivers.sh /tmp
 RUN chmod ugo+x /tmp/db-drivers.sh && \
-    /bin/sh /tmp/db-drivers.sh
-
-# Modify bin/run.sh so that java becomes a child process of dumb-init
-RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
+    /bin/sh /tmp/db-drivers.sh && \
+    # Modify bin/run.sh so that java becomes a child process of dumb-init
+    sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
 
 
@@ -49,45 +49,40 @@ COPY resources/modify-wrapper-linux-conf.gawk /tmp
 RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     /tmp/modify-wrapper-linux-conf.gawk ${APP_HOME}/default-conf/xlr-wrapper-linux.conf > /tmp/xlr-wrapper-linux.conf && \
     mv /tmp/xlr-wrapper-linux.conf ${APP_HOME}/default-conf/xlr-wrapper-linux.conf && \
-    rm /tmp/modify-wrapper-linux-conf.gawk
-
-# Create node-specific conf directory and add template for node-specific xl-release.conf file
-# The node-specific xl-release.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the
-# ${APP_HOME}/conf/xl-release.conf file by the xl-platform
-RUN mkdir ${APP_HOME}/node-conf
+    rm /tmp/modify-wrapper-linux-conf.gawk && \
+    # Create node-specific conf directory and add template for node-specific xl-release.conf file
+    # The node-specific xl-release.conf file provides HOSTNAME, HOSTNAME_SUFFIX & XL_NODE_NAME to the instance, which are then merged with the
+    # ${APP_HOME}/conf/xl-release.conf file by the xl-platform
+    mkdir ${APP_HOME}/node-conf
 COPY resources/node-conf ${APP_HOME}/node-conf
 
 # Move plugins directory to default-plugins, so that when no external plugins are loaded we can use the default
 RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
-    mkdir ${APP_HOME}/plugins
-
-# Create empty 'repository', 'work', 'export', 'archive' and 'reports' directory
-RUN mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
+    mkdir ${APP_HOME}/plugins && \
+    # Create empty 'repository', 'work', 'export', 'archive' and 'reports' directory
+    mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
 
 # Set permissions
-RUN addgroup -S -g 10001 xebialabs
-RUN chgrp -R 10001 ${APP_ROOT} && \
+RUN chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
-    chmod g+x ${APP_HOME}/bin/*.sh
+    chmod ugo+x ${APP_HOME}/bin/*.sh
 
 
 FROM centos:7
 
-MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 
 LABEL name="xebialabs/xl-release" \
-      maintainer="docker@xebialabs.com" \
-      vendor="XebiaLabs" \
-      version="24.1.2" \
+      vendor="Digital.ai" \
+      version="24.1.3" \
       release="1" \
       summary="XL Release" \
-      description="Enterprise-scale Application Release Automation for any environment" \
-      url="https://www.xebialabs.com/xl-release"
+      description="Automate, orchestrate and get visibility into your release pipelines — at enterprise scale" \
+      url="https://digital.ai/products/release/"
 
 
     # Set root folders
-ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
-ENV APP_HOME=${APP_ROOT}/xl-release-server
+ENV APP_ROOT=/opt/xebialabs \
+    APP_HOME=/opt/xebialabs/xl-release-server
 
 
 # Install dependencies
@@ -105,20 +100,16 @@ ENV OS=centos
 
 
 
+
 # Set ttl for DNS cache
 RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=30' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/conf/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 
-# Don't run as root
-RUN groupadd -r -g 10001 xebialabs
-RUN useradd -r -M -u 10001 -g 0 -G xebialabs xebialabs
-
-# Set permissions
-RUN chown -R 10001 ${APP_ROOT} && \
-    chmod u+x ${APP_HOME}/bin/*.sh &&\
-    chmod -R g=u ${APP_ROOT}
+# Add xebialabs user but do not switch to it
+RUN groupadd -r -g 10001 xebialabs && \
+    useradd -r -u 10001 -g 0 -G xebialabs xebialabs
 
 WORKDIR ${APP_HOME}
 
