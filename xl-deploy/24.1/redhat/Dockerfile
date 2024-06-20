@@ -1,8 +1,14 @@
-FROM alpine:3.16 as installer
+FROM registry.access.redhat.com/ubi8/openjdk-17:latest as installer
 
 # Install dependencies
-RUN apk update
-RUN apk add --no-cache gawk unzip curl busybox-extras
+USER root
+RUN microdnf update -y && rm -rf /var/cache/yum && \
+   INSTALL_PKGS="curl hostname shadow-utils which unzip gawk" && \
+   microdnf install --nodocs ${INSTALL_PKGS} && \
+   ### Install JQ
+   JQ_LOCATION="/usr/bin/jq" && \
+   curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
+   microdnf clean all
 
 
     
@@ -71,12 +77,7 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod ugo+x ${APP_HOME}/bin/*.sh
 
 
-FROM openjdk:17-jdk-slim-buster
-# We need to update this with jdk17
-# FROM openjdk:11-jdk-slim-buster
-# FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:11-jdk
-# USER 0
-
+FROM registry.access.redhat.com/ubi8/openjdk-17:latest
 
 
 LABEL name="xebialabs/xl-deploy" \
@@ -87,22 +88,27 @@ LABEL name="xebialabs/xl-deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
       url="https://digital.ai/products/deploy/"
 
+### add licenses to this directory
+COPY resources/licenses /licenses
+
 
     # Set root folders
 ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/xl-deploy-server
 
 
-# Install dependencies
-RUN apt-get update -y && \
-    apt-get install -y curl jq unzip apt-utils telnet && \
-    apt-get install -y fontconfig libfreetype6 && \
-    apt-get clean all -q
-
 # Copy installed XL Deploy
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
-ENV OS=debian
+ENV OS=redhat
+USER root
+
+RUN microdnf update -y && rm -rf /var/cache/yum && \
+   INSTALL_PKGS="curl hostname shadow-utils which unzip nc" && \
+   microdnf install --nodocs ${INSTALL_PKGS} && \
+   JQ_LOCATION="/usr/bin/jq" && \
+   curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
+   microdnf clean all
 
 
     # install Terraform
