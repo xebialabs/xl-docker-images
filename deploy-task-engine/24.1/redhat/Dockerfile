@@ -1,8 +1,14 @@
-FROM alpine:3.16 as installer
+FROM registry.access.redhat.com/ubi8/openjdk-17:latest as installer
 
 # Install dependencies
-RUN apk update
-RUN apk add --no-cache gawk unzip curl busybox-extras
+USER root
+RUN microdnf update -y && rm -rf /var/cache/yum && \
+   INSTALL_PKGS="curl hostname shadow-utils which unzip gawk" && \
+   microdnf install --nodocs ${INSTALL_PKGS} && \
+   ### Install JQ
+   JQ_LOCATION="/usr/bin/jq" && \
+   curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
+   microdnf clean all
 
 
     
@@ -61,7 +67,7 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod ugo+x ${APP_HOME}/bin/*.sh
 
 
-FROM centos:7
+FROM registry.access.redhat.com/ubi8/openjdk-17:latest
 
 
 LABEL name="xebialabs/deploy-task-engine" \
@@ -72,24 +78,27 @@ LABEL name="xebialabs/deploy-task-engine" \
       description="Enterprise-scale Application Release Automation for any environment" \
       url="https://digital.ai/products/deploy/"
 
+### add licenses to this directory
+COPY resources/licenses /licenses
+
 
     # Set root folders
 ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/deploy-task-engine
 
 
-# Install dependencies
-RUN yum update -y && \
-    yum install -y epel-release telnet && \
-    yum install -y curl jq unzip which && \
-    curl https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm --output jdk-17_linux-x64_bin.rpm && \
-    yum -y install ./jdk-17_linux-x64_bin.rpm && \
-    yum clean all -q
-
 # Copy installed Deploy Worker
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
-ENV OS=centos
+ENV OS=redhat
+USER root
+
+RUN microdnf update -y && rm -rf /var/cache/yum && \
+   INSTALL_PKGS="curl hostname shadow-utils which unzip nc" && \
+   microdnf install --nodocs ${INSTALL_PKGS} && \
+   JQ_LOCATION="/usr/bin/jq" && \
+   curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
+   microdnf clean all
 
 
     # install Terraform

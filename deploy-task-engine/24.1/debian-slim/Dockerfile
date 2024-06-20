@@ -8,14 +8,16 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
     
 
 # Set root folders
-ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
-ENV APP_HOME=${APP_ROOT}/deploy-task-engine
+ENV APP_ROOT=/opt/xebialabs \
+    APP_HOME=/opt/xebialabs/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-24.1.2.zip /tmp
+COPY resources/deploy-task-engine-24.1.3.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-24.1.2.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-24.1.2 ${APP_HOME}
+    unzip /tmp/deploy-task-engine-24.1.3.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-24.1.3 ${APP_HOME} && \
+
+    true
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -49,16 +51,14 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
 
 # Move plugins directory to default-plugins, so that when no external plugins are loaded we can use the default
 RUN mv ${APP_HOME}/plugins ${APP_HOME}/default-plugins && \
-    mkdir ${APP_HOME}/plugins
-
-# Create empty 'repository', 'work', 'export', 'archive' and 'reports' directory
-RUN mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
+    mkdir ${APP_HOME}/plugins && \
+    # Create empty 'repository', 'work', 'export', 'archive' and 'reports' directory
+    mkdir ${APP_HOME}/repository ${APP_HOME}/export ${APP_HOME}/archive ${APP_HOME}/work ${APP_HOME}/reports
 
 # Set permissions
-RUN addgroup -S -g 10001 xebialabs
-RUN chgrp -R 10001 ${APP_ROOT} && \
+RUN chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
-    chmod g+x ${APP_HOME}/bin/*.sh
+    chmod ugo+x ${APP_HOME}/bin/*.sh
 
 
 FROM openjdk:17-jdk-slim-buster
@@ -68,21 +68,19 @@ FROM openjdk:17-jdk-slim-buster
 # USER 0
 
 
-MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 
 LABEL name="xebialabs/deploy-task-engine" \
-      maintainer="docker@xebialabs.com" \
-      vendor="XebiaLabs" \
-      version="24.1.2" \
+      vendor="Digital.ai" \
+      version="24.1.3" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
-      url="https://www.xebialabs.com/deploy-task-engine"
+      url="https://digital.ai/products/deploy/"
 
 
     # Set root folders
-ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
-ENV APP_HOME=${APP_ROOT}/deploy-task-engine
+ENV APP_ROOT=/opt/xebialabs \
+    APP_HOME=/opt/xebialabs/deploy-task-engine
 
 
 # Install dependencies
@@ -105,20 +103,16 @@ RUN curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TERRAF
     rm -f /tmp/terraform.zip
 
 
+
 # Set ttl for DNS cache
 RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=30' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/conf/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 
-# Don't run as root
-RUN groupadd -r -g 10001 xebialabs
-RUN useradd -r -M -u 10001 -g 0 -G xebialabs xebialabs
-
-# Set permissions
-RUN chown -R 10001 ${APP_ROOT} && \
-    chmod u+x ${APP_HOME}/bin/*.sh &&\
-    chmod -R g=u ${APP_ROOT}
+# Add xebialabs user but do not switch to it
+RUN groupadd -r -g 10001 xebialabs && \
+    useradd -r -u 10001 -g 0 -G xebialabs xebialabs
 
 WORKDIR ${APP_HOME}
 
