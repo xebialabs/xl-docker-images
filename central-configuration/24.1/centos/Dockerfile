@@ -8,14 +8,14 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
     
 
 # Set root folders
-ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
-ENV APP_HOME=${APP_ROOT}/central-configuration-server
+ENV APP_ROOT=/opt/xebialabs \
+    APP_HOME=/opt/xebialabs/central-configuration-server
 
 # Install central-configuration from zip file
-COPY resources/central-configuration-24.1.2-server.zip /tmp
+COPY resources/central-configuration-24.1.3-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/central-configuration-24.1.2-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/central-configuration-24.1.2-server ${APP_HOME}
+    unzip /tmp/central-configuration-24.1.3-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/central-configuration-24.1.3-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -48,33 +48,28 @@ RUN chmod +x /tmp/modify-wrapper-linux-conf.gawk && \
     mv /tmp/xlc-wrapper.conf.common ${APP_HOME}/default-conf/xlc-wrapper.conf.common && \
     rm /tmp/modify-wrapper-linux-conf.gawk
 
-
 # Set permissions
-RUN addgroup -S -g 10001 xebialabs
-RUN chgrp -R 10001 ${APP_ROOT} && \
+RUN chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
-    chmod g+x ${APP_HOME}/bin/*.sh && \
+    chmod ugo+x ${APP_HOME}/bin/*.sh && \
     chmod a+rwx ${APP_HOME}/centralConfiguration
-
 
 
 FROM centos:7
 
-MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 
 LABEL name="xebialabs/central-configuration" \
-      maintainer="docker@xebialabs.com" \
-      vendor="XebiaLabs" \
-      version="24.1.2" \
+      vendor="Digital.ai" \
+      version="24.1.3" \
       release="1" \
       summary="Central configuration" \
       description="Enterprise-scale Application Release Automation for any environment" \
-      url="https://www.xebialabs.com/central-configuration"
+      url="https://digital.ai/products/deploy/"
 
 
     # Set root folders
-ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
-ENV APP_HOME=${APP_ROOT}/central-configuration-server
+ENV APP_ROOT=/opt/xebialabs \
+    APP_HOME=/opt/xebialabs/central-configuration-server
 
 
 # Install dependencies
@@ -92,20 +87,16 @@ ENV OS=centos
 
 
 
+
 # Set ttl for DNS cache
 RUN echo $'\n#\n# Set TTL for DNS cache.\nnetworkaddress.cache.ttl=30' >> $(readlink -f `which java` | sed -e 's:/jre/bin/java::' -e 's:/bin/java::')/conf/security/java.security
 
 COPY resources/amd64/tini ${APP_ROOT}
 RUN chmod ugo+x ${APP_ROOT}/tini
 
-# Don't run as root
-RUN groupadd -r -g 10001 xebialabs
-RUN useradd -r -M -u 10001 -g 0 -G xebialabs xebialabs
-
-# Set permissions
-RUN chown -R 10001 ${APP_ROOT} && \
-    chmod u+x ${APP_HOME}/bin/*.sh &&\
-    chmod -R g=u ${APP_ROOT}
+# Add xebialabs user but do not switch to it
+RUN groupadd -r -g 10001 xebialabs && \
+    useradd -r -u 10001 -g 0 -G xebialabs xebialabs
 
 WORKDIR ${APP_HOME}
 

@@ -1,35 +1,14 @@
-FROM registry.access.redhat.com/rhel7/rhel-atomic
-
-
-LABEL name="xebialabs/central-configuration" \
-      vendor="Digital.ai" \
-      version="24.1.3" \
-      release="1" \
-      summary="Central configuration" \
-      description="Enterprise-scale Application Release Automation for any environment" \
-      url="https://digital.ai/products/deploy/"
-
-COPY resources/help.md /tmp/
-
-### add licenses to this directory
-COPY resources/licenses /licenses
+FROM registry.access.redhat.com/ubi8/openjdk-17:latest as installer
 
 # Install dependencies
-RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname shadow-utils which" && \
-    microdnf install --enablerepo=rhel-7-server-rpms --enablerepo=rhel-7-server-optional-rpms --nodocs ${INSTALL_PKGS} && \
-    microdnf update && \
-### help file markdown to man conversion
-    go-md2man -in /tmp/help.md -out /help.1 && \
-    microdnf clean all
-
-RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-17-openjdk && \
-### Set the Java random source
-    echo "securerandom.source=file:/dev/urandom" >> /usr/lib/jvm/java/jre/lib/security/java.security && \
-    microdnf clean all
-
-### Install JQ
-RUN JQ_LOCATION="/usr/bin/jq" && \
-    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
+USER root
+RUN microdnf update -y && rm -rf /var/cache/yum && \
+   INSTALL_PKGS="curl hostname shadow-utils which unzip gawk" && \
+   microdnf install --nodocs ${INSTALL_PKGS} && \
+   ### Install JQ
+   JQ_LOCATION="/usr/bin/jq" && \
+   curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
+   microdnf clean all
 
 
     
@@ -82,9 +61,38 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod a+rwx ${APP_HOME}/centralConfiguration
 
 
+FROM registry.access.redhat.com/ubi8/openjdk-17:latest
 
 
-ENV OS=rhel
+LABEL name="xebialabs/central-configuration" \
+      vendor="Digital.ai" \
+      version="24.1.3" \
+      release="1" \
+      summary="Central configuration" \
+      description="Enterprise-scale Application Release Automation for any environment" \
+      url="https://digital.ai/products/deploy/"
+
+### add licenses to this directory
+COPY resources/licenses /licenses
+
+
+    # Set root folders
+ENV APP_ROOT=/opt/xebialabs \
+    APP_HOME=/opt/xebialabs/central-configuration-server
+
+
+# Copy installed Central configuration
+COPY --from=installer ${APP_ROOT} ${APP_ROOT}
+
+ENV OS=redhat
+USER root
+
+RUN microdnf update -y && rm -rf /var/cache/yum && \
+   INSTALL_PKGS="curl hostname shadow-utils which unzip nc" && \
+   microdnf install --nodocs ${INSTALL_PKGS} && \
+   JQ_LOCATION="/usr/bin/jq" && \
+   curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
+   microdnf clean all
 
 
 
