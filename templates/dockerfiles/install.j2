@@ -7,6 +7,8 @@ COPY resources/{{ product }}-{{ xl_version }}-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
     unzip /tmp/{{ product }}-{{ xl_version }}-server.zip -d ${APP_ROOT} && \
     mv ${APP_ROOT}/{{ product }}-{{ xl_version }}-server ${APP_HOME} && \
+    rm -fr ${APP_HOME}/serviceWrapper/ && \
+    rm ${APP_HOME}/bin/.wrapper-env* ${APP_HOME}/bin/install-service* ${APP_HOME}/bin/uninstall-service* && \
 {%- if skip_vulnerable_libs %}
     rm ${APP_HOME}/lib/derby*.jar && \
     rm -fr ${APP_HOME}/derbyns/ && \
