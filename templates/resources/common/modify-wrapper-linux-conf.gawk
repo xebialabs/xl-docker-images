@@ -8,7 +8,18 @@
 # Move the other classpath entries up by one
 match($0, /^(wrapper.java.classpath).([0-9]+)=(.*)$/, a) {
   printf("%s.%d=%s\n", a[1], (a[2]+1), a[3]);
+  # Keep track of the last classpath number
+  last_classpath_number = a[2] + 1
   next;
+}
+
+# Add the new classpath entries right after the last classpath entry
+{
+  if (!added_new_classpath && last_classpath_number) {
+    printf("wrapper.java.classpath.%d=driver/jdbc/*\n", last_classpath_number + 1);
+    printf("wrapper.java.classpath.%d=driver/mq/*\n", last_classpath_number + 2);
+    added_new_classpath = 1  # Ensure this block only runs once
+  }
 }
 
 # Count the number of additional JVM arguments

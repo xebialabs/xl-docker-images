@@ -34,6 +34,7 @@ context:
     - "${APP_ROOT}/bootstrap"
     - "${APP_HOME}/archive"
     - "${APP_HOME}/conf"
+    - "${APP_HOME}/driver/jdbc"
     - "${APP_HOME}/hotfix"
     - "${APP_HOME}/ext"
     - "${APP_HOME}/plugins"

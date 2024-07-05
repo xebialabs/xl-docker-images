@@ -46,6 +46,8 @@ context:
   volumes:
     - "${APP_HOME}/centralConfiguration"
     - "${APP_HOME}/conf"
+    - "${APP_HOME}/driver/jdbc"
+    - "${APP_HOME}/driver/mq"
     - "${APP_HOME}/export"
     - "${APP_HOME}/ext"
     - "${APP_HOME}/hotfix/lib"

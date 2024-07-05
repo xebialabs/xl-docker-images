@@ -29,11 +29,13 @@ class Renderer(object):
 
     def __generate_dockerfile(self, target_os, product_conf):
         target_path = self.__get_target_path(target_os, product_conf['name'])
-        context = self.__build_render_context(product_conf, target_os)
+        context = self.__build_render_context(product_conf, target_os, is_slim=False)
+        slim_context = self.__build_render_context(product_conf, target_os, is_slim=True)
         self.__render_jinja_template(Path('templates') / 'dockerfiles', product_conf['dockerfiles']['os'][target_os], target_path / 'Dockerfile', context)
+        self.__render_jinja_template(Path('templates') / 'dockerfiles', product_conf['dockerfiles']['os'][target_os], target_path / 'Dockerfile.slim', slim_context)
         print("Dockerfile template for '%s' rendered" % target_os)
 
-    def __build_render_context(self, product_conf, target_os):
+    def __build_render_context(self, product_conf, target_os, is_slim):
         context = dict(product_conf['context'])
         context['image_version'] = self.image_version
         context['xl_version'] = self.version
@@ -42,6 +44,7 @@ class Renderer(object):
             context['skip_vulnerable_libs'] = self.skip_vulnerable_libs
         context['target_os'] = target_os
         context['today'] = datetime.now().strftime('%Y-%m-%d')
+        context['is_slim'] = is_slim
         return context
 
     def __copy_render_resources(self, source_dir, product_conf, target_os):
@@ -60,8 +63,13 @@ class Renderer(object):
             elif p.is_file() and '.j2' in p.suffixes:
                 # Render J2 template
                 render_dest = dest_path / relative.parent / relative.stem
-                context = self.__build_render_context(product_conf, target_os)
+                context = self.__build_render_context(product_conf, target_os, is_slim=False)
                 self.__render_jinja_template(template_path, Path(source_dir) / relative, render_dest, context)
+
+                if relative.parent.name == 'bin':
+                    render_slim_dest = dest_path / relative.parent / (relative.stem + '.slim')
+                    slim_context = self.__build_render_context(product_conf, target_os, is_slim=True)
+                    self.__render_jinja_template(template_path, Path(source_dir) / relative, render_slim_dest, slim_context)
             elif p.is_file():
                 p.copy(dest_path / relative)
 

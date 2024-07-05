@@ -34,13 +34,18 @@ class ImageBuilder(object):
                 elif "error" in j:
                     raise Exception(j["error"])
 
-    def build_docker_image(self, target_os):
+    def build_docker_image(self, target_os, is_slim):
         client = docker.from_env()
+        if is_slim:
+            docker_file = str(Path(target_os) / "Dockerfile.slim").replace('\\', '/')
+        else:
+            docker_file = str(Path(target_os) / "Dockerfile").replace('\\', '/')
+
         generator = client.api.build(
             nocache=not self.use_cache,
             pull=not self.use_cache,
             path=str(target_path(self.product_conf['name'], self.image_version)),
-            dockerfile=str(Path(target_os) / "Dockerfile").replace('\\', '/'),
+            dockerfile=docker_file,
             rm=True,
         )
         for line in self.convert_build_logs(generator):
@@ -56,6 +61,8 @@ class ImageBuilder(object):
         image = client.images.get(image_id)
         repo = "%s/%s" % (self.registry, self.repository)
         for tag, _ in all_tags(target_os, self.image_version, self.product_conf['dockerfiles']['default']):
+            if is_slim:
+                tag += "-slim"
             print("Tag image with %s:%s" % (repo, tag))
             image.tag(repo, tag)
         image.reload()
