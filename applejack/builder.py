@@ -83,13 +83,15 @@ class ImageBuilder(object):
                 if 'error' in j:
                     raise Exception(j['error'])
 
-    def push_image(self, image_id, target_os):
+    def push_image(self, image_id, target_os, is_slim):
         print("Pushing image with id %s to %s" % (image_id, self.registry))
         client = docker.from_env()
         image = client.images.get(image_id)
         print("image = %s" % image)
         for tag, _ in all_tags(target_os, self.image_version, self.product_conf['dockerfiles']['default']):
             repo = "%s/%s" % (self.registry, self.repository)
+            if is_slim:
+                tag += "-slim"
             for line in self.convert_push_logs(client.images.push(repo, tag=tag, stream=True)):
                 print(line)
             print("Image %s with tag %s has been pushed to %s" % (image_id, tag, repo))
