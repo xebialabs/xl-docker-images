@@ -96,12 +96,16 @@ class Renderer(object):
         print(diff)
         for product_conf in all_product_configs():
             for target_os in target_systems(product_conf):
-                df = str(self.__get_target_path(target_os, product_conf['name']) / "Dockerfile")
-                print("Checking diff for %s" % df)
-                if df in diff:
-                    print("Adding modified %s" % df)
-                    changed = True
-                    repo.index.add([df])
+                dockerfile_paths = [
+                    str(self.__get_target_path(target_os, product_conf['name']) / "Dockerfile"),
+                    str(self.__get_target_path(target_os, product_conf['name']) / "Dockerfile.slim")
+                ]
+                for df in dockerfile_paths:
+                    print("Checking diff for %s" % df)
+                    if df in diff:
+                        print("Adding modified %s" % df)
+                        changed = True
+                        repo.index.add([df])
 
         # If nothing changed, no commit/tag operation is needed.
         if not changed:
