@@ -12,7 +12,7 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
     {% include 'install.j2' %}
 {% endif %}
 
-FROM centos:7
+FROM xebialabs/xl-centos:7-patch
 
 {% include 'metadata.j2' %}
 
@@ -23,8 +23,8 @@ FROM centos:7
 {% endif %}
 
 # Install dependencies
-#RUN yum update -y && \
-RUN yum install -y epel-release telnet && \
+RUN yum update -y && \
+    yum install -y epel-release telnet && \
     yum install -y java-11-openjdk-devel curl jq unzip which && \
     yum clean all -q
 
