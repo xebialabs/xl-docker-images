@@ -23,8 +23,8 @@ FROM centos:7
 {% endif %}
 
 # Install dependencies
-RUN yum update -y && \
-    yum install -y epel-release telnet && \
+#RUN yum update -y && \
+RUN yum install -y epel-release telnet && \
     yum install -y curl jq unzip which && \
     curl https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm --output jdk-17_linux-x64_bin.rpm && \
     yum -y install ./jdk-17_linux-x64_bin.rpm && \
