@@ -26,7 +26,6 @@ context:
   license_file: xl-release-license.lic
   boot_conf: xl-release-server.conf
   wrapper_conf: xlr-wrapper-linux.conf
-  skip_vulnerable_libs: false
   conf_files:
   - xl-release.conf
   port: 5516

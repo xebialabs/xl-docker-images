@@ -11,7 +11,6 @@ class Renderer(object):
         self.commit = commandline_args['commit']
         self.registry = commandline_args['registry']
         self.version = commandline_args['xl_version']
-        self.skip_vulnerable_libs = commandline_args['skip_vulnerable_libs']
         self.image_version = image_version(commandline_args['xl_version'], commandline_args['suffix'])
 
     def __render_jinja_template(self, templates_path, template_file, target_file, context):
@@ -40,8 +39,6 @@ class Renderer(object):
         context['image_version'] = self.image_version
         context['xl_version'] = self.version
         context['registry'] = self.registry
-        if self.skip_vulnerable_libs:
-            context['skip_vulnerable_libs'] = self.skip_vulnerable_libs
         context['target_os'] = target_os
         context['today'] = datetime.now().strftime('%Y-%m-%d')
         context['is_slim'] = is_slim

@@ -28,7 +28,6 @@ context:
   license_file: deployit-license.lic
   boot_conf: deployit.conf
   wrapper_conf: xld-wrapper.conf.common
-  skip_vulnerable_libs: false
   conf_files:
     - xl-deploy.conf
   central_config_files:

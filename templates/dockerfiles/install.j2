@@ -9,10 +9,6 @@ RUN mkdir -p ${APP_ROOT} && \
     mv ${APP_ROOT}/{{ product }}-{{ xl_version }}-server ${APP_HOME} && \
     rm -fr ${APP_HOME}/serviceWrapper/ && \
     rm ${APP_HOME}/bin/.wrapper-env* ${APP_HOME}/bin/install-service* ${APP_HOME}/bin/uninstall-service* && \
-{%- if skip_vulnerable_libs %}
-    rm ${APP_HOME}/lib/derby*.jar && \
-    rm -fr ${APP_HOME}/derbyns/ && \
-{%- endif %}
     true
 
 # Create directories for external drivers
@@ -23,7 +19,10 @@ RUN mkdir -p ${APP_HOME}/driver/jdbc && \
 # Remove bundled drivers if slim
 RUN rm ${APP_HOME}/lib/derby*.jar && \
     rm -fr ${APP_HOME}/derbyns/ && \
-    rm ${APP_HOME}/lib/h2*.jar
+    {% if 'xl-release' in product -%}
+    rm ${APP_HOME}/lib/h2*.jar && \
+    {% endif -%}
+    true
 {%- endif %}
 
 # Add bin/run-in-container.sh
