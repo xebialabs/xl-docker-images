@@ -12,10 +12,10 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/central-configuration-server
 
 # Install central-configuration from zip file
-COPY resources/central-configuration-24.1.3-server.zip /tmp
+COPY resources/central-configuration-24.1.4-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/central-configuration-24.1.3-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/central-configuration-24.1.3-server ${APP_HOME}
+    unzip /tmp/central-configuration-24.1.4-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/central-configuration-24.1.4-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -60,7 +60,7 @@ FROM centos:7
 
 LABEL name="xebialabs/central-configuration" \
       vendor="Digital.ai" \
-      version="24.1.3" \
+      version="24.1.4" \
       release="1" \
       summary="Central configuration" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -73,8 +73,8 @@ ENV APP_ROOT=/opt/xebialabs \
 
 
 # Install dependencies
-RUN yum update -y && \
-    yum install -y epel-release telnet && \
+#RUN yum update -y && \
+RUN yum install -y epel-release telnet && \
     yum install -y curl jq unzip which && \
     curl https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm --output jdk-17_linux-x64_bin.rpm && \
     yum -y install ./jdk-17_linux-x64_bin.rpm && \
