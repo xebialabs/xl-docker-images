@@ -18,6 +18,14 @@ function check_eula {
   fi;
 }
 
+check_files_exist() {
+    if ls $1 1> /dev/null 2>&1; then
+        return 1
+    else
+        return 0
+    fi
+}
+
 function copy_mq_driver {
   case ${XLD_TASK_QUEUE_DRIVER_CLASS_NAME} in
     *rabbitmq*)
@@ -37,13 +45,30 @@ function copy_mq_driver {
 
 function copy_db_driver {
   case ${XL_DB_URL} in
+    jdbc:h2:*)
+      XL_DB_DRIVER="org.h2.Driver"
+      {%- if is_slim %}
+      echo "h2 jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
+      {%- else %}
+      if check_files_exist "${APP_HOME}/driver/jdbc/h2*.jar"; then
+        echo "Detected H2 configuration. Copying required drivers to the driver/jdbc folder."
+        cp ${APP_ROOT}/db-libs/h2* ${APP_HOME}/driver/jdbc
+      else
+        echo "h2 jdbc driver is provided by default in the classpath"
+      fi
+      {%- endif %}
+      ;;
     jdbc:derby:*)
       {% if new_derby != "true" %}
         XL_DB_DRIVER="org.apache.derby.jdbc.AutoloadedDriver"
       {% else %}
         XL_DB_DRIVER="org.apache.derby.iapi.jdbc.AutoloadedDriver"
       {% endif %}
-      echo "Derby jdbc driver is provided by default in the classpath"
+      {%- if is_slim %}
+      echo "derby jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
+      {%- else %}
+      echo "derby jdbc driver is provided by default in the classpath"
+      {%- endif %}
       ;;
     jdbc:oracle:*)
       XL_DB_DRIVER="oracle.jdbc.OracleDriver"
@@ -51,15 +76,32 @@ function copy_db_driver {
       ;;
     jdbc:mysql:*)
       XL_DB_DRIVER="com.mysql.jdbc.Driver"
-      cp ${APP_ROOT}/db-libs/mysql* ${APP_HOME}/lib
+      {%- if is_slim %}
+      echo "mysql jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
+      {%- else %}
+      if check_files_exist "${APP_HOME}/driver/jdbc/mysql*.jar"; then
+        echo "Detected Mysql configuration. Copying required drivers to the driver/jdbc folder."
+        cp ${APP_ROOT}/db-libs/mysql* ${APP_HOME}/driver/jdbc
+      fi
+      {%- endif %}
       ;;
     jdbc:postgresql:*)
       XL_DB_DRIVER="org.postgresql.Driver"
-      cp ${APP_ROOT}/db-libs/postgresql* ${APP_HOME}/lib
+      if check_files_exist "${APP_HOME}/driver/jdbc/postgresql*.jar"; then
+        echo "Detected Postgresql configuration. Copying required drivers to the driver/jdbc folder."
+        cp ${APP_ROOT}/db-libs/postgresql* ${APP_HOME}/driver/jdbc
+      fi
       ;;
     jdbc:sqlserver:*)
       XL_DB_DRIVER="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-      cp ${APP_ROOT}/db-libs/mssql* ${APP_HOME}/lib
+      {%- if is_slim %}
+      echo "sqlserver jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
+      {%- else %}
+      if check_files_exist "${APP_HOME}/driver/jdbc/mssql*.jar"; then
+        echo "Detected SQLServer configuration. Copying required drivers to the driver/jdbc folder."
+        cp ${APP_ROOT}/db-libs/mssql* ${APP_HOME}/driver/jdbc
+      fi
+      {%- endif %}
       ;;
     jdbc:db2:*)
       XL_DB_DRIVER="com.ibm.db2.jcc.DB2Driver"
