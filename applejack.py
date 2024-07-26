@@ -43,7 +43,6 @@ def applejack():
 @applejack.command(help="Render the templates")
 @shared_opts
 @click.option('--commit', '-c', is_flag=True, help="Commit and tag the generated Dockerfiles.")
-@click.option('--skip_vulnerable_libs', '-s', is_flag=True, help="Remove from the image vulnerable libraries.")
 def render(**kwargs):
     renderer = Renderer(kwargs)
     for product in (kwargs['product'] or all_product_configs()):
@@ -75,9 +74,11 @@ def build(**kwargs):
         builder = ImageBuilder(kwargs, product_conf)
         for target_os in (kwargs['target_os'] or target_systems(product_conf)):
             print("Building Docker image for %s %s" % (product_conf['name'], target_os))
-            image_id = builder.build_docker_image(target_os)
+            image_id = builder.build_docker_image(target_os, is_slim=False)
+            slim_image_id = builder.build_docker_image(target_os, is_slim=True)
             if kwargs['push']:
-                builder.push_image(image_id, target_os)
+                builder.push_image(image_id, target_os, is_slim=False)
+                builder.push_image(slim_image_id, target_os, is_slim=True)
 
 
 if __name__ == '__main__':

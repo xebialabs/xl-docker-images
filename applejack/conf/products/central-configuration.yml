@@ -27,7 +27,6 @@ context:
   product_description: Enterprise-scale Application Release Automation for any environment
   boot_conf: deployit.conf
   wrapper_conf: xlc-wrapper.conf.common
-  skip_vulnerable_libs: false
   central_config_files:
     - deploy-cluster.yaml
     - deploy-metrics.yaml

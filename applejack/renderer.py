@@ -11,7 +11,6 @@ class Renderer(object):
         self.commit = commandline_args['commit']
         self.registry = commandline_args['registry']
         self.version = commandline_args['xl_version']
-        self.skip_vulnerable_libs = commandline_args['skip_vulnerable_libs']
         self.image_version = image_version(commandline_args['xl_version'], commandline_args['suffix'])
 
     def __render_jinja_template(self, templates_path, template_file, target_file, context):
@@ -29,19 +28,20 @@ class Renderer(object):
 
     def __generate_dockerfile(self, target_os, product_conf):
         target_path = self.__get_target_path(target_os, product_conf['name'])
-        context = self.__build_render_context(product_conf, target_os)
+        context = self.__build_render_context(product_conf, target_os, is_slim=False)
+        slim_context = self.__build_render_context(product_conf, target_os, is_slim=True)
         self.__render_jinja_template(Path('templates') / 'dockerfiles', product_conf['dockerfiles']['os'][target_os], target_path / 'Dockerfile', context)
+        self.__render_jinja_template(Path('templates') / 'dockerfiles', product_conf['dockerfiles']['os'][target_os], target_path / 'Dockerfile.slim', slim_context)
         print("Dockerfile template for '%s' rendered" % target_os)
 
-    def __build_render_context(self, product_conf, target_os):
+    def __build_render_context(self, product_conf, target_os, is_slim):
         context = dict(product_conf['context'])
         context['image_version'] = self.image_version
         context['xl_version'] = self.version
         context['registry'] = self.registry
-        if self.skip_vulnerable_libs:
-            context['skip_vulnerable_libs'] = self.skip_vulnerable_libs
         context['target_os'] = target_os
         context['today'] = datetime.now().strftime('%Y-%m-%d')
+        context['is_slim'] = is_slim
         return context
 
     def __copy_render_resources(self, source_dir, product_conf, target_os):
@@ -60,8 +60,13 @@ class Renderer(object):
             elif p.is_file() and '.j2' in p.suffixes:
                 # Render J2 template
                 render_dest = dest_path / relative.parent / relative.stem
-                context = self.__build_render_context(product_conf, target_os)
+                context = self.__build_render_context(product_conf, target_os, is_slim=False)
                 self.__render_jinja_template(template_path, Path(source_dir) / relative, render_dest, context)
+
+                if relative.parent.name == 'bin':
+                    render_slim_dest = dest_path / relative.parent / (relative.stem + '.slim')
+                    slim_context = self.__build_render_context(product_conf, target_os, is_slim=True)
+                    self.__render_jinja_template(template_path, Path(source_dir) / relative, render_slim_dest, slim_context)
             elif p.is_file():
                 p.copy(dest_path / relative)
 
@@ -88,12 +93,16 @@ class Renderer(object):
         print(diff)
         for product_conf in all_product_configs():
             for target_os in target_systems(product_conf):
-                df = str(self.__get_target_path(target_os, product_conf['name']) / "Dockerfile")
-                print("Checking diff for %s" % df)
-                if df in diff:
-                    print("Adding modified %s" % df)
-                    changed = True
-                    repo.index.add([df])
+                dockerfile_paths = [
+                    str(self.__get_target_path(target_os, product_conf['name']) / "Dockerfile"),
+                    str(self.__get_target_path(target_os, product_conf['name']) / "Dockerfile.slim")
+                ]
+                for df in dockerfile_paths:
+                    print("Checking diff for %s" % df)
+                    if df in diff:
+                        print("Adding modified %s" % df)
+                        changed = True
+                        repo.index.add([df])
 
         # If nothing changed, no commit/tag operation is needed.
         if not changed:

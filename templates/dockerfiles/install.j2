@@ -9,22 +9,41 @@ RUN mkdir -p ${APP_ROOT} && \
     mv ${APP_ROOT}/{{ product }}-{{ xl_version }}-server ${APP_HOME} && \
     rm -fr ${APP_HOME}/serviceWrapper/ && \
     rm ${APP_HOME}/bin/.wrapper-env* ${APP_HOME}/bin/install-service* ${APP_HOME}/bin/uninstall-service* && \
-{%- if skip_vulnerable_libs %}
-    rm ${APP_HOME}/lib/derby*.jar && \
-    rm -fr ${APP_HOME}/derbyns/ && \
-{%- endif %}
     true
 
+# Create directories for external drivers
+RUN mkdir -p ${APP_HOME}/driver/jdbc && \
+    mkdir -p ${APP_HOME}/driver/mq
+
+{%- if is_slim %}
+# Remove bundled drivers if slim
+RUN rm ${APP_HOME}/lib/derby*.jar && \
+    rm -fr ${APP_HOME}/derbyns/ && \
+    {% if 'xl-release' in product -%}
+    rm ${APP_HOME}/lib/h2*.jar && \
+    {% endif -%}
+    true
+{%- endif %}
+
 # Add bin/run-in-container.sh
-COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
+{%- if is_slim %}
+COPY resources/bin/run-in-container.sh.slim ${APP_HOME}/bin/run-in-container.sh
+{%- else %}
+COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/run-in-container.sh
+{%- endif %}
 
 # Add jmx-exporter for prometheus
 COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
-COPY resources/bin/db-drivers.sh /tmp
-RUN chmod ugo+x /tmp/db-drivers.sh && \
-    /bin/sh /tmp/db-drivers.sh && \
+{%- if is_slim %}
+COPY resources/bin/drivers.sh.slim /tmp/drivers.sh
+{%- else %}
+COPY resources/bin/drivers.sh /tmp/drivers.sh
+{%- endif %}
+
+RUN chmod ugo+x /tmp/drivers.sh && \
+    /bin/sh /tmp/drivers.sh && \
     # Modify bin/run.sh so that java becomes a child process of dumb-init
     sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 

@@ -34,13 +34,18 @@ class ImageBuilder(object):
                 elif "error" in j:
                     raise Exception(j["error"])
 
-    def build_docker_image(self, target_os):
+    def build_docker_image(self, target_os, is_slim):
         client = docker.from_env()
+        if is_slim:
+            docker_file = str(Path(target_os) / "Dockerfile.slim").replace('\\', '/')
+        else:
+            docker_file = str(Path(target_os) / "Dockerfile").replace('\\', '/')
+
         generator = client.api.build(
             nocache=not self.use_cache,
             pull=not self.use_cache,
             path=str(target_path(self.product_conf['name'], self.image_version)),
-            dockerfile=str(Path(target_os) / "Dockerfile").replace('\\', '/'),
+            dockerfile=docker_file,
             rm=True,
         )
         for line in self.convert_build_logs(generator):
@@ -56,6 +61,8 @@ class ImageBuilder(object):
         image = client.images.get(image_id)
         repo = "%s/%s" % (self.registry, self.repository)
         for tag, _ in all_tags(target_os, self.image_version, self.product_conf['dockerfiles']['default']):
+            if is_slim:
+                tag += "-slim"
             print("Tag image with %s:%s" % (repo, tag))
             image.tag(repo, tag)
         image.reload()
@@ -76,13 +83,15 @@ class ImageBuilder(object):
                 if 'error' in j:
                     raise Exception(j['error'])
 
-    def push_image(self, image_id, target_os):
+    def push_image(self, image_id, target_os, is_slim):
         print("Pushing image with id %s to %s" % (image_id, self.registry))
         client = docker.from_env()
         image = client.images.get(image_id)
         print("image = %s" % image)
         for tag, _ in all_tags(target_os, self.image_version, self.product_conf['dockerfiles']['default']):
             repo = "%s/%s" % (self.registry, self.repository)
+            if is_slim:
+                tag += "-slim"
             for line in self.convert_push_logs(client.images.push(repo, tag=tag, stream=True)):
                 print(line)
             print("Image %s with tag %s has been pushed to %s" % (image_id, tag, repo))

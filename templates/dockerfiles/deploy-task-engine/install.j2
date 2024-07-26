@@ -7,21 +7,35 @@ COPY resources/{{ product }}-{{ xl_version }}.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
     unzip /tmp/{{ product }}-{{ xl_version }}.zip -d ${APP_ROOT} && \
     mv ${APP_ROOT}/{{ product }}-{{ xl_version }} ${APP_HOME} && \
-{% if skip_vulnerable_libs %}
-    rm ${APP_HOME}/lib/derby*.jar && \
-{% endif %}
     true
 
+# Create directories for external drivers
+RUN mkdir -p ${APP_HOME}/driver/jdbc && \
+    mkdir -p ${APP_HOME}/driver/mq
+
+{%- if is_slim %}
+# Remove bundled drivers if slim
+RUN rm ${APP_HOME}/lib/derby*.jar
+{%- endif %}
+
 # Add bin/run-in-container.sh
-COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
+{%- if is_slim %}
+COPY resources/bin/run-in-container.sh.slim ${APP_HOME}/bin/run-in-container.sh
+{%- else %}
+COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/run-in-container.sh
+{%- endif %}
 
 # Add jmx-exporter for prometheus
 COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
-COPY resources/bin/db-drivers.sh /tmp
-RUN chmod ugo+x /tmp/db-drivers.sh && \
-    /bin/sh /tmp/db-drivers.sh
+{%- if is_slim %}
+COPY resources/bin/drivers.sh.slim /tmp/drivers.sh
+{%- else %}
+COPY resources/bin/drivers.sh /tmp/drivers.sh
+{%- endif %}
+RUN chmod ugo+x /tmp/drivers.sh && \
+    /bin/sh /tmp/drivers.sh
 
 # Modify bin/run.sh so that java becomes a child process of dumb-init
 RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
