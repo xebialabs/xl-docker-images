@@ -29,13 +29,13 @@ check_files_exist() {
 function copy_mq_driver {
   case ${XLD_TASK_QUEUE_DRIVER_CLASS_NAME} in
     *rabbitmq*)
-      echo "Detected RabbitMQ configuration. Copying required drivers to the lib folder."
-      cp ${APP_ROOT}/mq-libs/rabbitmq-jms* ${APP_HOME}/lib
-      cp ${APP_ROOT}/mq-libs/amqp-client* ${APP_HOME}/lib
+      echo "Detected RabbitMQ configuration. Copying required drivers to the driver/mq folder."
+      cp ${APP_ROOT}/mq-libs/rabbitmq-jms* ${APP_HOME}/driver/mq
+      cp ${APP_ROOT}/mq-libs/amqp-client* ${APP_HOME}/driver/mq
       ;;
     *activemq*)
-      echo "Detected ActiveMQ configuration. Copying required drivers to the lib folder."
-      cp ${APP_ROOT}/mq-libs/activemq* ${APP_HOME}/lib
+      echo "Detected ActiveMQ configuration. Copying required drivers to the driver/mq folder."
+      cp ${APP_ROOT}/mq-libs/activemq* ${APP_HOME}/driver/mq
       ;;
     *)
       echo "MQ Provider could not be inferred from url '${XLD_TASK_QUEUE_DRIVER_CLASS_NAME}'"
