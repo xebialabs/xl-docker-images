@@ -12,7 +12,7 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
     {% include 'install.j2' %}
 {% endif %}
 
-FROM centos:7
+FROM xebialabs/xl-centos:7-patch
 
 {% include 'metadata.j2' %}
 
