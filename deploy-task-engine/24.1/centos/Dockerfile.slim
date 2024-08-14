@@ -21,15 +21,17 @@ RUN mkdir -p ${APP_ROOT} && \
 # Create directories for external drivers
 RUN mkdir -p ${APP_HOME}/driver/jdbc && \
     mkdir -p ${APP_HOME}/driver/mq
+# Remove bundled drivers if slim
+RUN rm ${APP_HOME}/lib/derby*.jar
 
 # Add bin/run-in-container.sh
-COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/run-in-container.sh
+COPY resources/bin/run-in-container.sh.slim ${APP_HOME}/bin/run-in-container.sh
 
 # Add jmx-exporter for prometheus
 COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
-COPY resources/bin/drivers.sh /tmp/drivers.sh
+COPY resources/bin/drivers.sh.slim /tmp/drivers.sh
 RUN chmod ugo+x /tmp/drivers.sh && \
     /bin/sh /tmp/drivers.sh
 
@@ -64,8 +66,7 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod ugo+x ${APP_HOME}/bin/*.sh
 
 
-FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:17-jdk
-USER root
+FROM xebialabs/xl-centos:7-patch-v2.0
 
 
 LABEL name="xebialabs/deploy-task-engine" \
@@ -83,15 +84,17 @@ ENV APP_ROOT=/opt/xebialabs \
 
 
 # Install dependencies
-RUN apt-get update -y && \
-    apt-get install -y curl jq unzip apt-utils telnet && \
-    apt-get install -y fontconfig libfreetype6 && \
-    apt-get clean all -q
+#RUN yum update -y && \
+RUN yum install -y epel-release telnet && \
+    yum install -y curl jq unzip which && \
+    curl https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.rpm --output jdk-17_linux-x64_bin.rpm && \
+    yum -y install ./jdk-17_linux-x64_bin.rpm && \
+    yum clean all -q
 
 # Copy installed Deploy Worker
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
-ENV OS=ubuntu
+ENV OS=centos
 
 
     # install Terraform

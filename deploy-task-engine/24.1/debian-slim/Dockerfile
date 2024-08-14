@@ -12,23 +12,26 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-24.1.4.zip /tmp
+COPY resources/deploy-task-engine-24.1.6.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-24.1.4.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-24.1.4 ${APP_HOME} && \
-
+    unzip /tmp/deploy-task-engine-24.1.6.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-24.1.6 ${APP_HOME} && \
     true
 
+# Create directories for external drivers
+RUN mkdir -p ${APP_HOME}/driver/jdbc && \
+    mkdir -p ${APP_HOME}/driver/mq
+
 # Add bin/run-in-container.sh
-COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
+COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/run-in-container.sh
 
 # Add jmx-exporter for prometheus
 COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
-COPY resources/bin/db-drivers.sh /tmp
-RUN chmod ugo+x /tmp/db-drivers.sh && \
-    /bin/sh /tmp/db-drivers.sh
+COPY resources/bin/drivers.sh /tmp/drivers.sh
+RUN chmod ugo+x /tmp/drivers.sh && \
+    /bin/sh /tmp/drivers.sh
 
 # Modify bin/run.sh so that java becomes a child process of dumb-init
 RUN sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
@@ -71,7 +74,7 @@ FROM openjdk:17-jdk-slim-buster
 
 LABEL name="xebialabs/deploy-task-engine" \
       vendor="Digital.ai" \
-      version="24.1.4" \
+      version="24.1.6" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -137,7 +140,7 @@ ENV APP_PORT=4516 \
 
 USER 10001
 
-VOLUME ["${APP_HOME}/conf", "${APP_HOME}/ext", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/plugins", "${APP_HOME}/work"]
+VOLUME ["${APP_HOME}/conf", "${APP_HOME}/driver/jdbc", "${APP_HOME}/driver/mq", "${APP_HOME}/ext", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/plugins", "${APP_HOME}/work"]
 
 EXPOSE ${APP_PORT}
 
