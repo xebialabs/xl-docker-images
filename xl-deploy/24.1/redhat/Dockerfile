@@ -18,24 +18,29 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-24.1.4-server.zip /tmp
+COPY resources/xl-deploy-24.1.6-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-24.1.4-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-24.1.4-server ${APP_HOME} && \
+    unzip /tmp/xl-deploy-24.1.6-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-24.1.6-server ${APP_HOME} && \
     rm -fr ${APP_HOME}/serviceWrapper/ && \
     rm ${APP_HOME}/bin/.wrapper-env* ${APP_HOME}/bin/install-service* ${APP_HOME}/bin/uninstall-service* && \
     true
 
+# Create directories for external drivers
+RUN mkdir -p ${APP_HOME}/driver/jdbc && \
+    mkdir -p ${APP_HOME}/driver/mq
+
 # Add bin/run-in-container.sh
-COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
+COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/run-in-container.sh
 
 # Add jmx-exporter for prometheus
 COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
-COPY resources/bin/db-drivers.sh /tmp
-RUN chmod ugo+x /tmp/db-drivers.sh && \
-    /bin/sh /tmp/db-drivers.sh && \
+COPY resources/bin/drivers.sh /tmp/drivers.sh
+
+RUN chmod ugo+x /tmp/drivers.sh && \
+    /bin/sh /tmp/drivers.sh && \
     # Modify bin/run.sh so that java becomes a child process of dumb-init
     sed -i 's/^\($JAVACMD\)/exec \1/' ${APP_HOME}/bin/run.sh
 
@@ -84,7 +89,7 @@ FROM registry.access.redhat.com/ubi8/openjdk-17:latest
 
 LABEL name="xebialabs/xl-deploy" \
       vendor="Digital.ai" \
-      version="24.1.4" \
+      version="24.1.6" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -171,7 +176,7 @@ ENV SERVER_PORT=8180 \
 
 USER 10001
 
-VOLUME ["${APP_HOME}/centralConfiguration", "${APP_HOME}/conf", "${APP_HOME}/export", "${APP_HOME}/ext", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/importablePackages", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/work"]
+VOLUME ["${APP_HOME}/centralConfiguration", "${APP_HOME}/conf", "${APP_HOME}/driver/jdbc", "${APP_HOME}/driver/mq", "${APP_HOME}/export", "${APP_HOME}/ext", "${APP_HOME}/hotfix/lib", "${APP_HOME}/hotfix/plugins", "${APP_HOME}/importablePackages", "${APP_HOME}/plugins", "${APP_HOME}/repository", "${APP_HOME}/work"]
 
 EXPOSE ${APP_PORT}
 
