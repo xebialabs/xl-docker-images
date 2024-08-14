@@ -1,8 +1,35 @@
-FROM alpine:3.16 as installer
+FROM registry.access.redhat.com/rhel7/rhel-atomic
+
+
+LABEL name="xebialabs/xl-release" \
+      vendor="Digital.ai" \
+      version="24.1.6" \
+      release="1" \
+      summary="XL Release" \
+      description="Automate, orchestrate and get visibility into your release pipelines — at enterprise scale" \
+      url="https://digital.ai/products/release/"
+
+COPY resources/help.md /tmp/
+
+### add licenses to this directory
+COPY resources/licenses /licenses
 
 # Install dependencies
-RUN apk update
-RUN apk add --no-cache gawk unzip curl busybox-extras
+RUN INSTALL_PKGS="golang-github-cpuguy83-go-md2man curl hostname shadow-utils which" && \
+    microdnf install --enablerepo=rhel-7-server-rpms --enablerepo=rhel-7-server-optional-rpms --nodocs ${INSTALL_PKGS} && \
+    microdnf update && \
+### help file markdown to man conversion
+    go-md2man -in /tmp/help.md -out /help.1 && \
+    microdnf clean all
+
+RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-17-openjdk && \
+### Set the Java random source
+    echo "securerandom.source=file:/dev/urandom" >> /usr/lib/jvm/java/jre/lib/security/java.security && \
+    microdnf clean all
+
+### Install JQ
+RUN JQ_LOCATION="/usr/bin/jq" && \
+    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
 
 
     
@@ -23,15 +50,20 @@ RUN mkdir -p ${APP_ROOT} && \
 # Create directories for external drivers
 RUN mkdir -p ${APP_HOME}/driver/jdbc && \
     mkdir -p ${APP_HOME}/driver/mq
+# Remove bundled drivers if slim
+RUN rm ${APP_HOME}/lib/derby*.jar && \
+    rm -fr ${APP_HOME}/derbyns/ && \
+    rm ${APP_HOME}/lib/h2*.jar && \
+    true
 
 # Add bin/run-in-container.sh
-COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/run-in-container.sh
+COPY resources/bin/run-in-container.sh.slim ${APP_HOME}/bin/run-in-container.sh
 
 # Add jmx-exporter for prometheus
 COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
-COPY resources/bin/drivers.sh /tmp/drivers.sh
+COPY resources/bin/drivers.sh.slim /tmp/drivers.sh
 
 RUN chmod ugo+x /tmp/drivers.sh && \
     /bin/sh /tmp/drivers.sh && \
@@ -75,32 +107,9 @@ RUN chgrp -R 0 ${APP_ROOT} && \
     chmod ugo+x ${APP_HOME}/bin/*.sh
 
 
-FROM amazonlinux:2
 
 
-LABEL name="xebialabs/xl-release" \
-      vendor="Digital.ai" \
-      version="24.1.6" \
-      release="1" \
-      summary="XL Release" \
-      description="Automate, orchestrate and get visibility into your release pipelines — at enterprise scale" \
-      url="https://digital.ai/products/release/"
-
-
-    # Set root folders
-ENV APP_ROOT=/opt/xebialabs \
-    APP_HOME=/opt/xebialabs/xl-release-server
-
-
-# Install dependencies
-RUN yum update -y && \
-    yum install -y java-17-amazon-corretto curl jq shadow-utils.x86_64 hostname unzip which telnet && \
-    yum clean all -q
-
-# Copy installed XL Release
-COPY --from=installer ${APP_ROOT} ${APP_ROOT}
-
-ENV OS=amazonlinux
+ENV OS=rhel
 
 
 

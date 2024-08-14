@@ -23,15 +23,20 @@ RUN mkdir -p ${APP_ROOT} && \
 # Create directories for external drivers
 RUN mkdir -p ${APP_HOME}/driver/jdbc && \
     mkdir -p ${APP_HOME}/driver/mq
+# Remove bundled drivers if slim
+RUN rm ${APP_HOME}/lib/derby*.jar && \
+    rm -fr ${APP_HOME}/derbyns/ && \
+    rm ${APP_HOME}/lib/h2*.jar && \
+    true
 
 # Add bin/run-in-container.sh
-COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/run-in-container.sh
+COPY resources/bin/run-in-container.sh.slim ${APP_HOME}/bin/run-in-container.sh
 
 # Add jmx-exporter for prometheus
 COPY resources/jmx-exporter/jmx_prometheus_javaagent.jar ${APP_HOME}/lib/
 
 # Add (and run) Database driver download script
-COPY resources/bin/drivers.sh /tmp/drivers.sh
+COPY resources/bin/drivers.sh.slim /tmp/drivers.sh
 
 RUN chmod ugo+x /tmp/drivers.sh && \
     /bin/sh /tmp/drivers.sh && \
