@@ -15,8 +15,8 @@ deploy.security:
       postLogoutRedirectUri:
       rolesClaimName:
       userNameClaimName:
-      fullNameClaimName:
-      emailClaimName:
+      fullNameClaim:
+      emailClaim:
       idTokenJWSAlg:
       access-token:
         issuer:
