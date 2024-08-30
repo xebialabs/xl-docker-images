@@ -158,6 +158,11 @@ sidebar_position: 1
 - default value: none
 - example: "MQ_P@ssw0rd01"
 
+##### `XDG_CONFIG_HOME`
+- Config home directory required by jgit library.
+- possible values: "container-directory-with-write-permissions-for-jgit-lib"
+- default value: "/tmp/jgit"
+
 ### Specific for XLDeploy docker images:-
 
 ##### `APP_PORT`
