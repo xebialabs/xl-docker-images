@@ -18,10 +18,10 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-24.1.6.zip /tmp
+COPY resources/deploy-task-engine-24.1.8.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-24.1.6.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-24.1.6 ${APP_HOME} && \
+    unzip /tmp/deploy-task-engine-24.1.8.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-24.1.8 ${APP_HOME} && \
     true
 
 # Create directories for external drivers
@@ -77,7 +77,7 @@ FROM registry.access.redhat.com/ubi8/openjdk-17:latest
 
 LABEL name="xebialabs/deploy-task-engine" \
       vendor="Digital.ai" \
-      version="24.1.6" \
+      version="24.1.8" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
