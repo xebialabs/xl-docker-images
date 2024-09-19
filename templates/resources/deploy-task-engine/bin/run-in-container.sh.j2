@@ -139,6 +139,35 @@ function store_license {
   fi
 }
 
+function escape_special_characters() {
+    printf '%s\n' "$1" | sed -e 's/!/\\!/g' \
+                              -e 's/%/\\%/g' \
+                              -e 's/\^/\\^/g' \
+                              -e 's/&/\\&/g' \
+                              -e 's/\*/\\*/g' \
+                              -e 's/(/\\(/g' \
+                              -e 's/)/\\)/g' \
+                              -e 's/-/\\-/g' \
+                              -e 's/_/\\_/g' \
+                              -e 's/=/\\=/g' \
+                              -e 's/</\\</g' \
+                              -e 's/>/\\>/g' \
+                              -e 's/?/\\?/g' \
+                              -e 's/#/\\#/g' \
+                              -e 's/\$/\\$/g' \
+                              -e 's/+/\\+/g' \
+                              -e 's/\[/\\[/g' \
+                              -e 's/\]/\\]/g' \
+                              -e 's/{/\\{/g' \
+                              -e 's/}/\\}/g'
+}
+
+function escape_special_characters_in_all_env_vars() {
+    for env_var in "${!environment[@]}"; do
+        environment[$env_var]=$(escape_special_characters "${environment[$env_var]}")
+    done
+}
+
 
 function generate_product_conf {
 
@@ -177,6 +206,7 @@ check_eula
 copy_db_driver
 copy_mq_driver
 store_license
+escape_special_characters_in_all_env_vars
 generate_product_conf
 {% if plugin_source_supported %}set_plugin_source{% endif %}
 
