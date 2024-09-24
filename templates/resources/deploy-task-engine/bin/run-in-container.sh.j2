@@ -140,26 +140,26 @@ function store_license {
 }
 
 function escape_special_characters() {
-    printf '%s\n' "$1" | sed -e 's/!/\\!/g' \
-                              -e 's/%/\\%/g' \
-                              -e 's/\^/\\^/g' \
-                              -e 's/&/\\&/g' \
-                              -e 's/\*/\\*/g' \
-                              -e 's/(/\\(/g' \
-                              -e 's/)/\\)/g' \
-                              -e 's/-/\\-/g' \
-                              -e 's/_/\\_/g' \
-                              -e 's/=/\\=/g' \
-                              -e 's/</\\</g' \
-                              -e 's/>/\\>/g' \
-                              -e 's/?/\\?/g' \
+    printf '%s\n' "$1" | sed -e 's#!#\\!#g' \
+                              -e 's#%#\\%#g' \
+                              -e 's#\^#\\^#g' \
+                              -e 's#&#\\&#g' \
+                              -e 's#\*#\\*#g' \
+                              -e 's#(#\\(#g' \
+                              -e 's#)#\\)#g' \
+                              -e 's#-#\\-#g' \
+                              -e 's#_#\\_#g' \
+                              -e 's#=#\\=#g' \
+                              -e 's#<#\\<#g' \
+                              -e 's#>#\\>#g' \
+                              -e 's#?#\\?#g' \
                               -e 's/#/\\#/g' \
-                              -e 's/\$/\\$/g' \
-                              -e 's/+/\\+/g' \
-                              -e 's/\[/\\[/g' \
-                              -e 's/\]/\\]/g' \
-                              -e 's/{/\\{/g' \
-                              -e 's/}/\\}/g'
+                              -e 's#\$#\\$#g' \
+                              -e 's#+#\\+#g' \
+                              -e 's#\[#\\[#g' \
+                              -e 's#\]#\\]#g' \
+                              -e 's#{#\\{#g' \
+                              -e 's#}#\\}#g'
 }
 
 # To make sure sed substitutions work correctly in template files when special characters are present in any environment variable such as XL_DB_PASSWORD
