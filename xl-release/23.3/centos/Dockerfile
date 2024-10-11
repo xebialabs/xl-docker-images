@@ -12,10 +12,10 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-23.3.12-server.zip /tmp
+COPY resources/xl-release-23.3.14-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-23.3.12-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-23.3.12-server ${APP_HOME} && \
+    unzip /tmp/xl-release-23.3.14-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-23.3.14-server ${APP_HOME} && \
     rm -rf ${APP_HOME}/serviceWrapper/ && \
     rm ${APP_HOME}/bin/.wrapper-env* ${APP_HOME}/bin/install-service* ${APP_HOME}/bin/uninstall-service*
 
@@ -81,7 +81,7 @@ MAINTAINER XebiaLabs Development <docker@xebialabs.com>
 LABEL name="xebialabs/xl-release" \
       maintainer="docker@xebialabs.com" \
       vendor="XebiaLabs" \
-      version="23.3.12" \
+      version="23.3.14" \
       release="1" \
       summary="XL Release" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -148,7 +148,8 @@ ENV XL_CLUSTER_MODE=default \
     XLR_HTTP2_ENABLED=false \
     LOGBACK_GLOBAL_LOGGING_LEVEL=info \
     LOGBACK_SCAN_ENABLED=true \
-    LOGBACK_SCAN_PERIOD=30seconds
+    LOGBACK_SCAN_PERIOD=30seconds \
+    XDG_CONFIG_HOME=/tmp/jgit
 
 
 USER 10001
