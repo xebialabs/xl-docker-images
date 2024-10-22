@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-POSTGRESQL_VERSION="42.6.1"
+POSTGRESQL_VERSION="42.7.3"
 {%- if not is_slim %}
-MYSQL_VERSION="8.2.0"
-H2_VERSION="2.2.224"
-MSSQL_VERSION="11.2.3.jre17"
+MYSQL_VERSION="9.0.0"
+H2_VERSION="2.3.230"
+MSSQL_VERSION="12.8.0.jre11"
 {%- endif %}
 
 echo "Downloading DB drivers to ${APP_ROOT}/db-libs"
