@@ -168,6 +168,36 @@ function store_license {
   fi
 }
 
+function escape_special_characters() {
+    printf '%s\n' "$1" | sed -e 's#!#\\!#g' \
+                              -e 's#%#\\%#g' \
+                              -e 's#\^#\\^#g' \
+                              -e 's#&#\\&#g' \
+                              -e 's#\*#\\*#g' \
+                              -e 's#(#\\(#g' \
+                              -e 's#)#\\)#g' \
+                              -e 's#-#\\-#g' \
+                              -e 's#_#\\_#g' \
+                              -e 's#=#\\=#g' \
+                              -e 's#<#\\<#g' \
+                              -e 's#>#\\>#g' \
+                              -e 's#?#\\?#g' \
+                              -e 's/#/\\#/g' \
+                              -e 's#\$#\\$#g' \
+                              -e 's#+#\\+#g' \
+                              -e 's#\[#\\[#g' \
+                              -e 's#\]#\\]#g' \
+                              -e 's#{#\\{#g' \
+                              -e 's#}#\\}#g'
+}
+
+# To make sure sed substitutions work correctly in template files when special characters are present in any environment variable such as XL_DB_PASSWORD
+function escape_special_characters_in_all_env_vars() {
+    {% for env in environment %}
+      {{ env['key'] }}=$(escape_special_characters ${{ '{' }}{{ env['key'] }}{{ '}' }})
+    {% endfor %}
+}
+
 # Generate node-specific {{ product }}.conf file
 # The ${APP_HOME}/node-conf/{{ product }}.conf file provides node specific properties, which are then merged with the
 # ${APP_HOME}/conf/{{ product }}.conf file by the xl-platform when the instance is started.
@@ -295,6 +325,7 @@ copy_mq_driver
 store_license
 {%- endif %}
 
+escape_special_characters_in_all_env_vars
 generate_product_conf
 generate_node_conf
 check_force_upgrade
