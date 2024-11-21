@@ -3,7 +3,7 @@ FROM registry.access.redhat.com/rhel7/rhel-atomic
 
 LABEL name="xebialabs/deploy-task-engine" \
       vendor="Digital.ai" \
-      version="24.1.10" \
+      version="24.1.11" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -39,10 +39,10 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-24.1.10.zip /tmp
+COPY resources/deploy-task-engine-24.1.11.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-24.1.10.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-24.1.10 ${APP_HOME} && \
+    unzip /tmp/deploy-task-engine-24.1.11.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-24.1.11 ${APP_HOME} && \
     true
 
 # Create directories for external drivers
