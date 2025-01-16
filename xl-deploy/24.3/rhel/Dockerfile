@@ -3,7 +3,7 @@ FROM registry.access.redhat.com/rhel7/rhel-atomic
 
 LABEL name="xebialabs/xl-deploy" \
       vendor="Digital.ai" \
-      version="24.3.2" \
+      version="24.3.3" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -39,10 +39,10 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-24.3.2-server.zip /tmp
+COPY resources/xl-deploy-24.3.3-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-24.3.2-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-24.3.2-server ${APP_HOME} && \
+    unzip /tmp/xl-deploy-24.3.3-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-24.3.3-server ${APP_HOME} && \
     rm -fr ${APP_HOME}/serviceWrapper/ && \
     rm ${APP_HOME}/bin/.wrapper-env* ${APP_HOME}/bin/install-service* ${APP_HOME}/bin/uninstall-service* && \
     true
