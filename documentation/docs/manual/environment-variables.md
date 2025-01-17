@@ -149,6 +149,11 @@ sidebar_position: 1
 - possible values: pkcs12 or jks
 - default value: pkcs12
 
+##### `NETWORK_ADDRESS_CACHE_TTL`
+- The Java-level namelookup cache policy for successful lookups: any negative value: caching forever; any positive value: the number of seconds to cache an address for; zero: do not cache
+- possible values: any integer
+- default value: 30
+
 ### Specific for XLRelease docker images:-
 
 ##### `APP_PORT`
