@@ -47,6 +47,9 @@ sidebar_position: 1
 - possible values: "true", "false"
 - default value: "false"
 
+##### `XL_NODE_NAME`
+
+
 ##### `XL_CLUSTER_MODE`
 - This is to specify if the HA setup is needed and to specify the HA mode.
 - possible values: "default", "hot-standby", "full"
@@ -171,6 +174,12 @@ sidebar_position: 1
 - Flag to expose external messaging queue. If set to true, a default embedded-queue will be used and all environment variables will be ignored.
 - possible values: "true", "false"
 - default value: "true"
+
+##### `XLR_CLUSTER_NAME` xl.cluster.name
+
+##### `XLR_CLUSTER_MANAGER` xl.cluster.manager
+
+##### `XLR_CLUSTER_DATACENTER` xl.cluster.node.datacenter
 
 ##### `XLR_TASK_QUEUE_NAME`
 - Name for MQ task queue.
