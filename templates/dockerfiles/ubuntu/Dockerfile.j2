@@ -34,8 +34,4 @@ COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 ENV OS=ubuntu
 
-{% if 'deploy' in product %}
-    {% include 'terraform.j2' %}
-{% endif %}
-
 {% include 'runtime.j2' %}

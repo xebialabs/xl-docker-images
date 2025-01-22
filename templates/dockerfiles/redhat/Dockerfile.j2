@@ -44,8 +44,4 @@ RUN microdnf update -y && rm -rf /var/cache/yum && \
    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
    microdnf clean all
 
-{% if 'deploy' in product %}
-    {% include 'terraform.j2' %}
-{% endif %}
-
 {% include 'runtime.j2' %}
