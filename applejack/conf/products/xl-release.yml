@@ -42,6 +42,8 @@ context:
   environment:
   - key: XL_CLUSTER_MODE
     value: default
+  - key: XLR_CLUSTER_NAME
+    value: xl-release_cluster
   - key: XLR_CLUSTER_MANAGER
     value: xlr-legacy
   - key: XLR_CLUSTER_DATACENTER
