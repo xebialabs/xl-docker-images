@@ -12,10 +12,10 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-24.1.13.zip /tmp
+COPY resources/deploy-task-engine-24.1.14.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-24.1.13.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-24.1.13 ${APP_HOME} && \
+    unzip /tmp/deploy-task-engine-24.1.14.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-24.1.14 ${APP_HOME} && \
     true
 
 # Create directories for external drivers
@@ -70,7 +70,8 @@ USER root
 
 LABEL name="xebialabs/deploy-task-engine" \
       vendor="Digital.ai" \
-      version="24.1.13" \
+      maintainer="Digital.ai" \
+      version="24.1.14" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -92,15 +93,6 @@ RUN apt-get update -y && \
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 ENV OS=ubuntu
-
-
-    # install Terraform
-ENV TERRAFORM_VERSION=0.11.13
-
-RUN curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-    unzip /tmp/terraform.zip -d /usr/local/bin && \
-    rm -f /tmp/terraform.zip
-
 
 
 # Set ttl for DNS cache
