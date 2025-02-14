@@ -12,10 +12,10 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/central-configuration-server
 
 # Install central-configuration from zip file
-COPY resources/central-configuration-24.3.3-server.zip /tmp
+COPY resources/central-configuration-24.3.5-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/central-configuration-24.3.3-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/central-configuration-24.3.3-server ${APP_HOME}
+    unzip /tmp/central-configuration-24.3.5-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/central-configuration-24.3.5-server ${APP_HOME}
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
@@ -61,7 +61,8 @@ USER root
 
 LABEL name="xebialabs/central-configuration" \
       vendor="Digital.ai" \
-      version="24.3.3" \
+      maintainer="Digital.ai" \
+      version="24.3.5" \
       release="1" \
       summary="Central configuration" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -83,8 +84,6 @@ RUN apt-get update -y && \
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 ENV OS=ubuntu
-
-
 
 
 # Set ttl for DNS cache
