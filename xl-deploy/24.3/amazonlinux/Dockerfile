@@ -12,10 +12,10 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-24.3.3-server.zip /tmp
+COPY resources/xl-deploy-24.3.5-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-24.3.3-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-24.3.3-server ${APP_HOME} && \
+    unzip /tmp/xl-deploy-24.3.5-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-24.3.5-server ${APP_HOME} && \
     rm -fr ${APP_HOME}/serviceWrapper/ && \
     rm ${APP_HOME}/bin/.wrapper-env* ${APP_HOME}/bin/install-service* ${APP_HOME}/bin/uninstall-service* && \
     true
@@ -83,7 +83,8 @@ FROM amazonlinux:2
 
 LABEL name="xebialabs/xl-deploy" \
       vendor="Digital.ai" \
-      version="24.3.3" \
+      maintainer="Digital.ai" \
+      version="24.3.5" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -104,15 +105,6 @@ RUN yum update -y && \
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 ENV OS=amazonlinux
-
-
-    # install Terraform
-ENV TERRAFORM_VERSION=0.11.13
-
-RUN curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-    unzip /tmp/terraform.zip -d /usr/local/bin && \
-    rm -f /tmp/terraform.zip
-
 
 
 # Set ttl for DNS cache
