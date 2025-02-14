@@ -12,10 +12,10 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/deploy-task-engine
 
 # Install deploy-task-engine from zip file
-COPY resources/deploy-task-engine-24.3.3.zip /tmp
+COPY resources/deploy-task-engine-24.3.5.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/deploy-task-engine-24.3.3.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/deploy-task-engine-24.3.3 ${APP_HOME} && \
+    unzip /tmp/deploy-task-engine-24.3.5.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/deploy-task-engine-24.3.5 ${APP_HOME} && \
     true
 
 # Create directories for external drivers
@@ -71,7 +71,8 @@ FROM xebialabs/xl-centos:7-patch-v2.0
 
 LABEL name="xebialabs/deploy-task-engine" \
       vendor="Digital.ai" \
-      version="24.3.3" \
+      maintainer="Digital.ai" \
+      version="24.3.5" \
       release="1" \
       summary="Deploy Worker" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -95,15 +96,6 @@ RUN yum install -y epel-release telnet && \
 COPY --from=installer ${APP_ROOT} ${APP_ROOT}
 
 ENV OS=centos
-
-
-    # install Terraform
-ENV TERRAFORM_VERSION=0.11.13
-
-RUN curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-    unzip /tmp/terraform.zip -d /usr/local/bin && \
-    rm -f /tmp/terraform.zip
-
 
 
 # Set ttl for DNS cache
