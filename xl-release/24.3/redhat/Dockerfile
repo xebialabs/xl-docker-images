@@ -18,10 +18,10 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-24.3.3-server.zip /tmp
+COPY resources/xl-release-24.3.5-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-24.3.3-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-24.3.3-server ${APP_HOME} && \
+    unzip /tmp/xl-release-24.3.5-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-24.3.5-server ${APP_HOME} && \
     rm -fr ${APP_HOME}/serviceWrapper/ && \
     rm ${APP_HOME}/bin/.wrapper-env* ${APP_HOME}/bin/install-service* ${APP_HOME}/bin/uninstall-service* && \
     true
@@ -86,7 +86,8 @@ FROM registry.access.redhat.com/ubi8/openjdk-17:latest
 
 LABEL name="xebialabs/xl-release" \
       vendor="Digital.ai" \
-      version="24.3.3" \
+      maintainer="Digital.ai" \
+      version="24.3.5" \
       release="1" \
       summary="XL Release" \
       description="Automate, orchestrate and get visibility into your release pipelines — at enterprise scale" \
@@ -113,8 +114,6 @@ RUN microdnf update -y && rm -rf /var/cache/yum && \
    JQ_LOCATION="/usr/bin/jq" && \
    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
    microdnf clean all
-
-
 
 
 # Set ttl for DNS cache
