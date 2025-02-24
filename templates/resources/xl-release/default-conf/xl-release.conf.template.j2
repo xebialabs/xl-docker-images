@@ -2,7 +2,8 @@ xl {
   cluster {
     # mode: "default", "hot-standby", "full"
     mode = ${XL_CLUSTER_MODE}
-    name = "{{ product }}_cluster"
+    name = "${XLR_CLUSTER_NAME}"
+    manager = "${XLR_CLUSTER_MANAGER}"
     pekko {
       loglevel = "INFO"
       actor.debug.receive = off
