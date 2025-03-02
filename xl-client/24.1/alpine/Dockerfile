@@ -8,17 +8,17 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-client
 ENV XL_OP_BLUEPRINTS_HOME=${APP_ROOT}/xl-op-blueprints
 
-COPY resources/xl-client-24.1.12-linux-amd64.bin /tmp
+COPY resources/xl-client-24.1.14-linux-amd64.bin /tmp
 
 RUN mkdir -p ${APP_HOME} && \
-    mv /tmp/xl-client-24.1.12-linux-amd64.bin ${APP_HOME}/xl && \
+    mv /tmp/xl-client-24.1.14-linux-amd64.bin ${APP_HOME}/xl && \
     chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod +x ${APP_HOME}/xl
 
 RUN mkdir -p ${XL_OP_BLUEPRINTS_HOME} && \
-    wget -O /tmp/xl-op-blueprints-24.1.12.zip https://nexus.xebialabs.com/nexus/content/repositories/digitalai-public/ai/digital/xlclient/blueprints/xl-op-blueprints/24.1.12/xl-op-blueprints-24.1.12.zip && \
-    unzip -o /tmp/xl-op-blueprints-24.1.12.zip -d ${XL_OP_BLUEPRINTS_HOME} && \
+    wget -O /tmp/xl-op-blueprints-24.1.14.zip https://nexus.xebialabs.com/nexus/content/repositories/digitalai-public/ai/digital/xlclient/blueprints/xl-op-blueprints/24.1.14/xl-op-blueprints-24.1.14.zip && \
+    unzip -o /tmp/xl-op-blueprints-24.1.14.zip -d ${XL_OP_BLUEPRINTS_HOME} && \
     chgrp -R 0 ${XL_OP_BLUEPRINTS_HOME} && \
     chmod -R g=u ${XL_OP_BLUEPRINTS_HOME}
 
@@ -27,7 +27,8 @@ FROM alpine:3.19
 
 LABEL name="xebialabs/xl-client" \
       vendor="Digital.ai" \
-      version="24.1.12" \
+      maintainer="Digital.ai" \
+      version="24.1.14" \
       release="1" \
       summary="XL Client" \
       description="Remote control your XebiaLabs DevOps Platform!" \
