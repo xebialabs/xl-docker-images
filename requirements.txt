@@ -1,0 +1,14 @@
+certifi==2018.4.16
+chardet==3.0.4
+docker==3.4.1
+docker-pycreds==0.3.0
+gitdb2==2.0.4
+GitPython==2.1.11
+idna==2.7
+Jinja2==2.11.3
+MarkupSafe==1.0
+requests==2.20.0
+six==1.11.0
+smmap2==2.0.4
+urllib3==1.26.5 
+websocket-client==0.48.0
