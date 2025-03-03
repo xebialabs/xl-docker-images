@@ -1,4 +1,4 @@
-FROM alpine:3.19 as installer
+FROM alpine:3.21 as installer
 
 # Install dependencies
 RUN apk update
@@ -22,7 +22,7 @@ RUN mkdir -p ${XL_OP_BLUEPRINTS_HOME} && \
     chgrp -R 0 ${XL_OP_BLUEPRINTS_HOME} && \
     chmod -R g=u ${XL_OP_BLUEPRINTS_HOME}
 
-FROM alpine:3.19
+FROM alpine:3.21
 
 {% include 'metadata.j2' %}
 
@@ -34,7 +34,7 @@ RUN apk update
 
 # Install kubectl
 RUN apk add --no-cache curl && \
-    curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.26.3/bin/linux/amd64/kubectl" && \
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
     chmod +x kubectl && \
     mv kubectl /usr/local/bin/ && \
     apk del curl && \
@@ -49,11 +49,11 @@ RUN apk add --no-cache yq && \
 
 # Install helm
 RUN apk add --no-cache curl tar && \
-    curl -LO https://get.helm.sh/helm-v3.14.0-linux-amd64.tar.gz && \
-    tar -xvf helm-v3.14.0-linux-amd64.tar.gz && \
+    curl -LO https://get.helm.sh/helm-v3.17.1-linux-amd64.tar.gz && \
+    tar -xvf helm-v3.17.1-linux-amd64.tar.gz && \
     chmod +x linux-amd64/helm && \
     mv linux-amd64/helm /usr/local/bin && \
-    rm -rf helm-v3.14.0-linux-amd64.tar.gz linux-amd64 && \
+    rm -rf helm-v3.17.1-linux-amd64.tar.gz linux-amd64 && \
     apk del curl tar && \
     helm version
 
@@ -98,7 +98,7 @@ RUN mkdir -p ${APP_ROOT}/.config/gcloud && \
 
 # Install Krew
 RUN cd /tmp \
-  && wget -O krew-linux_amd64.tar.gz https://github.com/kubernetes-sigs/krew/releases/download/v0.4.3/krew-linux_amd64.tar.gz \
+  && wget -O krew-linux_amd64.tar.gz https://github.com/kubernetes-sigs/krew/releases/download/v0.4.4/krew-linux_amd64.tar.gz \
   && tar zxvf krew-linux_amd64.tar.gz \
   && ./krew-linux_amd64 install krew && \
   rm -rf /tmp/krew*
