@@ -47,6 +47,11 @@ sidebar_position: 1
 - possible values: "true", "false"
 - default value: "false"
 
+##### `XL_NODE_NAME`
+- This is to specify the node name.
+- possible values:"user-string-value"
+- default value: The IP address or the hostname of the container.
+
 ##### `XL_CLUSTER_MODE`
 - This is to specify if the HA setup is needed and to specify the HA mode.
 - possible values: "default", "hot-standby", "full"
@@ -171,6 +176,21 @@ sidebar_position: 1
 - Flag to expose external messaging queue. If set to true, a default embedded-queue will be used and all environment variables will be ignored.
 - possible values: "true", "false"
 - default value: "true"
+
+##### `XLR_CLUSTER_NAME` 
+- This is to specify the cluster name.
+- possible values: "xlr-legacy" or "xlr-pekko-native"
+- default value: "xlr-legacy"
+
+##### `XLR_CLUSTER_MANAGER` 
+- This is to specify the manager for the cluster. Possible values are xlr-legacy and xlr-pekko-native. Each defines different discovery and downing strategies.
+- possible values: "name-string-value"
+- default value: "xlr-tasks-queue"
+
+##### `XLR_CLUSTER_DATACENTER` 
+- The datacenter name that node belongs to.
+- possible values: "name-string-value"
+- default value: "default"
 
 ##### `XLR_TASK_QUEUE_NAME`
 - Name for MQ task queue.

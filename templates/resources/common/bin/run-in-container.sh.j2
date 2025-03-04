@@ -185,6 +185,7 @@ function generate_node_conf {
         sed -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
             -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
             -e "s#\${XL_NODE_NAME}#${IP_ADDRESS}#g" \
+            -e "s#\${XLR_CLUSTER_DATACENTER}#${XLR_CLUSTER_DATACENTER}#g" \
           ${APP_HOME}/node-conf/{{ file }}.template > ${APP_HOME}/node-conf/{{ file }}
       fi
     {% endfor %}

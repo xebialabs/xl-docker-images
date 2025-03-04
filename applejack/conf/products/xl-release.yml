@@ -42,6 +42,12 @@ context:
   environment:
   - key: XL_CLUSTER_MODE
     value: default
+  - key: XLR_CLUSTER_NAME
+    value: xl-release_cluster
+  - key: XLR_CLUSTER_MANAGER
+    value: xlr-legacy
+  - key: XLR_CLUSTER_DATACENTER
+    value: default
   - key: XL_DB_URL
     value: "jdbc:h2:file:${APP_HOME}/repository/xl-release"
   - key: XL_DB_USERNAME
@@ -52,8 +58,6 @@ context:
     value: "10"
   - key: XL_METRICS_ENABLED
     value: "false"
-  - key: XL_CLUSTER_MODE
-    value: default
   - key: SERVER_URL
     value: "http://localhost:\\${APP_PORT}/"
   - key: XL_REPORT_DB_URL
