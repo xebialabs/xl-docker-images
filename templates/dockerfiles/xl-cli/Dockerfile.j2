@@ -49,11 +49,11 @@ RUN apk add --no-cache yq && \
 
 # Install helm
 RUN apk add --no-cache curl tar && \
-    curl -LO https://get.helm.sh/helm-v3.17.1-linux-amd64.tar.gz && \
-    tar -xvf helm-v3.17.1-linux-amd64.tar.gz && \
+    curl -LO https://get.helm.sh/helm-v3.17.2-linux-amd64.tar.gz && \
+    tar -xvf helm-v3.17.2-linux-amd64.tar.gz && \
     chmod +x linux-amd64/helm && \
     mv linux-amd64/helm /usr/local/bin && \
-    rm -rf helm-v3.17.1-linux-amd64.tar.gz linux-amd64 && \
+    rm -rf helm-v3.17.2-linux-amd64.tar.gz linux-amd64 && \
     apk del curl tar && \
     helm version
 
