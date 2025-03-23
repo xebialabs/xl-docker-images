@@ -18,10 +18,10 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/xl-deploy-server
 
 # Install xl-deploy from zip file
-COPY resources/xl-deploy-24.1.14-server.zip /tmp
+COPY resources/xl-deploy-24.1.17-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-deploy-24.1.14-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-deploy-24.1.14-server ${APP_HOME} && \
+    unzip /tmp/xl-deploy-24.1.17-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-deploy-24.1.17-server ${APP_HOME} && \
     rm -fr ${APP_HOME}/serviceWrapper/ && \
     rm ${APP_HOME}/bin/.wrapper-env* ${APP_HOME}/bin/install-service* ${APP_HOME}/bin/uninstall-service* && \
     true
@@ -90,7 +90,7 @@ FROM registry.access.redhat.com/ubi8/openjdk-17:latest
 LABEL name="xebialabs/xl-deploy" \
       vendor="Digital.ai" \
       maintainer="Digital.ai" \
-      version="24.1.14" \
+      version="24.1.17" \
       release="1" \
       summary="XL Deploy" \
       description="Enterprise-scale Application Release Automation for any environment" \
