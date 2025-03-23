@@ -4,7 +4,7 @@ FROM registry.access.redhat.com/rhel7/rhel-atomic
 LABEL name="xebialabs/central-configuration" \
       vendor="Digital.ai" \
       maintainer="Digital.ai" \
-      version="24.1.14" \
+      version="24.1.17" \
       release="1" \
       summary="Central configuration" \
       description="Enterprise-scale Application Release Automation for any environment" \
@@ -40,10 +40,13 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/central-configuration-server
 
 # Install central-configuration from zip file
-COPY resources/central-configuration-24.1.14-server.zip /tmp
+COPY resources/central-configuration-24.1.17-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/central-configuration-24.1.14-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/central-configuration-24.1.14-server ${APP_HOME}
+    unzip /tmp/central-configuration-24.1.17-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/central-configuration-24.1.17-server ${APP_HOME} && \
+    rm -fr ${APP_HOME}/serviceWrapper/ && \
+    rm -f ${APP_HOME}/bin/.wrapper-env* ${APP_HOME}/bin/install-service* ${APP_HOME}/bin/uninstall-service* && \
+    true
 
 # Add bin/run-in-container.sh
 COPY resources/bin/run-in-container.sh ${APP_HOME}/bin/
