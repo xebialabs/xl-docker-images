@@ -4,7 +4,7 @@ import java.time.format.DateTimeFormatter
 
 
 plugins {
-    kotlin("jvm") version "1.8.10"
+    kotlin("jvm") version "2.1.20"
 
     id("com.github.node-gradle.node") version "4.0.0"
     id("idea")
