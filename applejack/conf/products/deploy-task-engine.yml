@@ -72,3 +72,5 @@ context:
       value: "true"
     - key: LOGBACK_SCAN_PERIOD
       value: "30seconds"
+    - key: NETWORK_ADDRESS_CACHE_TTL
+      value: "30"
