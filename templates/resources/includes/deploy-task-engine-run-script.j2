@@ -68,6 +68,17 @@ if [[ -z "$APP_CONTEXT_ROOT" ]]; then
   APP_CONTEXT_ROOT="/"
 fi
 
+# Set up new installation for security.properties
+if [ ! -f "${APP_HOME}/conf/security.properties" ]; then
+  echo "No ${APP_HOME}/conf/security.properties file detected:"
+
+  echo "... Generating {{ boot_conf }}"
+
+  sed -e "s#\${NETWORK_ADDRESS_CACHE_TTL}#${NETWORK_ADDRESS_CACHE_TTL}#g" \
+      ${APP_HOME}/default-conf/security.properties.template > ${APP_HOME}/conf/security.properties
+  echo "Done"
+fi
+
 # Set up new installation
 if [ ! -f "${APP_HOME}/conf/{{ boot_conf }}" ]; then
   echo "No ${APP_HOME}/conf/{{ boot_conf }} file detected:"
