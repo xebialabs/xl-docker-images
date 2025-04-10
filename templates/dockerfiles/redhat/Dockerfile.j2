@@ -1,10 +1,10 @@
-FROM registry.access.redhat.com/ubi8/openjdk-17:latest as installer
+FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:latest as installer
 
 # Install dependencies
 USER root
 RUN microdnf update -y && rm -rf /var/cache/yum && \
-   INSTALL_PKGS="curl hostname shadow-utils which unzip gawk" && \
-   microdnf install --nodocs ${INSTALL_PKGS} && \
+   INSTALL_PKGS="curl-minimal hostname shadow-utils which unzip gawk" && \
+   microdnf install -y --nodocs ${INSTALL_PKGS} && \
    ### Install JQ
    JQ_LOCATION="/usr/bin/jq" && \
    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
@@ -18,7 +18,7 @@ RUN microdnf update -y && rm -rf /var/cache/yum && \
     {% include 'install.j2' %}
 {% endif %}
 
-FROM registry.access.redhat.com/ubi8/openjdk-17:latest
+FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:latest
 
 {% include 'metadata.j2' %}
 
@@ -38,8 +38,8 @@ ENV OS=redhat
 USER root
 
 RUN microdnf update -y && rm -rf /var/cache/yum && \
-   INSTALL_PKGS="curl hostname shadow-utils which unzip nc" && \
-   microdnf install --nodocs ${INSTALL_PKGS} && \
+   INSTALL_PKGS="curl-minimal hostname shadow-utils which unzip nc" && \
+   microdnf install -y --nodocs ${INSTALL_PKGS} && \
    JQ_LOCATION="/usr/bin/jq" && \
    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
    microdnf clean all
