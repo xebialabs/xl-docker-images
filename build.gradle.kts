@@ -1,6 +1,7 @@
 import com.github.gradle.node.yarn.task.YarnTask
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 
 plugins {
@@ -11,6 +12,8 @@ plugins {
 }
 
 project.defaultTasks = listOf("build")
+
+val languageLevel = properties["languageLevel"] as String
 
 repositories {
     mavenLocal()
@@ -34,8 +37,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.toVersion(languageLevel)
+    targetCompatibility = JavaVersion.toVersion(languageLevel)
     withSourcesJar()
     withJavadocJar()
 }
@@ -47,11 +50,12 @@ tasks.named<Test>("test") {
 tasks {
 
     compileKotlin {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_21.toString()
+        compilerOptions.jvmTarget.set(JvmTarget.fromTarget(languageLevel))
+
     }
 
     compileTestKotlin {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_21.toString()
+        compilerOptions.jvmTarget.set(JvmTarget.fromTarget(languageLevel))
     }
 
     named<YarnTask>("yarn_install") {
@@ -95,7 +99,7 @@ tasks.named("build") {
 }
 
 node {
-    version.set("14.17.5")
-    yarnVersion.set("1.22.11")
+    version.set(properties["nodeVersion"] as String)
+    yarnVersion.set(properties["yarnVersion"] as String)
     download.set(true)
 }
