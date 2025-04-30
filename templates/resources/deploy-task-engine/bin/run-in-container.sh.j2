@@ -75,7 +75,11 @@ function copy_db_driver {
       echo "oracle jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       ;;
     jdbc:mysql:*)
+      {%- if xl_version_major_minor == "24.1" %}
       XL_DB_DRIVER="com.mysql.jdbc.Driver"
+      {%- else %}
+      XL_DB_DRIVER="com.mysql.cj.jdbc.Driver"
+      {%- endif %}
       {%- if is_slim %}
       echo "mysql jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       {%- else %}
@@ -156,6 +160,9 @@ function generate_product_conf {
       echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
     elif [ -e ${APP_HOME}/default-conf/{{file}}.template ]; then
       echo "Generate configuration file {{ file }} from environment parameters"
+      {%- for env in environment %}
+          export {{ env['key'] }}_ESCAPED=$(echo "${{ env['key'] }}" | sed 's/&/\\&/g')
+      {%- endfor %}
       sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
       {% for env in environment %}
           {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
