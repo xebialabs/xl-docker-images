@@ -12,7 +12,7 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
     {% include 'install.j2' %}
 {% endif %}
 
-FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:17-jdk
+FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:21-jdk
 USER root
 
 {% include 'metadata.j2' %}
