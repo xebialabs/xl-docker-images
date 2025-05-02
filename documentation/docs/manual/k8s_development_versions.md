@@ -21,7 +21,7 @@ $ minikube image load xebialabs/xl-deploy:10.4.0-SNAPSHOT -p k120
 $ minikube image load xebialabs/deploy-task-engine:10.4.0-SNAPSHOT -p k120
 ```
 
-In case of using [helm chart](https://github.com/xebialabs/xl-deploy-kubernetes-helm-chart) do changes in `values.yaml` 
+In case of using [helm chart](https://github.com/digital-ai/deploy-helm-chart) do changes in `values.yaml` 
 ```yaml
 ...
 ## XL-Deploy image version
