@@ -128,11 +128,7 @@ function set_db_driver {
       XL_DB_DRIVER="oracle.jdbc.OracleDriver"
       ;;
     jdbc:mysql:*)
-      {%- if xl_version_major_minor == "24.1" %}
-      XL_DB_DRIVER="com.mysql.jdbc.Driver"
-      {%- else %}
       XL_DB_DRIVER="com.mysql.cj.jdbc.Driver"
-      {%- endif %}
       ;;
     jdbc:postgresql:*)
       XL_DB_DRIVER="org.postgresql.Driver"
