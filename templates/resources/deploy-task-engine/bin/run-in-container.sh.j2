@@ -75,11 +75,7 @@ function copy_db_driver {
       echo "oracle jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       ;;
     jdbc:mysql:*)
-      {%- if xl_version_major_minor == "24.1" %}
-      XL_DB_DRIVER="com.mysql.jdbc.Driver"
-      {%- else %}
       XL_DB_DRIVER="com.mysql.cj.jdbc.Driver"
-      {%- endif %}
       {%- if is_slim %}
       echo "mysql jdbc driver is not provided by default in the classpath, please make sure you provide one. Please refer readme for more details"
       {%- else %}
