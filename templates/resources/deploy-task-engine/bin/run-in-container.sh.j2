@@ -156,9 +156,12 @@ function generate_product_conf {
       echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
     elif [ -e ${APP_HOME}/default-conf/{{file}}.template ]; then
       echo "Generate configuration file {{ file }} from environment parameters"
+      {%- for env in environment %}
+          export {{ env['key'] }}_ESCAPED=$(echo "${{ env['key'] }}" | sed 's/&/\\&/g')
+      {%- endfor %}
       sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
       {% for env in environment %}
-          {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
+          {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"_ESCAPED}#g\" \\" }}
       {% endfor -%}
           ${APP_HOME}/default-conf/{{ file }}.template > ${APP_HOME}/conf/{{ file }}
     fi
