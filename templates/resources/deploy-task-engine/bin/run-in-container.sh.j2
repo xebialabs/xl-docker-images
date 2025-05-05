@@ -161,7 +161,7 @@ function generate_product_conf {
       {%- endfor %}
       sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
       {% for env in environment %}
-          {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
+          {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"_ESCAPED}#g\" \\" }}
       {% endfor -%}
           ${APP_HOME}/default-conf/{{ file }}.template > ${APP_HOME}/conf/{{ file }}
     fi
