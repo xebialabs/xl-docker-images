@@ -221,13 +221,16 @@ function generate_product_conf {
         echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
       elif [[ -e ${APP_HOME}/central-conf/{{file}}.template && ! -f "${APP_HOME}/centralConfiguration/{{ file }}" ]]; then
         echo "Generate configuration file {{ file }} from environment parameters"
+        {%- for env in environment %}
+            export {{ env['key'] }}_ESCAPED=$(echo "${{ env['key'] }}" | sed 's/&/\\&/g')
+        {%- endfor %}
         sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
             -e "s#\${HOSTNAME_SUFFIX}#${HOSTNAME_SUFFIX}#g" \
             -e "s#\${DNS_RESOLVER}#${DNS_RESOLVER}#g" \
             -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
             -e "s#\${XLD_TASK_QUEUE_DRIVER_CLASS_NAME}#${JMS_DRIVER_CLASS_NAME}#g" \
         {% for env in environment %}
-            {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
+            {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"_ESCAPED}#g\" \\" }}
         {% endfor -%}
             ${APP_HOME}/central-conf/{{ file }}.template > ${APP_HOME}/centralConfiguration/{{ file }}
       fi
@@ -243,9 +246,12 @@ function generate_product_conf {
         echo "Not generating {{file}} as GENERATE_XL_CONFIG != 'true'"
       elif [ -e ${APP_HOME}/default-conf/{{file}}.template ]; then
         echo "Generate configuration file {{ file }} from environment parameters"
+        {%- for env in environment %}
+            export {{ env['key'] }}_ESCAPED=$(echo "${{ env['key'] }}" | sed 's/&/\\&/g')
+        {%- endfor %}
         sed -e "s#\${XL_DB_DRIVER}#${XL_DB_DRIVER}#g" \
         {% for env in environment %}
-            {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"}#g\" \\" }}
+            {{- "    -e \"s#\${"+env['key']+"}#${"+env['key']+"_ESCAPED}#g\" \\" }}
         {% endfor -%}
             ${APP_HOME}/default-conf/{{ file }}.template > ${APP_HOME}/conf/{{ file }}
       fi
