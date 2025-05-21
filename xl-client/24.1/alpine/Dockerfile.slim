@@ -1,4 +1,4 @@
-FROM alpine:3.19 as installer
+FROM alpine:3.21 as installer
 
 # Install dependencies
 RUN apk update
@@ -8,26 +8,27 @@ ENV USER_UID=10001 APP_ROOT=/opt/xebialabs
 ENV APP_HOME=${APP_ROOT}/xl-client
 ENV XL_OP_BLUEPRINTS_HOME=${APP_ROOT}/xl-op-blueprints
 
-COPY resources/xl-client-24.1.6-linux-amd64.bin /tmp
+COPY resources/xl-client-24.1.18-521.1635-linux-amd64.bin /tmp
 
 RUN mkdir -p ${APP_HOME} && \
-    mv /tmp/xl-client-24.1.6-linux-amd64.bin ${APP_HOME}/xl && \
+    mv /tmp/xl-client-24.1.18-521.1635-linux-amd64.bin ${APP_HOME}/xl && \
     chgrp -R 0 ${APP_ROOT} && \
     chmod -R g=u ${APP_ROOT} && \
     chmod +x ${APP_HOME}/xl
 
 RUN mkdir -p ${XL_OP_BLUEPRINTS_HOME} && \
-    wget -O /tmp/xl-op-blueprints-24.1.6.zip https://nexus.xebialabs.com/nexus/content/repositories/digitalai-public/ai/digital/xlclient/blueprints/xl-op-blueprints/24.1.6/xl-op-blueprints-24.1.6.zip && \
-    unzip -o /tmp/xl-op-blueprints-24.1.6.zip -d ${XL_OP_BLUEPRINTS_HOME} && \
+    wget -O /tmp/xl-op-blueprints-24.1.18-521.1635.zip https://nexus.xebialabs.com/nexus/content/repositories/digitalai-public/ai/digital/xlclient/blueprints/xl-op-blueprints/24.1.18-521.1635/xl-op-blueprints-24.1.18-521.1635.zip && \
+    unzip -o /tmp/xl-op-blueprints-24.1.18-521.1635.zip -d ${XL_OP_BLUEPRINTS_HOME} && \
     chgrp -R 0 ${XL_OP_BLUEPRINTS_HOME} && \
     chmod -R g=u ${XL_OP_BLUEPRINTS_HOME}
 
-FROM alpine:3.19
+FROM alpine:3.21
 
 
 LABEL name="xebialabs/xl-client" \
       vendor="Digital.ai" \
-      version="24.1.6" \
+      maintainer="Digital.ai" \
+      version="24.1.18-521.1635" \
       release="1" \
       summary="XL Client" \
       description="Remote control your XebiaLabs DevOps Platform!" \
@@ -41,7 +42,7 @@ RUN apk update
 
 # Install kubectl
 RUN apk add --no-cache curl && \
-    curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.26.3/bin/linux/amd64/kubectl" && \
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
     chmod +x kubectl && \
     mv kubectl /usr/local/bin/ && \
     apk del curl && \
@@ -56,11 +57,11 @@ RUN apk add --no-cache yq && \
 
 # Install helm
 RUN apk add --no-cache curl tar && \
-    curl -LO https://get.helm.sh/helm-v3.14.0-linux-amd64.tar.gz && \
-    tar -xvf helm-v3.14.0-linux-amd64.tar.gz && \
+    curl -LO https://get.helm.sh/helm-v3.17.3-linux-amd64.tar.gz && \
+    tar -xvf helm-v3.17.3-linux-amd64.tar.gz && \
     chmod +x linux-amd64/helm && \
     mv linux-amd64/helm /usr/local/bin && \
-    rm -rf helm-v3.14.0-linux-amd64.tar.gz linux-amd64 && \
+    rm -rf helm-v3.17.3-linux-amd64.tar.gz linux-amd64 && \
     apk del curl tar && \
     helm version
 
