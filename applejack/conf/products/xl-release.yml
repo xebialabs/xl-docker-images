@@ -76,18 +76,6 @@ context:
     value: "false"
   - key: ENABLE_EMBEDDED_QUEUE
     value: "true"
-  - key: XLR_TASK_QUEUE_PASSWORD
-    value: "mqadmin"
-  - key: XLR_TASK_QUEUE_NAME
-    value: "xlr-tasks-queue"
-  - key: XLR_TASK_QUEUE_URL
-    value: "amqp://localhost:61616"
-  - key: XLR_TASK_QUEUE_USERNAME
-    value: "mqadmin"
-  - key: XLR_TASK_QUEUE_TYPE
-    value: "classic"
-  - key: XLR_TASK_QUEUE_CONNECTOR_TYPE
-    value: "rabbitmq-jms"  
   - key: PLUGIN_SOURCE
     value: "database"
   - key: FORCE_REMOVE_MISSING_TYPES
