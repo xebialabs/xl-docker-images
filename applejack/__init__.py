@@ -59,7 +59,7 @@ def major_minor(image_version):
 
 def major_minor_patch(image_version):
     """Split a version into its 3 root components (major, minor, patch)."""
-    return '.'.join(image_version.split('.')[:3])
+    return '.'.join(image_version.split('-')[0].split('.')[:3])
 
 def all_tags(target_os, image_version, default_os=None):
     """Create a generator that yields all the version tags for a specific target_os and image_version."""
