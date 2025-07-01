@@ -46,6 +46,17 @@ function copy_mq_driver {
 }
 {%- endif %}
 
+{%- if 'xl-release' in product %}
+
+function copy_extra_lib {
+  mkdir -p ${APP_ROOT}/extra/lib
+  if [[ "$XL_EXTRA_LIBS" == *"aws-sdk-sts"* ]]; then
+      echo "Detected AWS SDK STS configuration. Copying required libs to the extra/lib folder."
+      cp ${APP_ROOT}/extra-libs/sts-* ${APP_HOME}/extra/lib
+  fi
+}
+{%- endif %}
+
 function copy_db_driver {
   echo "Copying a database driver"
 
@@ -300,6 +311,10 @@ copy_db_driver
 copy_mq_driver 
 {%- endif %}
 store_license
+{%- endif %}
+
+{%- if 'xl-release' in product %}
+copy_extra_lib
 {%- endif %}
 
 generate_product_conf
