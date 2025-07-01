@@ -18,6 +18,7 @@ match($0, /^(wrapper.java.classpath).([0-9]+)=(.*)$/, a) {
   if (!added_new_classpath && last_classpath_number) {
     printf("wrapper.java.classpath.%d=driver/jdbc/*\n", last_classpath_number + 1);
     printf("wrapper.java.classpath.%d=driver/mq/*\n", last_classpath_number + 2);
+    printf("wrapper.java.classpath.%d=extra/lib/*\n", last_classpath_number + 3);
     added_new_classpath = 1  # Ensure this block only runs once
   }
 }

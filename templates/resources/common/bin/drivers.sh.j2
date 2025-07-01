@@ -34,3 +34,13 @@ curl https://repo1.maven.org/maven2/com/rabbitmq/jms/rabbitmq-jms/${RABBIT_MQ_JM
 curl https://repo1.maven.org/maven2/org/apache/activemq/activemq-client-jakarta/${ACTIVE_MQ_VERSION}/activemq-client-jakarta-${ACTIVE_MQ_VERSION}.jar -o ${APP_ROOT}/mq-libs/activemq-client-jakarta-${ACTIVE_MQ_VERSION}.jar
 {%- endif %}
 {%- endif %}
+
+{%- if 'xl-release' in product %}
+
+echo "Downloading extra libs to ${APP_ROOT}/extra-libs"
+mkdir ${APP_ROOT}/extra-libs
+
+AWS_SDK_VERSION="2.31.9"
+
+curl https://repo1.maven.org/maven2/software/amazon/awssdk/sts/${AWS_SDK_VERSION}/sts-${AWS_SDK_VERSION}.jar -o ${APP_ROOT}/extra-libs/sts-${AWS_SDK_VERSION}.jar -f
+{%- endif %}
