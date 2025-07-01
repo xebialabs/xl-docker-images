@@ -49,7 +49,7 @@ function copy_mq_driver {
 {%- if 'xl-release' in product %}
 
 function copy_extra_lib {
-  mkdir -p ${APP_ROOT}/extra/lib
+  mkdir -p ${APP_HOME}/extra/lib
   if [[ "$XL_EXTRA_LIBS" == *"aws-sdk-sts"* ]]; then
       echo "Detected AWS SDK STS configuration. Copying required libs to the extra/lib folder."
       cp ${APP_ROOT}/extra-libs/sts-* ${APP_HOME}/extra/lib
