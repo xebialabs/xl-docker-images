@@ -6,19 +6,23 @@ fi
 
 if [[ -z $NEXUS_USERNAME ]]; then
   echo "NEXUS_USERNAME env var is required"
+  exit 1
 fi
 
 if [[ -z $NEXUS_PASSWORD ]]; then
   echo "NEXUS_PASSWORD env var is required"
+  exit 1
 fi
 
 if [[ -z $RELEASE_EXPLICIT ]]; then
   echo "RELEASE_EXPLICIT env var is required"
+  exit 1
 fi
 
 TARGET_PRODUCT=${1:-${TARGET_PRODUCT}}
 if [[ -z $TARGET_PRODUCT ]]; then
   echo "TARGET_PRODUCT env var is required"
+  exit 1
 fi
 
 if [[ -z $TARGET_OS ]]; then
