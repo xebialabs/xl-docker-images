@@ -1,4 +1,4 @@
-FROM alpine:3.21 as installer
+FROM alpine:3.22 as installer
 
 # Install dependencies
 RUN apk update
@@ -22,7 +22,7 @@ RUN mkdir -p ${XL_OP_BLUEPRINTS_HOME} && \
     chgrp -R 0 ${XL_OP_BLUEPRINTS_HOME} && \
     chmod -R g=u ${XL_OP_BLUEPRINTS_HOME}
 
-FROM alpine:3.21
+FROM alpine:3.22
 
 {% include 'metadata.j2' %}
 
@@ -49,11 +49,11 @@ RUN apk add --no-cache yq && \
 
 # Install helm
 RUN apk add --no-cache curl tar && \
-    curl -LO https://get.helm.sh/helm-v3.17.3-linux-amd64.tar.gz && \
-    tar -xvf helm-v3.17.3-linux-amd64.tar.gz && \
+    curl -LO https://get.helm.sh/helm-v3.18.4-linux-amd64.tar.gz && \
+    tar -xvf helm-v3.18.4-linux-amd64.tar.gz && \
     chmod +x linux-amd64/helm && \
     mv linux-amd64/helm /usr/local/bin && \
-    rm -rf helm-v3.17.3-linux-amd64.tar.gz linux-amd64 && \
+    rm -rf helm-v3.18.4-linux-amd64.tar.gz linux-amd64 && \
     apk del curl tar && \
     helm version
 
