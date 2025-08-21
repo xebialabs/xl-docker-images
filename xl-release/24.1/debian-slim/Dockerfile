@@ -1,4 +1,4 @@
-FROM alpine:3.21 as installer
+FROM alpine:3.22 as installer
 
 # Install dependencies
 RUN apk update
@@ -12,10 +12,10 @@ ENV APP_ROOT=/opt/xebialabs \
     APP_HOME=/opt/xebialabs/xl-release-server
 
 # Install xl-release from zip file
-COPY resources/xl-release-24.1.17-server.zip /tmp
+COPY resources/xl-release-24.1.21-804.1349-server.zip /tmp
 RUN mkdir -p ${APP_ROOT} && \
-    unzip /tmp/xl-release-24.1.17-server.zip -d ${APP_ROOT} && \
-    mv ${APP_ROOT}/xl-release-24.1.17-server ${APP_HOME} && \
+    unzip /tmp/xl-release-24.1.21-804.1349-server.zip -d ${APP_ROOT} && \
+    mv ${APP_ROOT}/xl-release-24.1.21-804.1349-server ${APP_HOME} && \
     rm -fr ${APP_HOME}/serviceWrapper/ && \
     rm ${APP_HOME}/bin/.wrapper-env* ${APP_HOME}/bin/install-service* ${APP_HOME}/bin/uninstall-service* && \
     true
@@ -86,7 +86,7 @@ FROM openjdk:17-jdk-slim-buster
 LABEL name="xebialabs/xl-release" \
       vendor="Digital.ai" \
       maintainer="Digital.ai" \
-      version="24.1.17" \
+      version="24.1.21-804.1349" \
       release="1" \
       summary="XL Release" \
       description="Automate, orchestrate and get visibility into your release pipelines — at enterprise scale" \
