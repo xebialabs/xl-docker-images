@@ -49,11 +49,11 @@ RUN apk add --no-cache yq && \
 
 # Install helm
 RUN apk add --no-cache curl tar && \
-    curl -LO https://get.helm.sh/helm-v3.17.3-linux-amd64.tar.gz && \
-    tar -xvf helm-v3.17.3-linux-amd64.tar.gz && \
+    curl -LO https://get.helm.sh/helm-v3.19.0-linux-amd64.tar.gz && \
+    tar -xvf helm-v3.19.0-linux-amd64.tar.gz && \
     chmod +x linux-amd64/helm && \
     mv linux-amd64/helm /usr/local/bin && \
-    rm -rf helm-v3.17.3-linux-amd64.tar.gz linux-amd64 && \
+    rm -rf helm-v3.19.0-linux-amd64.tar.gz linux-amd64 && \
     apk del curl tar && \
     helm version
 
@@ -64,7 +64,7 @@ RUN apk add --no-cache vim xclip
 
 # Install oc
 RUN apk add --no-cache gcompat curl ca-certificates tar gzip && \
-    curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.8.11/openshift-client-linux.tar.gz | tar zx && \
+    curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.16.0/openshift-client-linux.tar.gz | tar zx && \
     mv oc /usr/local/bin && \
     apk del curl tar gzip && \
     oc version --client
@@ -80,7 +80,7 @@ ENV PATH="/opt/google-cloud-sdk/bin:${PATH}"
 
 # Install gcloud auth plugin
 RUN gcloud components install beta && \
-    gcloud components install  gke-gcloud-auth-plugin
+    gcloud components install gke-gcloud-auth-plugin
 
 # git installation needed for krew
 RUN apk add --no-cache git
@@ -98,10 +98,10 @@ RUN mkdir -p ${APP_ROOT}/.config/gcloud && \
 
 # Install Krew
 RUN cd /tmp \
-  && wget -O krew-linux_amd64.tar.gz https://github.com/kubernetes-sigs/krew/releases/download/v0.4.4/krew-linux_amd64.tar.gz \
-  && tar zxvf krew-linux_amd64.tar.gz \
-  && ./krew-linux_amd64 install krew && \
-  rm -rf /tmp/krew*
+    && wget -O krew-linux_amd64.tar.gz https://github.com/kubernetes-sigs/krew/releases/download/v0.4.5/krew-linux_amd64.tar.gz \
+    && tar zxvf krew-linux_amd64.tar.gz \
+    && ./krew-linux_amd64 install krew && \
+    rm -rf /tmp/krew*
 
 # Set up Krew
 ENV PATH="${APP_ROOT}/.krew/bin:${PATH}"
