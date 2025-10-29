@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     kotlin("jvm") version "2.1.20"
 
-    id("com.github.node-gradle.node") version "4.0.0"
+    id("com.github.node-gradle.node") version "7.1.0"
     id("idea")
 }
 
@@ -62,6 +62,7 @@ tasks {
         group = "doc"
         args.set(listOf("--mutex", "network"))
         workingDir.set(file("${rootDir}/documentation"))
+        environment.set(mapOf("NODE_OPTIONS" to "--openssl-legacy-provider"))
     }
 
     register<YarnTask>("yarnRunStart") {
@@ -69,6 +70,7 @@ tasks {
         dependsOn(named("yarn_install"))
         args.set(listOf("run", "start"))
         workingDir.set(file("${rootDir}/documentation"))
+        environment.set(mapOf("NODE_OPTIONS" to "--openssl-legacy-provider"))
     }
 
     register<YarnTask>("yarnRunBuild") {
@@ -76,6 +78,7 @@ tasks {
         dependsOn(named("yarn_install"))
         args.set(listOf("run", "build"))
         workingDir.set(file("${rootDir}/documentation"))
+        environment.set(mapOf("NODE_OPTIONS" to "--openssl-legacy-provider"))
     }
 
     register<Delete>("docCleanUp") {
