@@ -9,7 +9,7 @@ pipeline {
 
     parameters {
         choice(
-                name: 'products',
+                name: 'product',
                 choices: ['xl-client', 'xl-release', 'xl-deploy', 'deploy-task-engine', 'central-configuration'],
                 description: 'Select the product you want to generate Docker Image for')
         string(
@@ -21,15 +21,15 @@ pipeline {
                 defaultValue: 'master',
                 description: "Git branch to build from")
         choice(
-                name: 'target_os',
+                name: 'targetOs',
                 choices: ['all', 'ubuntu', 'redhat'],
                 description: "Target OS for Docker Images")
         choice(
-                name: 'ReleaseType',
+                name: 'releaseType',
                 choices: ['nightly', 'final'],
                 description: "Type of Release if it is nightly or final")
         choice(
-                name: 'Registry',
+                name: 'registry',
                 choices: ['xldevdocker', 'xebialabs', 'xebialabsunsupported', 'xebialabsearlyaccess'],
                 description: "Docker Registry you want to push Docker Images to")
     }
@@ -49,69 +49,65 @@ pipeline {
     stages {
 
         stage('Rendering and Build Docker Images for XLProducts') {
-            parallel {
-                stage('Rendering and Build Docker Images for Linux OS') {
-                    when {
-                        expression {
-                            (params.target_os == 'all' || params.target_os in ['ubuntu', 'redhat'])
-                        }
+            when {
+                expression {
+                    (params.targetOs == 'all' || params.targetOs in ['ubuntu', 'redhat'])
+                }
+            }
+            agent {
+                label 'docker_linux'
+            }
+            steps {
+                // Clean old workspace
+                step([$class: 'WsCleanup'])
+
+                // Checkout from specified branch
+                checkout([$class: 'GitSCM',
+                    branches: [[name: "*/${params.branch}"]],
+                    userRemoteConfigs: scm.userRemoteConfigs
+                ])
+
+                // Clean docker images including volumes
+                sh '''
+                    docker rm -f $(docker ps -a -q) 2>/dev/null || echo "No more containers to remove."
+                    docker rmi $(docker images -q) 2>/dev/null || echo "No more images to remove."
+                    docker system prune -a --volumes -f 2>/dev/null || echo "No more data to prun."
+                '''
+
+                // install pipenv and needed dependencies
+                sh 'pipenv install'
+
+                // Rendering and Committing changes
+                script {
+                    def productVersion = getLatestVersion(params.product)
+                    def targetOsList = getTargetOsList(params.targetOs, params.product)
+
+                    if ((params.releaseType == "final") && (params.registry == "xebialabs")) {
+                        sh "pipenv run ./applejack.py render --xl-version ${productVersion} --product ${params.product} --registry ${params.registry} --commit"
+                    } else {
+                        sh "pipenv run ./applejack.py render --xl-version ${productVersion} --product ${params.product} --registry ${params.registry}"
                     }
-                    agent {
-                        label 'docker_linux'
+
+                    // Build Docker Image and push it
+                    if (params.product == 'xl-client') {
+                        sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW} --product ${params.product} --target-os alpine --push --registry ${params.registry}"
+                    } else {
+                        def targetOsArgs = targetOsList.collect { "--target-os ${it}" }.join(' ')
+                        sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW} --product ${params.product} ${targetOsArgs} --push --registry ${params.registry}"
                     }
-                    steps {
-                        // Clean old workspace
-                        step([$class: 'WsCleanup'])
-
-                        // Checkout from specified branch
-                        checkout([$class: 'GitSCM',
-                            branches: [[name: "*/${params.branch}"]],
-                            userRemoteConfigs: scm.userRemoteConfigs
-                        ])
-
-                        // Clean docker images including volumes
-                        sh '''
-                            docker rm -f $(docker ps -a -q) 2>/dev/null || echo "No more containers to remove."
-                            docker rmi $(docker images -q) 2>/dev/null || echo "No more images to remove."
-                            docker system prune -a --volumes -f 2>/dev/null || echo "No more data to prun."
-                        '''
-
-                        // install pipenv and needed dependencies
-                        sh 'pipenv install'
-
-                        // Rendering and Committing changes
-                        script {
-                            def productVersion = getLatestVersion(params.products)
-                            def targetOsList = getTargetOsList(params.target_os, params.products)
-
-                            if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
-                                sh "pipenv run ./applejack.py render --xl-version ${productVersion} --product ${params.products} --registry ${params.Registry} --commit"
-                            } else {
-                                sh "pipenv run ./applejack.py render --xl-version ${productVersion} --product ${params.products} --registry ${params.Registry}"
-                            }
-
-                            // Build Docker Image and push it
-                            if (params.products == 'xl-client') {
-                                sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW} --product ${params.products} --target-os alpine --push --registry ${params.Registry}"
-                            } else {
-                                def targetOsArgs = targetOsList.collect { "--target-os ${it}" }.join(' ')
-                                sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW} --product ${params.products} ${targetOsArgs} --push --registry ${params.Registry}"
-                            }
-                        }
-                        script {
-                            cleanWs()
-                        }
-                    }
+                }
+                script {
+                    cleanWs()
                 }
             }
         }
 
         stage('Test Docker Images for XLProducts') {
             parallel {
-                stage('Test Docker Images for Linux OS') {
+                stage('Test Docker Images for Ubuntu') {
                     when {
                         expression {
-                            (params.target_os == 'all' || params.target_os in ['ubuntu', 'redhat'])
+                            (params.targetOs == 'all' || params.targetOs == 'ubuntu')
                         }
                     }
                     agent {
@@ -119,71 +115,28 @@ pipeline {
                     }
                     steps {
                         script {
-                            def productVersion = getLatestVersion(params.products)
+                            def productVersion = getLatestVersion(params.product)
+                            testDockerImage(params.product, productVersion, params.registry, 'ubuntu')
+                        }
+                        script {
+                            cleanWs()
+                        }
+                    }
+                }
 
-                            if (params.products == 'xl-release') {
-                                // Run Docker
-                                def status = sh(script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name xl-release ${params.Registry}/xl-release:${productVersion}", returnStatus: true)
-                                // Result
-                                if (status != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                                // Test if port is up
-                                sh "sleep 100"
-                                def pstatus = sh(script: "curl localhost:6616", returnStatus: true)
-                                // Result
-                                if (pstatus != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                            }
-
-                            if (params.products == 'xl-deploy') {
-                                // Run Docker
-                                def status = sh(script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy ${params.Registry}/xl-deploy:${productVersion}", returnStatus: true)
-                                // Result
-                                if (status != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                                // Test if port is up
-                                sh "sleep 100"
-                                def pstatus = sh(script: "curl localhost:5616", returnStatus: true)
-                                // Result
-                                if (pstatus != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                            }
-
-                            if (params.products == 'central-configuration') {
-                                // Run Docker
-                                def status = sh(script: "docker run -d -p 8888:8888 --name central-configuration ${params.Registry}/central-configuration:${productVersion}", returnStatus: true)
-                                // Result
-                                if (status != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                                // Test if port is up
-                                sh "sleep 100"
-                                def pstatus = sh(script: "curl localhost:8888", returnStatus: true)
-                                // Result
-                                if (pstatus != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                            }
-
-                            if (params.products == 'deploy-task-engine') {
-                                // Run Docker
-                                def status = sh(script: "docker run -d -p 9180:8180 --name deploy-task-engine ${params.Registry}/deploy-task-engine:${productVersion}", returnStatus: true)
-                                // Result
-                                if (status != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                            }
+                stage('Test Docker Images for Redhat') {
+                    when {
+                        expression {
+                            (params.targetOs == 'all' || params.targetOs == 'redhat')
+                        }
+                    }
+                    agent {
+                        label 'docker_linux'
+                    }
+                    steps {
+                        script {
+                            def productVersion = getLatestVersion(params.product)
+                            testDockerImage(params.product, productVersion, params.registry, 'redhat')
                         }
                         script {
                             cleanWs()
@@ -219,7 +172,7 @@ def getLatestVersion(xl_product) {
         }
 
         def productVersion = ""
-        
+
         switch(xl_product) {
             case 'xl-client':
                 productVersion = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlclient/xl-client/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
@@ -239,7 +192,7 @@ def getLatestVersion(xl_product) {
             default:
                 error("Unknown product: ${xl_product}")
         }
-        
+
         writeFile(file: "${env.WORKSPACE}/${xl_product}-latest", text: "${productVersion}")
         return productVersion
     }
@@ -247,7 +200,7 @@ def getLatestVersion(xl_product) {
 
 def getTargetOsList(target_os, product) {
     def osList = []
-    
+
     if (target_os == 'all') {
         if (product == 'xl-client') {
             osList = ['alpine']
@@ -257,6 +210,72 @@ def getTargetOsList(target_os, product) {
     } else if (target_os in ['ubuntu', 'redhat']) {
         osList = [target_os]
     }
-    
+
     return osList
+}
+
+def testDockerImage(product, productVersion, registry, targetOs) {
+    // Get product-specific test configuration
+    def config = getProductTestConfig(product, productVersion, registry, targetOs)
+
+    if (config.dockerCmd) {
+        // Run Docker container
+        def status = sh(script: config.dockerCmd, returnStatus: true)
+
+        // Check if container started successfully
+        if (status != 0) {
+            currentBuild.result = 'FAILURE'
+            error("Docker container failed to start: ${registry}/${product}:${productVersion}-${targetOs}")
+        }
+
+        // Wait for service to be ready and test if accessible (if test URL provided)
+        if (config.testUrl) {
+            sh "sleep 100"
+            def pstatus = sh(script: "curl ${config.testUrl}", returnStatus: true)
+
+            // Check if service is accessible
+            if (pstatus != 0) {
+                currentBuild.result = 'FAILURE'
+                error("Service is not accessible in container: ${registry}/${product}:${productVersion}-${targetOs}")
+            }
+        }
+    }
+}
+
+/**
+ * Provides the configuration to test for given product viz. docker command and test URL
+ * @return Map containing 'dockerCmd' and 'testUrl' keys
+ */
+def getProductTestConfig(product, productVersion, registry, targetOs) {
+    def config = [:]
+    def imageSuffix = (targetOs == 'redhat') ? '-redhat' : ''
+    def portOffset = (targetOs == 'redhat') ? 1 : 0  // Add 1 to port for redhat to avoid conflicts
+
+    switch(product) {
+        case 'xl-release':
+            def hostPort = 6616 + portOffset
+            config.dockerCmd = "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p ${hostPort}:5516 --name xl-release-${targetOs} ${registry}/xl-release:${productVersion}${imageSuffix}"
+            config.testUrl = "localhost:${hostPort}"
+            break
+        case 'xl-deploy':
+            def hostPort = 5616 + portOffset
+            config.dockerCmd = "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p ${hostPort}:4516 --name xl-deploy-${targetOs} ${registry}/xl-deploy:${productVersion}${imageSuffix}"
+            config.testUrl = "localhost:${hostPort}"
+            break
+        case 'central-configuration':
+            def hostPort = 8888 + portOffset
+            config.dockerCmd = "docker run -d -p ${hostPort}:8888 --name central-configuration-${targetOs} ${registry}/central-configuration:${productVersion}${imageSuffix}"
+            config.testUrl = "localhost:${hostPort}"
+            break
+        case 'deploy-task-engine':
+            def hostPort = 9180 + portOffset
+            config.dockerCmd = "docker run -d -p ${hostPort}:8180 --name deploy-task-engine-${targetOs} ${registry}/deploy-task-engine:${productVersion}${imageSuffix}"
+            config.testUrl = null // No URL test for this product
+            break
+        default:
+            config.dockerCmd = null
+            config.testUrl = null
+    }
+
+    return config
 }
