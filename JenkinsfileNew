@@ -27,10 +27,10 @@ pipeline {
         choice(
                 name: 'releaseType',
                 choices: ['nightly', 'final'],
-                description: "Type of Release if it is nightly or final")
+                description: "Type of Release if it is nightly or final. Dockerfiles will be committed only for final releases to xebialabs registry.")
         choice(
                 name: 'registry',
-                choices: ['xldevdocker', 'xebialabs', 'xebialabsunsupported', 'xebialabsearlyaccess'],
+                choices: ['xebialabsunsupported', 'xebialabs', 'xebialabsearlyaccess', 'xldevdocker'],
                 description: "Docker Registry you want to push Docker Images to")
     }
 
@@ -82,19 +82,13 @@ pipeline {
                     def productVersion = getLatestVersion(params.product)
                     def targetOsList = getTargetOsList(params.targetOs, params.product)
 
-                    if ((params.releaseType == "final") && (params.registry == "xebialabs")) {
-                        sh "pipenv run ./applejack.py render --xl-version ${productVersion} --product ${params.product} --registry ${params.registry} --commit"
-                    } else {
-                        sh "pipenv run ./applejack.py render --xl-version ${productVersion} --product ${params.product} --registry ${params.registry}"
-                    }
+                    // Add --commit flag only for final releases to xebialabs registry
+                    def commitFlag = ((params.releaseType == "final") && (params.registry == "xebialabs")) ? '--commit' : ''
+                    sh "pipenv run ./applejack.py render --xl-version ${productVersion} --product ${params.product} --registry ${params.registry} ${commitFlag}"
 
                     // Build Docker Image and push it
-                    if (params.product == 'xl-client') {
-                        sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW} --product ${params.product} --target-os alpine --push --registry ${params.registry}"
-                    } else {
-                        def targetOsArgs = targetOsList.collect { "--target-os ${it}" }.join(' ')
-                        sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW} --product ${params.product} ${targetOsArgs} --push --registry ${params.registry}"
-                    }
+                    def targetOsArgs = (params.product == 'xl-client') ? '--target-os alpine' : targetOsList.collect { "--target-os ${it}" }.join(' ')
+                    sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW} --product ${params.product} ${targetOsArgs} --push --registry ${params.registry}"
                 }
                 script {
                     cleanWs()
