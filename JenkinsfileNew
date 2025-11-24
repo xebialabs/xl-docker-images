@@ -11,7 +11,7 @@ pipeline {
         choice(
                 name: 'product',
                 choices: ['xl-client', 'xl-release', 'xl-deploy', 'deploy-task-engine', 'central-configuration'],
-                description: 'Select the product you want to generate Docker Image for')
+                description: 'Select the product you want to generate docker image for')
         string(
                 name: 'version',
                 defaultValue: '',
@@ -23,7 +23,7 @@ pipeline {
         choice(
                 name: 'targetOs',
                 choices: ['all', 'ubuntu', 'redhat'],
-                description: "Target OS for Docker Images")
+                description: "Target OS for docker images")
         choice(
                 name: 'releaseType',
                 choices: ['nightly', 'final'],
@@ -31,7 +31,7 @@ pipeline {
         choice(
                 name: 'registry',
                 choices: ['xebialabsunsupported', 'xebialabs', 'xebialabsearlyaccess', 'xldevdocker'],
-                description: "Docker Registry you want to push Docker Images to")
+                description: "Docker registry where docker images will be pushed to")
     }
 
     options {
@@ -43,12 +43,22 @@ pipeline {
 
     environment {
         NEXUS_CRED = credentials('nexus-ci')
-        SEED_VERSION = '9.6.1-alpha.4'
     }
 
     stages {
 
-        stage('Rendering and Build Docker Images for XLProducts') {
+        stage('Determine Product Version') {
+            agent none
+            steps {
+                script {
+                    // Determine product version incase of PR build or user did not provide one for latest version
+                    env.PRODUCT_VERSION = getLatestVersion(params.product)
+                    echo "Using product version: ${env.PRODUCT_VERSION} for all stages"
+                }
+            }
+        }
+
+        stage('Rendering and Build Docker Images for Products') {
             when {
                 expression {
                     (params.targetOs == 'all' || params.targetOs in ['ubuntu', 'redhat'])
@@ -79,7 +89,7 @@ pipeline {
 
                 // Rendering and Committing changes
                 script {
-                    def productVersion = getLatestVersion(params.product)
+                    def productVersion = env.PRODUCT_VERSION
                     def targetOsList = getTargetOsList(params.targetOs, params.product)
 
                     // Add --commit flag only for final releases to xebialabs registry
@@ -96,7 +106,7 @@ pipeline {
             }
         }
 
-        stage('Test Docker Images for XLProducts') {
+        stage('Test Docker Images') {
             parallel {
                 stage('Test Docker Images for Ubuntu') {
                     when {
@@ -109,7 +119,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            def productVersion = getLatestVersion(params.product)
+                            def productVersion = env.PRODUCT_VERSION
                             testDockerImage(params.product, productVersion, params.registry, 'ubuntu')
                         }
                         script {
@@ -129,7 +139,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            def productVersion = getLatestVersion(params.product)
+                            def productVersion = env.PRODUCT_VERSION
                             testDockerImage(params.product, productVersion, params.registry, 'redhat')
                         }
                         script {
@@ -158,37 +168,101 @@ pipeline {
     }
 }
 
+/**
+ * Determines product version - uses specified version, fetches latest if no version specified,
+ * or fetches latest version corresponding to PR builds.
+ *
+ * @return The resolved product version string
+ */
 def getLatestVersion(xl_product) {
     script {
-        // Use provided version or get latest from nexus
+        // Use provided version first incase of pipeline job with build parameters
         if (params.version != '') {
+            echo "Using explicitly provided version: ${params.version}"
             return params.version
         }
 
-        def productVersion = ""
+        // Determine target branch (PR target branch or default to master when no version param provided)
+        def targetBranch = env.CHANGE_TARGET ?: env.ghprbTargetBranch ?: 'master'
+        echo "Determining latest version for ${xl_product} targeting branch: ${targetBranch}"
 
-        switch(xl_product) {
-            case 'xl-client':
-                productVersion = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlclient/xl-client/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
-                break
-            case 'xl-release':
-                productVersion = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlrelease/xl-release/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
-                break
-            case 'xl-deploy':
-                productVersion = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
-                break
-            case 'central-configuration':
-                productVersion = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/ai/digital/config/central-configuration-server/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
-                break
-            case 'deploy-task-engine':
-                productVersion = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
-                break
-            default:
-                error("Unknown product: ${xl_product}")
+        def groupId = getGroupId(xl_product)
+        def artifactId = getArtifactId(xl_product)
+        def versionPattern = getVersionForNexusSearch(targetBranch)
+
+        def productVersion = getLatestVersionFromNexus(groupId, artifactId, versionPattern)
+
+        if (!productVersion) {
+            error("No version found for ${xl_product} corresponding to branch ${targetBranch}. Cannot proceed with build.")
         }
 
-        writeFile(file: "${env.WORKSPACE}/${xl_product}-latest", text: "${productVersion}")
+        echo "Selected version ${productVersion} for ${xl_product} targeting branch ${targetBranch}"
         return productVersion
+    }
+}
+
+/**
+ * Determines the specific major.minor version to search nexus based on target branch.
+ * 
+ * Returns branch name (e.g., "25.3" of current repo) for maintenance branches to search for "25.3.*" versions.
+ * Returns null for master/other branches to get latest available version.
+ */
+def getVersionForNexusSearch(targetBranch) {
+    return (targetBranch ==~ /^\d+\.\d+$/) ? targetBranch : null
+}
+
+def getLatestVersionFromNexus(groupId, artifactId, versionPattern) {
+    def searchUrl = "https://nexus.xebialabs.com/nexus/service/local/lucene/search?g=${groupId}&a=${artifactId}"
+
+    if (versionPattern) {
+        searchUrl += "&v=${versionPattern}*"
+        echo "Searching for versions matching: ${versionPattern}.*"
+    }
+
+    def versionCmd = """
+        curl -su \${NEXUS_CRED} '${searchUrl}' 2>/dev/null | \\
+        grep -o '<version>[^<]*</version>' | \\
+        sed 's/<version>\\(.*\\)<\\/version>/\\1/' | \\
+        sort -V | \\
+        tail -1
+    """
+
+    def version = sh(script: versionCmd, returnStdout: true).trim()
+
+    return version
+}
+
+def getGroupId(xl_product) {
+    switch(xl_product) {
+        case 'xl-client':
+            return 'com.xebialabs.xlclient'
+        case 'xl-release':
+            return 'com.xebialabs.xlrelease'
+        case 'xl-deploy':
+            return 'com.xebialabs.deployit'
+        case 'central-configuration':
+            return 'ai.digital.config'
+        case 'deploy-task-engine':
+            return 'com.xebialabs.deployit'
+        default:
+            error("Unknown product: ${xl_product}")
+    }
+}
+
+def getArtifactId(xl_product) {
+    switch(xl_product) {
+        case 'xl-client':
+            return 'xl-client'
+        case 'xl-release':
+            return 'xl-release'
+        case 'xl-deploy':
+            return 'xl-deploy'
+        case 'central-configuration':
+            return 'central-configuration-server'
+        case 'deploy-task-engine':
+            return 'xl-deploy'  // Uses same artifact as xl-deploy
+        default:
+            error("Unknown product: ${xl_product}")
     }
 }
 
