@@ -1,8 +1,6 @@
 #!groovy
 @Library('jenkins-pipeline-libs@master')
 import java.lang.Object
-import com.xebialabs.pipeline.utils.Branches
-import groovy.transform.Field
 
 pipeline {
     agent none
@@ -10,8 +8,8 @@ pipeline {
     parameters {
         choice(
                 name: 'product',
-                choices: ['xl-client', 'xl-release', 'xl-deploy', 'deploy-task-engine', 'central-configuration'],
-                description: 'Select the product you want to generate docker image for')
+                choices: ['all', 'xl-client', 'xl-release', 'xl-deploy', 'deploy-task-engine', 'central-configuration'],
+                description: 'Select the product you want to generate docker image for (not all)')
         string(
                 name: 'version',
                 defaultValue: '',
@@ -32,6 +30,10 @@ pipeline {
                 name: 'registry',
                 choices: ['xebialabsunsupported', 'xebialabs', 'xebialabsearlyaccess', 'xldevdocker'],
                 description: "Docker registry where docker images will be pushed to")
+        booleanParam(
+                name: 'pushImages',
+                defaultValue: false,
+                description: "Whether to push images to registry (Disabled for PR builds)")
     }
 
     options {
@@ -48,12 +50,15 @@ pipeline {
     stages {
 
         stage('Determine Product Version') {
-            agent none
+            agent any
             steps {
                 script {
-                    // Determine product version incase of PR build or user did not provide one for latest version
-                    env.PRODUCT_VERSION = getLatestVersion(params.product)
-                    echo "Using product version: ${env.PRODUCT_VERSION} for all stages"
+                    def products = productsAsList()
+
+                    products.each { product ->
+                        def version = getLatestVersion(product)
+                        setEnvProductVersion(product, version)
+                    }
                 }
             }
         }
@@ -89,16 +94,22 @@ pipeline {
 
                 // Rendering and Committing changes
                 script {
-                    def productVersion = env.PRODUCT_VERSION
-                    def targetOsList = getTargetOsList(params.targetOs, params.product)
+                    def products = productsAsList()
 
-                    // Add --commit flag only for final releases to xebialabs registry
-                    def commitFlag = ((params.releaseType == "final") && (params.registry == "xebialabs")) ? '--commit' : ''
-                    sh "pipenv run ./applejack.py render --xl-version ${productVersion} --product ${params.product} --registry ${params.registry} ${commitFlag}"
+                    products.each { currentProduct ->
+                        echo "Processing product: ${currentProduct}"
+                        def productVersion = getEnvProductVersion(currentProduct)
+                        def targetOsList = getTargetOsList(params.targetOs, currentProduct)
 
-                    // Build Docker Image and push it
-                    def targetOsArgs = (params.product == 'xl-client') ? '--target-os alpine' : targetOsList.collect { "--target-os ${it}" }.join(' ')
-                    sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW} --product ${params.product} ${targetOsArgs} --push --registry ${params.registry}"
+                        // Add --commit flag only for final releases to xebialabs registry
+                        def commitFlag = ((params.releaseType == "final") && (params.registry == "xebialabs")) ? '--commit' : ''
+                        sh "pipenv run ./applejack.py render --xl-version ${productVersion} --product ${currentProduct} --registry ${params.registry} ${commitFlag}"
+
+                        // Build Docker Image
+                        def pushFlag = params.pushImages ? '--push' : ''
+                        def targetOsArgs = (currentProduct == 'xl-client') ? '--target-os alpine' : targetOsList.collect { "--target-os ${it}" }.join(' ')
+                        sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW} --product ${currentProduct} ${targetOsArgs} ${pushFlag} --registry ${params.registry}"
+                    }
                 }
                 script {
                     cleanWs()
@@ -119,8 +130,13 @@ pipeline {
                     }
                     steps {
                         script {
-                            def productVersion = env.PRODUCT_VERSION
-                            testDockerImage(params.product, productVersion, params.registry, 'ubuntu')
+                            def products = productsAsList()
+
+                            products.each { currentProduct ->
+                                echo "Testing ${currentProduct} on Ubuntu"
+                                def productVersion = getEnvProductVersion(currentProduct)
+                                testDockerImage(currentProduct, productVersion, params.registry, 'ubuntu')
+                            }
                         }
                         script {
                             cleanWs()
@@ -139,8 +155,13 @@ pipeline {
                     }
                     steps {
                         script {
-                            def productVersion = env.PRODUCT_VERSION
-                            testDockerImage(params.product, productVersion, params.registry, 'redhat')
+                            def products = productsAsList()
+
+                            products.each { currentProduct ->
+                                echo "Testing ${currentProduct} on RedHat"
+                                def productVersion = getEnvProductVersion(currentProduct)
+                                testDockerImage(currentProduct, productVersion, params.registry, 'redhat')
+                            }
                         }
                         script {
                             cleanWs()
@@ -168,6 +189,43 @@ pipeline {
     }
 }
 
+def productsAsList() {
+    return (params.product == 'all') ?
+        ['xl-client', 'xl-release', 'xl-deploy', 'deploy-task-engine', 'central-configuration'] :
+        [params.product]
+}
+
+/**
+ * Sets the product version in environment variables.
+ * Uses naming convention: env.{PRODUCT_NAME}_VERSION
+ *
+ * @param xl_product The product name (e.g., 'xl-deploy', 'xl-release')
+ * @param version The version to store
+ */
+def setEnvProductVersion(xl_product, version) {
+    def envVarName = "${xl_product.replace('-', '_').toUpperCase()}_VERSION"
+    env."${envVarName}" = version
+    echo "Set environment variable ${envVarName} = ${version}"
+}
+
+/**
+ * Retrieves the product version from environment variables.
+ * Uses naming convention: env.{PRODUCT_NAME}_VERSION
+ * 
+ * @param xl_product The product name (e.g., 'xl-deploy', 'xl-release')
+ * @return The version string from environment variables
+ */
+def getEnvProductVersion(xl_product) {
+    def envVarName = "${xl_product.replace('-', '_').toUpperCase()}_VERSION"
+    def version = env."${envVarName}"
+
+    if (!version) {
+        error("No version found for product ${xl_product}. Expected environment variable: ${envVarName}")
+    }
+
+    return version
+}
+
 /**
  * Determines product version - uses specified version, fetches latest if no version specified,
  * or fetches latest version corresponding to PR builds.
@@ -182,9 +240,8 @@ def getLatestVersion(xl_product) {
             return params.version
         }
 
-        // Determine target branch (PR target branch or default to master when no version param provided)
-        def targetBranch = env.CHANGE_TARGET ?: env.ghprbTargetBranch ?: 'master'
-        echo "Determining latest version for ${xl_product} targeting branch: ${targetBranch}"
+        // Determine target branch (PR target branch or build branch parameter)
+        def targetBranch = env.CHANGE_TARGET ?: env.ghprbTargetBranch ?: params.branch
 
         def groupId = getGroupId(xl_product)
         def artifactId = getArtifactId(xl_product)
@@ -202,15 +259,18 @@ def getLatestVersion(xl_product) {
 }
 
 /**
- * Determines the specific major.minor version to search nexus based on target branch.
- * 
- * Returns branch name (e.g., "25.3" of current repo) for maintenance branches to search for "25.3.*" versions.
+ * Determines the specific major.minor version to form search url.
+ *
+ * Returns branch name for maintenance branch (e.g. "25.3").
  * Returns null for master/other branches to get latest available version.
  */
 def getVersionForNexusSearch(targetBranch) {
     return (targetBranch ==~ /^\d+\.\d+$/) ? targetBranch : null
 }
 
+/**
+* Fetches the latest version from Nexus for given groupId, artifactId, and optional version pattern.
+*/
 def getLatestVersionFromNexus(groupId, artifactId, versionPattern) {
     def searchUrl = "https://nexus.xebialabs.com/nexus/service/local/lucene/search?g=${groupId}&a=${artifactId}"
 
@@ -299,7 +359,7 @@ def testDockerImage(product, productVersion, registry, targetOs) {
         // Wait for service to be ready and test if accessible (if test URL provided)
         if (config.testUrl) {
             sh "sleep 100"
-            def pstatus = sh(script: "curl ${config.testUrl}", returnStatus: true)
+            def pstatus = sh(script: "curl -s ${config.testUrl} > /dev/null 2>&1", returnStatus: true)
 
             // Check if service is accessible
             if (pstatus != 0) {
