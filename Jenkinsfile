@@ -21,14 +21,14 @@ pipeline {
         choice(
                 name: 'targetOs',
                 choices: ['all', 'ubuntu', 'redhat'],
-                description: "Target OS for docker images")
+                description: "Target OS for docker images (ignored for xl-client which uses alpine only)")
         choice(
                 name: 'releaseType',
                 choices: ['nightly', 'final'],
                 description: "Type of Release if it is nightly or final. Dockerfiles will be committed only for final releases to xebialabs registry.")
         choice(
                 name: 'registry',
-                choices: ['xebialabsunsupported', 'xebialabs', 'xebialabsearlyaccess', 'xldevdocker'],
+                choices: ['xebialabsunsupported', 'xebialabs', 'xebialabsearlyaccess'],
                 description: "Docker registry where docker images will be pushed to")
         booleanParam(
                 name: 'pushImages',
@@ -108,7 +108,7 @@ pipeline {
                         // Build Docker Image
                         def pushFlag = params.pushImages ? '--push' : ''
                         def targetOsArgs = (currentProduct == 'xl-client') ? '--target-os alpine' : targetOsList.collect { "--target-os ${it}" }.join(' ')
-                        sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW} --product ${currentProduct} ${targetOsArgs} ${pushFlag} --registry ${params.registry}"
+                        sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username \${NEXUS_CRED_USR} --download-password \${NEXUS_CRED_PSW} --product ${currentProduct} ${targetOsArgs} ${pushFlag} --registry ${params.registry}"
                     }
                 }
                 script {
