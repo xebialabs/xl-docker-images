@@ -1,75 +1,39 @@
 #!groovy
 @Library('jenkins-pipeline-libs@master')
 import java.lang.Object
-import com.xebialabs.pipeline.utils.Branches
-import groovy.transform.Field
-
-def dte_LatestVersion = ""
-def xlr_LatestVersion = ""
-def xlclient_LatestVersion = ""
-def xld_LatestVersion = ""
-def cc_LatestVersion = ""
 
 pipeline {
     agent none
 
     parameters {
-        booleanParam(
-                name: 'xl_client',
-                defaultValue: false,
-                description: 'Specifies if you want to generate Docker Image for XLClient')
-        string(
-                name: 'xlclient_version',
-                defaultValue: '',
-                description: "Version of XL Client you want to create Docker Images for")
-        booleanParam(
-                name: 'xl_release',
-                defaultValue: false,
-                description: 'Specifies if you want to generate Docker Image for XLRelease')
-        string(
-                name: 'xlr_version',
-                defaultValue: '',
-                description: "Version of XL Release you want to create Docker Images for")
-        booleanParam(
-                name: 'xl_deploy',
-                defaultValue: false,
-                description: 'Specifies if you want to generate Docker Image for XLDeploy')
-        string(
-                name: 'xld_version',
-                defaultValue: '',
-                description: "Version of XL Deploy you want to create Docker Images for")
-        booleanParam(
-                name: 'deploy_task_engine',
-                defaultValue: false,
-                description: 'Specifies if you want to generate Docker Image for Deploy Task Engine')
-        string(
-                name: 'deploy_task_engine_version',
-                defaultValue: '',
-                description: "Version of Deploy Task Engine you want to create Docker Images for")
-        booleanParam(
-                name: 'central_configuration',
-                defaultValue: false,
-                description: 'Specifies if you want to generate Docker Image for Central Configuration')
-        string(
-                name: 'cc_version',
-                defaultValue: '',
-                description: "Version of Central Configuration you want to create Docker Images for")
-        booleanParam(
-                name: 'Linux',
-                defaultValue: true,
-                description: 'Specifies if Target OS is "Debian-slim, CentOS, Amazon" which defines what tags will be generated')
-        booleanParam(
-                name: 'RHEL',
-                defaultValue: false,
-                description: 'Specifies if Target OS is "RHEL" which defines what tags will be generated')
         choice(
-                name: 'ReleaseType',
+                name: 'product',
+                choices: ['all', 'xl-client', 'xl-release', 'xl-deploy', 'deploy-task-engine', 'central-configuration'],
+                description: 'Select the product you want to generate docker image for (not all)')
+        string(
+                name: 'version',
+                defaultValue: '',
+                description: "Version of the product you want to create Docker Images for (leave empty for latest)")
+        string(
+                name: 'branch',
+                defaultValue: 'master',
+                description: "Git branch to build from")
+        choice(
+                name: 'targetOs',
+                choices: ['all', 'ubuntu', 'redhat'],
+                description: "Target OS for docker images")
+        choice(
+                name: 'releaseType',
                 choices: ['nightly', 'final'],
-                description: "Type of Release if it is nightly or final")
+                description: "Type of Release if it is nightly or final. Dockerfiles will be committed only for final releases to xebialabs registry.")
         choice(
-                name: 'Registry',
-                choices: ['xl-docker.xebialabs.com', 'xebialabs', 'xebialabsunsupported', 'xebialabsearlyaccess'],
-                description: "Docker Registry you want to push non RHEL Docker Images to")
+                name: 'registry',
+                choices: ['xebialabsunsupported', 'xebialabs', 'xebialabsearlyaccess', 'xldevdocker'],
+                description: "Docker registry where docker images will be pushed to")
+        booleanParam(
+                name: 'pushImages',
+                defaultValue: false,
+                description: "Whether to push images to registry (Disabled for PR builds)")
     }
 
     options {
@@ -80,271 +44,98 @@ pipeline {
     }
 
     environment {
-        xlrelease_RHEL_registry_url = 'p762626407e78baea07bf3901fb89bdaf24e2db505'
-        xldeploy_RHEL_registry_url = 'p213351287537b1081d854572a246c48cdf8f9d5585'
-        DIST_SERVER_CRED = credentials('distserver')
         NEXUS_CRED = credentials('nexus-ci')
-        XLR_RHEL_TOKEN = credentials('xlr-rhel-token')
-        XLD_RHEL_TOKEN = credentials('xld-rhel-token')
-        SEED_VERSION = '9.6.1-alpha.4'
     }
 
     stages {
 
-        stage('Rendering and Build Docker Images for XLProducts') {
-            parallel {
-                stage('Rendering and Build Docker Images for debian-slim centos ubuntu amazonlinux') {
-                    when {
-                        expression { params.Linux == true }
-                    }
-                    agent {
-                        label 'docker_linux'
-                    }
-                    steps {
-                        // Clean old workspace
-                        step([$class: 'WsCleanup'])
-                        checkout scm
+        stage('Determine Product Version') {
+            agent any
+            steps {
+                script {
+                    def products = productsAsList()
 
-                        // Clean docker images including volumes
-                        sh '''
-                            docker rm -f $(docker ps -a -q) 2>/dev/null || echo "No more containers to remove."
-                            docker rmi $(docker images -q) 2>/dev/null || echo "No more images to remove."
-                            docker system prune -a --volumes -f 2>/dev/null || echo "No more data to prun."
-                        '''
-
-                        // install pipenv and needed dependencies
-                        sh 'pipenv install'
-
-                        // Rendering and Committing changes
-                        script {
-                            if (params.xl_client== true) {
-
-                                xlclient_LatestVersion = getLatestVersion("xl_client")
-
-                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry} --commit"
-                                } else {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xlclient_LatestVersion} --product xl-client --registry ${params.Registry}"
-                                }
-
-                                // Build Docker Image and push it
-                                sh "pipenv run ./applejack.py build --xl-version ${xlclient_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-client  --target-os alpine  --push --registry ${params.Registry}"
-                            }
-
-                            if (params.xl_release == true) {
-
-                                xlr_LatestVersion = getLatestVersion("xl_release")
-
-                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --registry ${params.Registry} --commit"
-                                } else {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --registry ${params.Registry}"
-                                }
-
-                                // Build Docker Image and push it
-                                sh "pipenv run ./applejack.py build --xl-version ${xlr_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-release  --target-os debian-slim --target-os ubuntu --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
-                            }
-
-                            if (params.xl_deploy == true) {
-
-                                xld_LatestVersion = getLatestVersion("xl_deploy")
-
-                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --registry ${params.Registry} --commit"
-                                } else {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --registry ${params.Registry}"
-                                }
-
-                                // Build Docker Image and push it
-                                sh "pipenv run ./applejack.py build --xl-version ${xld_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-deploy  --target-os debian-slim --target-os ubuntu --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
-                            }
-                            if (params.central_configuration == true) {
-
-                                cc_LatestVersion = getLatestVersion("central_configuration")
-
-                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${cc_LatestVersion} --product central-configuration --registry ${params.Registry} --commit"
-                                } else {
-                                    sh "pipenv run ./applejack.py render --xl-version ${cc_LatestVersion} --product central-configuration --registry ${params.Registry}"
-                                }
-
-                                // Build Docker Image and push it
-                                sh "pipenv run ./applejack.py build --xl-version ${cc_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product central-configuration  --target-os debian-slim --target-os ubuntu --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
-                            }
-                            if (params.deploy_task_engine == true) {
-
-                                dte_LatestVersion = getLatestVersion("deploy_task_engine")
-
-                                if ((params.ReleaseType == "final") && (params.Registry == "xebialabs")) {
-                                    sh "pipenv run ./applejack.py render --xl-version ${dte_LatestVersion} --product deploy-task-engine --registry ${params.Registry} --commit"
-                                } else {
-                                    sh "pipenv run ./applejack.py render --xl-version ${dte_LatestVersion} --product deploy-task-engine --registry ${params.Registry}"
-                                }
-
-                                // Build Docker Image and push it
-                                sh "pipenv run ./applejack.py build --xl-version ${dte_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product deploy-task-engine  --target-os debian-slim --target-os ubuntu --target-os centos --target-os amazonlinux --push --registry ${params.Registry}"
-                            }
-                        }
-                        script {
-                            cleanWs()
-                        }
-                    }
-                }
-
-                stage('Rendering and Build Docker Images for rhel') {
-                    when {
-                        expression { params.RHEL == true }
-                    }
-                    agent {
-                        label 'docker_rhel'
-                    }
-                    steps {
-                        // Clean old workspace
-                        step([$class: 'WsCleanup'])
-                        checkout scm
-
-                        // Clean docker images including volumes
-                        sh '''
-                            docker rm -vf $(docker ps -a -q) 2>/dev/null || echo "No more containers to remove."
-                            docker rmi $(docker images -q) 2>/dev/null || echo "No more images to remove."
-                            docker system prune -a -f 2>/dev/null || echo "No more data to prun."
-                        '''
-
-                        // install pipenv and needed dependencies
-                        sh 'pipenv install'
-
-                        // Rendering and Committing changes
-                        script {
-
-                            if (params.xl_release == true) {
-
-                                xlr_LatestVersion = getLatestVersion("xl_release")
-
-                                if (params.ReleaseType == "final") {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release --commit"
-                                } else {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xlr_LatestVersion} --product xl-release"
-                                }
-
-                                // build docker images and push it to internal docker registry
-                                sh "pipenv run ./applejack.py build --xl-version ${xlr_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-release  --target-os rhel --push --registry xl-docker.xebialabs.com"
-
-                                if (params.ReleaseType == "final") {
-                                    // push to redhat resgistry
-                                    def imageid = sh(script: "docker images | grep xl-release | grep ${xlr_LatestVersion} | awk -e '{print \$3}'", returnStdout: true).trim()
-                                    // Login to rhel Docker
-                                    sh "docker login -u unused -e none scan.connect.redhat.com -p ${XLR_RHEL_TOKEN}"
-                                    // tag and push
-                                    sh "docker tag ${imageid} scan.connect.redhat.com/${env.xlrelease_RHEL_registry_url}/xl-release:${xlr_LatestVersion}-rhel"
-                                    sh "docker push scan.connect.redhat.com/${env.xlrelease_RHEL_registry_url}/xl-release:${xlr_LatestVersion}-rhel"
-                                }
-                            }
-
-                            if (params.xl_deploy == true) {
-
-                                xld_LatestVersion = getLatestVersion("xl_deploy")
-
-                                if (params.ReleaseType == "final") {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy --commit"
-                                } else {
-                                    sh "pipenv run ./applejack.py render --xl-version ${xld_LatestVersion} --product xl-deploy"
-                                }
-
-                                // build docker images and push it to internal docker registry
-                                sh "pipenv run ./applejack.py build --xl-version ${xld_LatestVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW}  --product xl-deploy  --target-os rhel --push --registry xl-docker.xebialabs.com"
-
-                                if (params.ReleaseType == "final") {
-                                    // push to redhat resgistry
-                                    def imageid = sh(script: "docker images | grep xl-deploy | grep ${xld_LatestVersion} | awk -e '{print \$3}'", returnStdout: true).trim()
-                                    // Login to rhel Docker
-                                    sh "docker login -u unused -e none scan.connect.redhat.com -p ${XLD_RHEL_TOKEN}"
-                                    // tag and push
-                                    sh "docker tag ${imageid} scan.connect.redhat.com/${env.xldeploy_RHEL_registry_url}/xl-deploy:${xld_LatestVersion}-rhel"
-                                    sh "docker push scan.connect.redhat.com/${env.xldeploy_RHEL_registry_url}/xl-deploy:${xld_LatestVersion}-rhel"
-                                }
-                            }
-                        }
-                        script {
-                            cleanWs()
-                        }
+                    products.each { product ->
+                        def version = getLatestVersion(product)
+                        setEnvProductVersion(product, version)
                     }
                 }
             }
         }
 
-        stage('Test Docker Images for XLProducts') {
+        stage('Rendering and Build Docker Images for Products') {
+            when {
+                expression {
+                    (params.targetOs == 'all' || params.targetOs in ['ubuntu', 'redhat'])
+                }
+            }
+            agent {
+                label 'docker_linux'
+            }
+            steps {
+                // Clean old workspace
+                step([$class: 'WsCleanup'])
+
+                // Checkout from specified branch
+                checkout([$class: 'GitSCM',
+                    branches: [[name: "*/${params.branch}"]],
+                    userRemoteConfigs: scm.userRemoteConfigs
+                ])
+
+                // Clean docker images including volumes
+                sh '''
+                    docker rm -f $(docker ps -a -q) 2>/dev/null || echo "No more containers to remove."
+                    docker rmi $(docker images -q) 2>/dev/null || echo "No more images to remove."
+                    docker system prune -a --volumes -f 2>/dev/null || echo "No more data to prun."
+                '''
+
+                // install pipenv and needed dependencies
+                sh 'pipenv install'
+
+                // Rendering and Committing changes
+                script {
+                    def products = productsAsList()
+
+                    products.each { currentProduct ->
+                        echo "Processing product: ${currentProduct}"
+                        def productVersion = getEnvProductVersion(currentProduct)
+                        def targetOsList = getTargetOsList(params.targetOs, currentProduct)
+
+                        // Add --commit flag only for final releases to xebialabs registry
+                        def commitFlag = ((params.releaseType == "final") && (params.registry == "xebialabs")) ? '--commit' : ''
+                        sh "pipenv run ./applejack.py render --xl-version ${productVersion} --product ${currentProduct} --registry ${params.registry} ${commitFlag}"
+
+                        // Build Docker Image
+                        def pushFlag = params.pushImages ? '--push' : ''
+                        def targetOsArgs = (currentProduct == 'xl-client') ? '--target-os alpine' : targetOsList.collect { "--target-os ${it}" }.join(' ')
+                        sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username ${NEXUS_CRED_USR} --download-password ${NEXUS_CRED_PSW} --product ${currentProduct} ${targetOsArgs} ${pushFlag} --registry ${params.registry}"
+                    }
+                }
+                script {
+                    cleanWs()
+                }
+            }
+        }
+
+        stage('Test Docker Images') {
             parallel {
-                stage('Test Docker Images for debian-slim') {
+                stage('Test Docker Images for Ubuntu') {
                     when {
-                        expression { params.Linux == true }
+                        expression {
+                            (params.targetOs == 'all' || params.targetOs == 'ubuntu')
+                        }
                     }
                     agent {
                         label 'docker_linux'
                     }
                     steps {
                         script {
-                            if (params.xl_release == true) {
-                                // Run Docker
-                                def status = sh(script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name xl-release ${params.Registry}/xl-release:${xlr_LatestVersion}", returnStatus: true)
-                                // Result
-                                if (status != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                                // Test if port is up
-                                sh "sleep 100"
-                                def pstatus = sh(script: "curl localhost:6616", returnStatus: true)
-                                // Result
-                                if (pstatus != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
+                            def products = productsAsList()
 
-                            }
-
-                            if (params.xl_deploy == true) {
-                                // Run Docker
-                                def status = sh(script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy ${params.Registry}/xl-deploy:${xld_LatestVersion}", returnStatus: true)
-                                // Result
-                                if (status != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                                // Test if port is up
-                                sh "sleep 100"
-                                def pstatus = sh(script: "curl localhost:5616", returnStatus: true)
-                                // Result
-                                if (pstatus != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                            }
-                            if (params.central_configuration == true) {
-                                // Run Docker
-                                def status = sh (script: "docker run -d -p 8888:8888 --name central-configuration ${params.Registry}/central-configuration:${cc_LatestVersion}", returnStatus: true)
-                                // Result
-                                if (status != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                                // Test if port is up
-                                sh "sleep 100"
-                                def pstatus = sh (script: "curl localhost:8888", returnStatus: true)
-                                // Result
-                                if (pstatus != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
-                            }
-
-                            if (params.deploy_task_engine == true) {
-                                // Run Docker
-                                def status = sh(script: "docker run -d -p 9180:8180 --name deploy-task-engine ${params.Registry}/deploy-task-engine:${dte_LatestVersion}", returnStatus: true)
-                                // Result
-                                if (status != 0) {
-                                    currentBuild.result = 'FAILURE'
-                                    error('Docker Image Start FAILED')
-                                }
+                            products.each { currentProduct ->
+                                echo "Testing ${currentProduct} on Ubuntu"
+                                def productVersion = getEnvProductVersion(currentProduct)
+                                testDockerImage(currentProduct, productVersion, params.registry, 'ubuntu')
                             }
                         }
                         script {
@@ -353,57 +144,27 @@ pipeline {
                     }
                 }
 
-                stage('Test Docker Images for rhel') {
+                stage('Test Docker Images for Redhat') {
                     when {
-                        expression { params.RHEL == true }
+                        expression {
+                            (params.targetOs == 'all' || params.targetOs == 'redhat')
+                        }
                     }
                     agent {
-                        label 'docker_rhel'
+                        label 'docker_linux'
                     }
                     steps {
-                        withCredentials([string(credentialsId: 'xlr-rhel-token', variable: 'xlr_rhel_token'),
-                                         string(credentialsId: 'xld-rhel-token', variable: 'xld_rhel_token')]) {
-                            script {
-                                if (params.xl_release == true) {
-                                    // Run Docker
-                                    def status = sh(script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 6616:5516 --name xl-release xl-docker.xebialabs.com/xl-release:${xlr_LatestVersion}-rhel", returnStatus: true)
-                                    // Check Result
-                                    if (status != 0) {
-                                        currentBuild.result = 'FAILURE'
-                                        error('Docker Image Start FAILED')
-                                    }
-                                    // Test if port is up
-                                    sh "sleep 100"
-                                    def pstatus = sh(script: "curl localhost:6616", returnStatus: true)
-                                    // Result
-                                    if (pstatus != 0) {
-                                        currentBuild.result = 'FAILURE'
-                                        error('Docker Image Start FAILED')
-                                    }
+                        script {
+                            def products = productsAsList()
 
-                                }
-
-                                if (params.xl_deploy == true) {
-                                    // Run Docker
-                                    def status = sh(script: "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p 5616:4516 --name xl-deploy xl-docker.xebialabs.com/xl-deploy:${xld_LatestVersion}-rhel", returnStatus: true)
-                                    // Check Result
-                                    if (status != 0) {
-                                        currentBuild.result = 'FAILURE'
-                                        error('Docker Image Start FAILED')
-                                    }
-                                    // Test if port is up
-                                    sh "sleep 100"
-                                    def pstatus = sh(script: "curl localhost:5616", returnStatus: true)
-                                    // Result
-                                    if (pstatus != 0) {
-                                        currentBuild.result = 'FAILURE'
-                                        error('Docker Image Start FAILED')
-                                    }
-                                }
+                            products.each { currentProduct ->
+                                echo "Testing ${currentProduct} on RedHat"
+                                def productVersion = getEnvProductVersion(currentProduct)
+                                testDockerImage(currentProduct, productVersion, params.registry, 'redhat')
                             }
-                            script {
-                                cleanWs()
-                            }
+                        }
+                        script {
+                            cleanWs()
                         }
                     }
                 }
@@ -428,94 +189,221 @@ pipeline {
     }
 }
 
+def productsAsList() {
+    return (params.product == 'all') ?
+        ['xl-client', 'xl-release', 'xl-deploy', 'deploy-task-engine', 'central-configuration'] :
+        [params.product]
+}
+
+/**
+ * Sets the product version in environment variables.
+ * Uses naming convention: env.{PRODUCT_NAME}_VERSION
+ *
+ * @param xl_product The product name (e.g., 'xl-deploy', 'xl-release')
+ * @param version The version to store
+ */
+def setEnvProductVersion(xl_product, version) {
+    def envVarName = "${xl_product.replace('-', '_').toUpperCase()}_VERSION"
+    env."${envVarName}" = version
+    echo "Set environment variable ${envVarName} = ${version}"
+}
+
+/**
+ * Retrieves the product version from environment variables.
+ * Uses naming convention: env.{PRODUCT_NAME}_VERSION
+ * 
+ * @param xl_product The product name (e.g., 'xl-deploy', 'xl-release')
+ * @return The version string from environment variables
+ */
+def getEnvProductVersion(xl_product) {
+    def envVarName = "${xl_product.replace('-', '_').toUpperCase()}_VERSION"
+    def version = env."${envVarName}"
+
+    if (!version) {
+        error("No version found for product ${xl_product}. Expected environment variable: ${envVarName}")
+    }
+
+    return version
+}
+
+/**
+ * Determines product version - uses specified version, fetches latest if no version specified,
+ * or fetches latest version corresponding to PR builds.
+ *
+ * @return The resolved product version string
+ */
 def getLatestVersion(xl_product) {
     script {
-
-        if (xl_product == 'xl_client') {
-            if (params.xlclient_version == '') {
-
-                def xlclient_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlclient/xl-client/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
-
-                writeFile(file: "${env.WORKSPACE}/xl-client-latest", text: "${xlclient_Version}")
-                xlclient_LatestVersion = readFile "${env.WORKSPACE}/xl-client-latest"
-
-            } else {
-
-                writeFile(file: "${env.WORKSPACE}/xl-client-latest", text: "${params.xlclient_version}")
-                xlclient_LatestVersion = readFile "${env.WORKSPACE}/xl-client-latest"
-
-            }
-            return xlclient_LatestVersion
-
+        // Use provided version first incase of pipeline job with build parameters
+        if (params.version != '') {
+            echo "Using explicitly provided version: ${params.version}"
+            return params.version
         }
 
-        if (xl_product == 'xl_release') {
-            if (params.xlr_version == '') {
+        // Determine target branch (PR target branch or build branch parameter)
+        def targetBranch = env.CHANGE_TARGET ?: env.ghprbTargetBranch ?: params.branch
 
-                def xlr_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/xlrelease/xl-release/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
+        def groupId = getGroupId(xl_product)
+        def artifactId = getArtifactId(xl_product)
+        def versionPattern = getVersionForNexusSearch(targetBranch)
 
-                writeFile(file: "${env.WORKSPACE}/xl-release-latest", text: "${xlr_Version}")
-                xlr_LatestVersion = readFile "${env.WORKSPACE}/xl-release-latest"
+        def productVersion = getLatestVersionFromNexus(groupId, artifactId, versionPattern)
 
-            } else {
-
-                writeFile(file: "${env.WORKSPACE}/xl-release-latest", text: "${params.xlr_version}")
-                xlr_LatestVersion = readFile "${env.WORKSPACE}/xl-release-latest"
-
-            }
-            return xlr_LatestVersion
-
+        if (!productVersion) {
+            error("No version found for ${xl_product} corresponding to branch ${targetBranch}. Cannot proceed with build.")
         }
 
-        if (xl_product == 'xl_deploy') {
-            if (params.xld_version == '') {
+        echo "Selected version ${productVersion} for ${xl_product} targeting branch ${targetBranch}"
+        return productVersion
+    }
+}
 
-                def xld_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
+/**
+ * Determines the specific major.minor version to form search url.
+ *
+ * Returns branch name for maintenance branch (e.g. "25.3").
+ * Returns null for master/other branches to get latest available version.
+ */
+def getVersionForNexusSearch(targetBranch) {
+    return (targetBranch ==~ /^\d+\.\d+$/) ? targetBranch : null
+}
 
-                writeFile(file: "${env.WORKSPACE}/xl-deploy-latest", text: "${xld_Version}")
-                xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
+/**
+* Fetches the latest version from Nexus for given groupId, artifactId, and optional version pattern.
+*/
+def getLatestVersionFromNexus(groupId, artifactId, versionPattern) {
+    def searchUrl = "https://nexus.xebialabs.com/nexus/service/local/lucene/search?g=${groupId}&a=${artifactId}"
 
-            } else {
+    if (versionPattern) {
+        searchUrl += "&v=${versionPattern}*"
+        echo "Searching for versions matching: ${versionPattern}.*"
+    }
 
-                writeFile(file: "${env.WORKSPACE}/xl-deploy-latest", text: "${params.xld_version}")
-                xld_LatestVersion = readFile "${env.WORKSPACE}/xl-deploy-latest"
+    def versionCmd = """
+        curl -su \${NEXUS_CRED} '${searchUrl}' 2>/dev/null | \\
+        grep -o '<version>[^<]*</version>' | \\
+        sed 's/<version>\\(.*\\)<\\/version>/\\1/' | \\
+        sort -V | \\
+        tail -1
+    """
 
-            }
-            return xld_LatestVersion
+    def version = sh(script: versionCmd, returnStdout: true).trim()
+
+    return version
+}
+
+def getGroupId(xl_product) {
+    switch(xl_product) {
+        case 'xl-client':
+            return 'com.xebialabs.xlclient'
+        case 'xl-release':
+            return 'com.xebialabs.xlrelease'
+        case 'xl-deploy':
+            return 'com.xebialabs.deployit'
+        case 'central-configuration':
+            return 'ai.digital.config'
+        case 'deploy-task-engine':
+            return 'com.xebialabs.deployit'
+        default:
+            error("Unknown product: ${xl_product}")
+    }
+}
+
+def getArtifactId(xl_product) {
+    switch(xl_product) {
+        case 'xl-client':
+            return 'xl-client'
+        case 'xl-release':
+            return 'xl-release'
+        case 'xl-deploy':
+            return 'xl-deploy'
+        case 'central-configuration':
+            return 'central-configuration-server'
+        case 'deploy-task-engine':
+            return 'xl-deploy'  // Uses same artifact as xl-deploy
+        default:
+            error("Unknown product: ${xl_product}")
+    }
+}
+
+def getTargetOsList(target_os, product) {
+    def osList = []
+
+    if (target_os == 'all') {
+        if (product == 'xl-client') {
+            osList = ['alpine']
+        } else {
+            osList = ['ubuntu', 'redhat']
+        }
+    } else if (target_os in ['ubuntu', 'redhat']) {
+        osList = [target_os]
+    }
+
+    return osList
+}
+
+def testDockerImage(product, productVersion, registry, targetOs) {
+    // Get product-specific test configuration
+    def config = getProductTestConfig(product, productVersion, registry, targetOs)
+
+    if (config.dockerCmd) {
+        // Run Docker container
+        def status = sh(script: config.dockerCmd, returnStatus: true)
+
+        // Check if container started successfully
+        if (status != 0) {
+            currentBuild.result = 'FAILURE'
+            error("Docker container failed to start: ${registry}/${product}:${productVersion}-${targetOs}")
         }
 
-        if (xl_product == 'central_configuration') {
-            if (params.cc_version == '') {
+        // Wait for service to be ready and test if accessible (if test URL provided)
+        if (config.testUrl) {
+            sh "sleep 100"
+            def pstatus = sh(script: "curl -s ${config.testUrl} > /dev/null 2>&1", returnStatus: true)
 
-                def cc_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/ai/digital/config/central-configuration-server/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
-
-                writeFile (file: "${env.WORKSPACE}/central-configuration-latest", text: "${cc_Version}")
-                cc_LatestVersion = readFile "${env.WORKSPACE}/central-configuration-latest"
-
-            } else {
-
-                writeFile (file: "${env.WORKSPACE}/central-configuration-latest", text: "${params.cc_version}")
-                cc_LatestVersion = readFile "${env.WORKSPACE}/central-configuration-latest"
-
+            // Check if service is accessible
+            if (pstatus != 0) {
+                currentBuild.result = 'FAILURE'
+                error("Service is not accessible in container: ${registry}/${product}:${productVersion}-${targetOs}")
             }
-            return cc_LatestVersion
-        }
-
-        if (xl_product == 'deploy_task_engine') {
-            if (params.deploy_task_engine_version == '') {
-
-                def dte_Version = sh(script: 'curl -su ${NEXUS_CRED} https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/com/xebialabs/deployit/xl-deploy/maven-metadata.xml | grep "<release>" | cut -d ">" -f 2 | cut -d "<" -f 1 | sort -n | tail -1', returnStdout: true).trim()
-
-                writeFile(file: "${env.WORKSPACE}/deploy-task-engine-latest", text: "${dte_Version}")
-                dte_LatestVersion = readFile "${env.WORKSPACE}/deploy-task-engine-latest"
-
-            } else {
-
-                writeFile(file: "${env.WORKSPACE}/deploy-task-engine-latest", text: "${params.deploy_task_engine_version}")
-                dte_LatestVersion = readFile "${env.WORKSPACE}/deploy-task-engine-latest"
-
-            }
-            return dte_LatestVersion
         }
     }
+}
+
+/**
+ * Provides the configuration to test for given product viz. docker command and test URL
+ * @return Map containing 'dockerCmd' and 'testUrl' keys
+ */
+def getProductTestConfig(product, productVersion, registry, targetOs) {
+    def config = [:]
+    def imageSuffix = (targetOs == 'redhat') ? '-redhat' : ''
+    def portOffset = (targetOs == 'redhat') ? 1 : 0  // Add 1 to port for redhat to avoid conflicts
+
+    switch(product) {
+        case 'xl-release':
+            def hostPort = 6616 + portOffset
+            config.dockerCmd = "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p ${hostPort}:5516 --name xl-release-${targetOs} ${registry}/xl-release:${productVersion}${imageSuffix}"
+            config.testUrl = "localhost:${hostPort}"
+            break
+        case 'xl-deploy':
+            def hostPort = 5616 + portOffset
+            config.dockerCmd = "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p ${hostPort}:4516 --name xl-deploy-${targetOs} ${registry}/xl-deploy:${productVersion}${imageSuffix}"
+            config.testUrl = "localhost:${hostPort}"
+            break
+        case 'central-configuration':
+            def hostPort = 8888 + portOffset
+            config.dockerCmd = "docker run -d -p ${hostPort}:8888 --name central-configuration-${targetOs} ${registry}/central-configuration:${productVersion}${imageSuffix}"
+            config.testUrl = "localhost:${hostPort}"
+            break
+        case 'deploy-task-engine':
+            def hostPort = 9180 + portOffset
+            config.dockerCmd = "docker run -d -p ${hostPort}:8180 --name deploy-task-engine-${targetOs} ${registry}/deploy-task-engine:${productVersion}${imageSuffix}"
+            config.testUrl = null // No URL test for this product
+            break
+        default:
+            config.dockerCmd = null
+            config.testUrl = null
+    }
+
+    return config
 }
