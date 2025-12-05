@@ -358,11 +358,29 @@ def testDockerImage(product, productVersion, registry, targetOs) {
 
         // Wait for service to be ready and test if accessible (if test URL provided)
         if (config.testUrl) {
-            sh "sleep 100"
-            def pstatus = sh(script: "curl -s ${config.testUrl} > /dev/null 2>&1", returnStatus: true)
+            def initialWait = 30 // seconds
+            sh "sleep ${initialWait}"
+
+            def retryCount = 7
+            def retryInterval = 10 // seconds
+            def totalWaitTime = initialWait
+
+            while (retryCount > 0) {
+                def success = sh(script: "curl -s ${config.testUrl} > /dev/null 2>&1", returnStatus: true) == 0
+
+                // Check if service is accessible
+                if (success) {
+                    echo "Service is accessible after ${totalWaitTime} seconds"
+                    break
+                } else {
+                    retryCount--
+                    sh "sleep ${retryInterval}"
+                    totalWaitTime += retryInterval
+                }
+            }
 
             // Check if service is accessible
-            if (pstatus != 0) {
+            if (retryCount == 0) {
                 currentBuild.result = 'FAILURE'
                 error("Service is not accessible in container: ${registry}/${product}:${productVersion}-${targetOs}")
             }
