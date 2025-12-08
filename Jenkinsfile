@@ -34,6 +34,10 @@ pipeline {
                 name: 'pushImages',
                 defaultValue: false,
                 description: "Whether to push images to registry (Disabled for PR builds)")
+        booleanParam(
+                name: 'skipTests',
+                defaultValue: false,
+                description: "Skip docker image testing stage")
     }
 
     options {
@@ -118,6 +122,11 @@ pipeline {
         }
 
         stage('Test Docker Images') {
+            when {
+                expression {
+                    !params.skipTests
+                }
+            }
             parallel {
                 stage('Test Docker Images for Ubuntu') {
                     when {
