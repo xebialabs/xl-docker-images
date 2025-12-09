@@ -33,6 +33,7 @@
     <logger name="liquibase" level="warn" />
     <logger name="liquibase.changelog.visitor.UpdateVisitor" level="debug" />
     <logger name="liquibase.changelog.ChangeSet" level="info" />
+    <logger name="org.jboss.windup.decompiler" level="error" />
 
     <!--  Audit logging -->
     <appender name="AUDIT" class="ch.qos.logback.core.ConsoleAppender">

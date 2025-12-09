@@ -38,6 +38,7 @@
     <logger name="liquibase" level="warn"/>
     <logger name="org.springframework.web.socket.adapter.jetty.JettyWebSocketHandlerAdapter" level="off"/>
     <logger name="org.apache.pekko.io.dns.internal.DnsClient" level="error" />
+    <logger name="org.jboss.windup.decompiler" level="error" />
 
     <!--  Audit logging -->
 
