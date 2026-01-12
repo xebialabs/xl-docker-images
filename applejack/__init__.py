@@ -57,13 +57,19 @@ def major_minor(image_version):
     """Split a version into its 2 root components (major, minor)."""
     return '.'.join(image_version.split('.')[0:2])
 
+def major_minor_patch(image_version):
+    """Split a version into its 3 root components (major, minor, patch)."""
+    return '.'.join(image_version.split('-')[0].split('.')[:3])
 
 def all_tags(target_os, image_version, default_os=None):
     """Create a generator that yields all the version tags for a specific target_os and image_version."""
     major_version = major_minor(image_version)
+    major_minor_version = major_minor_patch(image_version)
     if target_os:
         yield ("%s-%s" % (image_version, target_os), False)
         yield ("%s-%s" % (major_version, target_os), True)
+        yield ("%s-%s" % (major_minor_version, target_os), True)
     if default_os == target_os or not target_os:
         yield (image_version, False)
         yield (major_version, True)
+        yield (major_minor_version, True)
