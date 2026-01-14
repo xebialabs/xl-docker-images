@@ -102,3 +102,5 @@ context:
       value: "true"
     - key: LOGBACK_SCAN_PERIOD
       value: "30seconds"
+    - key: MAX_RAM_PERCENTAGE
+      value: "50"

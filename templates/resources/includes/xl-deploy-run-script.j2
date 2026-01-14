@@ -55,6 +55,16 @@ for f in *; do
     cp -R $f ${APP_HOME}/conf/
   fi
 done
+
+if [ -f ${APP_HOME}/conf/{{ wrapper_conf }} ]; then
+    echo "... Not copying {{ wrapper_conf }} because it already exists in the conf directory"
+else
+    echo "... Copying {{ wrapper_conf }} to the conf directory"
+    sed -e "s#\${HOSTNAME}#${HOSTNAME}#g" \
+        -e "s#\${MAX_RAM_PERCENTAGE}#${MAX_RAM_PERCENTAGE}#g" \
+        ${APP_HOME}/default-conf/{{ wrapper_conf }}.template > ${APP_HOME}/conf/{{ wrapper_conf }}
+fi
+
 cd ${APP_HOME}
 echo "Done copying default configurations"
 
