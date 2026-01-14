@@ -46,7 +46,7 @@ match($0, /^(wrapper.java.additional).([0-9]+)=(.*)$/, a) {
 # Add dynamic JVM memory limits based on Docker container limits
 END {
   printf("wrapper.java.additional.%d=-XX:+UseContainerSupport\n", additionals + 1);
-  printf("wrapper.java.additional.%d=-XX:MaxRAMPercentage=50\n", additionals + 2);
+  printf("wrapper.java.additional.%d=-XX:MaxRAMPercentage=${MAX_RAM_PERCENTAGE}\n", additionals + 2);
 }
 
 # Enable JMX exporter for Prometheus
