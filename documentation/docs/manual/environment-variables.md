@@ -159,6 +159,11 @@ sidebar_position: 1
 - possible values: any integer
 - default value: 30
 
+##### `MAX_RAM_PERCENTAGE`
+- Uses a percentage of the container memory limit to set the maximum heap size for the JVM. It sets `-XX:MaxRAMPercentage=` value for the JVM.
+- possible values: any positive integer
+- default value: 50
+
 ### Specific for XLRelease docker images:-
 
 ##### `APP_PORT`
