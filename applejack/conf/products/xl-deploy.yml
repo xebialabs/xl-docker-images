@@ -124,3 +124,5 @@ context:
     value: "30seconds"
   - key: NETWORK_ADDRESS_CACHE_TTL
     value: "30"
+  - key: MAX_RAM_PERCENTAGE
+    value: "50"
