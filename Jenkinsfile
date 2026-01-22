@@ -356,6 +356,10 @@ def testDockerImage(product, productVersion, registry, targetOs) {
     def config = getProductTestConfig(product, productVersion, registry, targetOs)
 
     if (config.dockerCmd) {
+        // Remove any existing container with the same name to prevent conflicts
+        def containerName = "${product}-${targetOs}"
+        sh "docker rm -f ${containerName} 2>/dev/null || true"
+
         // Run Docker container
         def status = sh(script: config.dockerCmd, returnStatus: true)
 
@@ -409,22 +413,22 @@ def getProductTestConfig(product, productVersion, registry, targetOs) {
     switch(product) {
         case 'xl-release':
             def hostPort = 6616 + portOffset
-            config.dockerCmd = "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p ${hostPort}:5516 --name xl-release-${targetOs} ${registry}/xl-release:${productVersion}${imageSuffix}"
+            config.dockerCmd = "docker run -d --rm -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p ${hostPort}:5516 --name xl-release-${targetOs} ${registry}/xl-release:${productVersion}${imageSuffix}"
             config.testUrl = "localhost:${hostPort}"
             break
         case 'xl-deploy':
             def hostPort = 5616 + portOffset
-            config.dockerCmd = "docker run -d -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p ${hostPort}:4516 --name xl-deploy-${targetOs} ${registry}/xl-deploy:${productVersion}${imageSuffix}"
+            config.dockerCmd = "docker run -d --rm -e ADMIN_PASSWORD=admin -e ACCEPT_EULA=Y -p ${hostPort}:4516 --name xl-deploy-${targetOs} ${registry}/xl-deploy:${productVersion}${imageSuffix}"
             config.testUrl = "localhost:${hostPort}"
             break
         case 'central-configuration':
             def hostPort = 8888 + portOffset
-            config.dockerCmd = "docker run -d -p ${hostPort}:8888 --name central-configuration-${targetOs} ${registry}/central-configuration:${productVersion}${imageSuffix}"
+            config.dockerCmd = "docker run -d --rm -p ${hostPort}:8888 --name central-configuration-${targetOs} ${registry}/central-configuration:${productVersion}${imageSuffix}"
             config.testUrl = "localhost:${hostPort}"
             break
         case 'deploy-task-engine':
             def hostPort = 9180 + portOffset
-            config.dockerCmd = "docker run -d -p ${hostPort}:8180 --name deploy-task-engine-${targetOs} ${registry}/deploy-task-engine:${productVersion}${imageSuffix}"
+            config.dockerCmd = "docker run -d --rm -p ${hostPort}:8180 --name deploy-task-engine-${targetOs} ${registry}/deploy-task-engine:${productVersion}${imageSuffix}"
             config.testUrl = null // No URL test for this product
             break
         default:
