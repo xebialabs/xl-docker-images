@@ -38,6 +38,10 @@ pipeline {
                 name: 'skipTests',
                 defaultValue: false,
                 description: "Skip docker image testing stage")
+        string(
+                name: 'platforms',
+                defaultValue: 'linux/amd64',
+                description: "Comma-separated target platforms for multi-arch builds (e.g., linux/amd64,linux/arm64)")
     }
 
     options {
@@ -93,6 +97,16 @@ pipeline {
                     docker system prune -a --volumes -f 2>/dev/null || echo "No more data to prun."
                 '''
 
+                // Set up QEMU for cross-platform builds
+                sh 'docker run --privileged --rm tonistiigi/binfmt --install all'
+
+                // Set up docker buildx builder
+                sh '''
+                    docker buildx create --name multiplatform-builder --use --bootstrap 2>/dev/null || \
+                    docker buildx use multiplatform-builder
+                    docker buildx inspect --bootstrap
+                '''
+
                 // install pipenv and needed dependencies
                 sh 'pipenv install'
 
@@ -109,10 +123,11 @@ pipeline {
                         def commitFlag = ((params.releaseType == "final") && (params.registry == "xebialabs")) ? '--commit' : ''
                         sh "pipenv run ./applejack.py render --xl-version ${productVersion} --product ${currentProduct} --registry ${params.registry} ${commitFlag}"
 
-                        // Build Docker Image
+                        // Build Docker Image with multi-platform support
                         def pushFlag = params.pushImages ? '--push' : ''
                         def targetOsArgs = (currentProduct == 'xl-client') ? '--target-os alpine' : targetOsList.collect { "--target-os ${it}" }.join(' ')
-                        sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username \${NEXUS_CRED_USR} --download-password \${NEXUS_CRED_PSW} --product ${currentProduct} ${targetOsArgs} ${pushFlag} --registry ${params.registry}"
+                        def platformFlags = params.platforms.split(',').collect { "--platform ${it.trim()}" }.join(' ')
+                        sh "pipenv run ./applejack.py build --xl-version ${productVersion} --download-source nexus --download-username \${NEXUS_CRED_USR} --download-password \${NEXUS_CRED_PSW} --product ${currentProduct} ${targetOsArgs} ${pushFlag} ${platformFlags} --registry ${params.registry}"
                     }
                 }
                 script {

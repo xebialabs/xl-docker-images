@@ -33,10 +33,20 @@ if [[ -z $DOCKER_HUB_REPOSITORY ]]; then
   DOCKER_HUB_REPOSITORY=xebialabsunsupported
 fi
 
+# Multi-platform support: default to linux/amd64 for backward compatibility
+if [[ -z $PLATFORMS ]]; then
+  PLATFORMS="linux/amd64"
+fi
+
+# Convert space-separated platforms to --platform flags
+PLATFORM_FLAGS=""
+for p in $PLATFORMS; do
+  PLATFORM_FLAGS="$PLATFORM_FLAGS --platform $p"
+done
+
 pipenv update --python=$PYTHON3
 
 pipenv run --python=$PYTHON3 ./applejack.py render --xl-version $RELEASE_EXPLICIT --product $TARGET_PRODUCT --registry $DOCKER_HUB_REPOSITORY \
            && pipenv run --python=$PYTHON3 ./applejack.py build --xl-version $RELEASE_EXPLICIT --product $TARGET_PRODUCT --registry $DOCKER_HUB_REPOSITORY --target-os $TARGET_OS \
            --download-username $NEXUS_USERNAME --download-password $NEXUS_PASSWORD --download-source=nexus \
-            && docker push $DOCKER_HUB_REPOSITORY/$TARGET_PRODUCT:$RELEASE_EXPLICIT-$TARGET_OS \
-            && docker push $DOCKER_HUB_REPOSITORY/$TARGET_PRODUCT:$RELEASE_EXPLICIT-$TARGET_OS-slim
+           $PLATFORM_FLAGS --push

@@ -1,6 +1,4 @@
-import json
-import docker
-import re
+import subprocess
 import sys
 from pathlib import Path
 from . import image_version, all_tags, target_path, target_systems
@@ -23,75 +21,75 @@ class ImageBuilder(object):
             raise Exception("Cannot push a non-release(candidate) to the official repository, please specify 'xebialabsunsupported'")
         pass
 
-    @staticmethod
-    def convert_build_logs(generator):
-        for line in generator:
-            multilines = [l for l in line.split(b'\n') if l.strip()]
-            for l in multilines:
-                j = json.loads(l)
-                if "stream" in j:
-                    yield j['stream']
-                elif "error" in j:
-                    raise Exception(j["error"])
+    def build_docker_image(self, target_os, is_slim, platforms=None):
+        """Build a Docker image using docker buildx for multi-platform support.
+        
+        Args:
+            target_os: Target operating system (e.g., 'ubuntu', 'redhat', 'alpine')
+            is_slim: Whether to build the slim variant
+            platforms: List of target platforms (e.g., ['linux/amd64', 'linux/arm64'])
+        
+        Returns:
+            None (buildx doesn't return an image ID when building multi-platform)
+        """
+        platforms = platforms or ['linux/amd64']
 
-    def build_docker_image(self, target_os, is_slim):
-        client = docker.from_env()
+        build_path = str(target_path(self.product_conf['name'], self.image_version))
+
         if is_slim:
-            docker_file = str(Path(target_os) / "Dockerfile.slim").replace('\\', '/')
+            docker_file = str(Path(build_path) / target_os / "Dockerfile.slim").replace('\\', '/')
         else:
-            docker_file = str(Path(target_os) / "Dockerfile").replace('\\', '/')
-
-        generator = client.api.build(
-            nocache=not self.use_cache,
-            pull=not self.use_cache,
-            path=str(target_path(self.product_conf['name'], self.image_version)),
-            dockerfile=docker_file,
-            rm=True,
-        )
-        for line in self.convert_build_logs(generator):
-            match = re.search(
-                r'(^Successfully built |sha256:)([0-9a-f]+)$',
-                line
-            )
-            if match:
-                image_id = match.group(2)
-            sys.stdout.write(line)
-
-        print("Built image %s for %s" % (image_id, target_os))
-        image = client.images.get(image_id)
+            docker_file = str(Path(build_path) / target_os / "Dockerfile").replace('\\', '/')
         repo = "%s/%s" % (self.registry, self.repository)
+
+        # Build tag arguments
+        tag_args = []
         for tag, _ in all_tags(target_os, self.image_version, self.product_conf['dockerfiles']['default']):
             if is_slim:
                 tag += "-slim"
-            print("Tag image with %s:%s" % (repo, tag))
-            image.tag(repo, tag)
-        image.reload()
-        print("Image %s has been tagged with %s" % (image_id, ', '.join(image.tags)))
-        return image_id
+            tag_args.extend(['-t', '%s:%s' % (repo, tag)])
 
-    @staticmethod
-    def convert_push_logs(generator):
-        for line in generator:
-            multilines = [l for l in line.split(b'\n') if l.strip()]
-            for l in multilines:
-                j = json.loads(l)
-                if 'status' in j and 'progress' not in j:
-                    if 'id' in j:
-                        yield "%s %s" % (j['status'], j['id'])
-                    else:
-                        yield j['status']
-                if 'error' in j:
-                    raise Exception(j['error'])
+        platform_str = ','.join(platforms)
+        is_multi_platform = len(platforms) > 1
 
-    def push_image(self, image_id, target_os, is_slim):
-        print("Pushing image with id %s to %s" % (image_id, self.registry))
-        client = docker.from_env()
-        image = client.images.get(image_id)
-        print("image = %s" % image)
-        for tag, _ in all_tags(target_os, self.image_version, self.product_conf['dockerfiles']['default']):
-            repo = "%s/%s" % (self.registry, self.repository)
-            if is_slim:
-                tag += "-slim"
-            for line in self.convert_push_logs(client.images.push(repo, tag=tag, stream=True)):
-                print(line)
-            print("Image %s with tag %s has been pushed to %s" % (image_id, tag, repo))
+        cmd = [
+            'docker', 'buildx', 'build',
+            '--platform', platform_str,
+            '-f', docker_file,
+            *tag_args,
+        ]
+
+        # For single-platform builds, explicitly pass TARGETARCH as a build-arg
+        # to ensure it's set correctly even if buildx doesn't auto-inject it
+        if not is_multi_platform:
+            arch = platforms[0].split('/')[-1]
+            cmd.extend(['--build-arg', 'TARGETARCH=%s' % arch])
+
+        if self.push:
+            # Multi-platform images must be pushed directly (can't load to local daemon)
+            cmd.append('--push')
+        elif not is_multi_platform:
+            # Single platform can be loaded into local Docker daemon
+            cmd.append('--load')
+        else:
+            # Multi-platform without push: build only (useful for CI validation)
+            print("WARNING: Multi-platform build without --push. Images will not be loaded into local daemon.")
+
+        if not self.use_cache:
+            cmd.append('--no-cache')
+            cmd.append('--pull')
+
+        cmd.append(build_path)
+
+        print("Running: %s" % ' '.join(cmd))
+        result = subprocess.run(cmd, check=False)
+
+        if result.returncode != 0:
+            raise Exception("Docker buildx build failed with exit code %d for %s %s" % (
+                result.returncode, target_os, '(slim)' if is_slim else ''))
+
+        slim_label = " (slim)" if is_slim else ""
+        print("Built image for %s%s [platforms: %s]" % (target_os, slim_label, platform_str))
+        print("Tagged with: %s" % ', '.join(t for t in tag_args if not t.startswith('-')))
+
+        return None

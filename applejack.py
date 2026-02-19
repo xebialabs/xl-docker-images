@@ -2,7 +2,7 @@
 from applejack.downloader import XLDevOpsPlatformDownloader
 from applejack.renderer import Renderer
 from applejack.builder import ImageBuilder
-from applejack import all_products, all_product_configs, load_product_config, target_systems
+from applejack import all_products, all_product_configs, load_product_config, target_systems, SUPPORTED_PLATFORMS, arch_from_platform
 import click
 
 
@@ -23,8 +23,10 @@ class ProductConfigType(click.Choice):
 _shared_opts = [
     click.option('--product', multiple=True, help="The product to build the files / images for.", type=ProductConfigType(all_products())),
     click.option('--xl-version', help="Product version, e.g. 8.1.0", required=True),
-    click.option('--registry', help="Docker registry to use, either to pull from when used with render or to push to when used with build", default='xebialabs'),
-    click.option('--suffix', help="The (optional) suffix attached to the Docker and Git commit tags. Only used when a new version of the Docker images is released for the same product version"),
+    click.option('--registry', help="Docker registry to use, either to pull from when used with render or to push to when used with build",
+                 default='xebialabs'),
+    click.option('--suffix',
+                 help="The (optional) suffix attached to the Docker and Git commit tags. Only used when a new version of the Docker images is released for the same product version"),
 ]
 
 
@@ -61,24 +63,27 @@ def render(**kwargs):
 @click.option('--download-username', help="Username to use to download product ZIP.")
 @click.option('--download-password', help="Password to use to download product ZIP.")
 @click.option('--target-os', multiple=True, help="The target container OS to build and/or push.")
+@click.option('--platform', multiple=True,
+              help="Target platform(s) for docker buildx (e.g., linux/amd64, linux/arm64). Can be specified multiple times. Default: linux/amd64",
+              type=click.Choice(SUPPORTED_PLATFORMS),
+              default=['linux/amd64'])
 @click.option('--use-cache', is_flag=True, help="Don't download product ZIP if already downloaded, don't pull the base image and use the Docker build cache")
 @click.option('--m2location', help="The location of the .m2 repository for localm2 download sources. Defaults to ~/.m2/repository")
 @click.option('--zipfile', help="The actual zip file to use when --download-source=zip")
 def build(**kwargs):
+    platforms = list(kwargs['platform'])
+    architectures = [arch_from_platform(p) for p in platforms]
     for product_conf in (kwargs['product'] or all_product_configs()):
         downloader = XLDevOpsPlatformDownloader(kwargs, product_conf)
-        if 'repositories' in product_conf.keys() and (not kwargs['use_cache'] or not downloader.is_cached()):
+        if 'repositories' in product_conf.keys() and (not kwargs['use_cache'] or not downloader.is_cached(architectures)):
             print("Going to download product ZIP for %s version %s" %
                   (product_conf['name'], kwargs['xl_version']))
-            downloader.download_product()
+            downloader.download_product(architectures)
         builder = ImageBuilder(kwargs, product_conf)
         for target_os in (kwargs['target_os'] or target_systems(product_conf)):
-            print("Building Docker image for %s %s" % (product_conf['name'], target_os))
-            image_id = builder.build_docker_image(target_os, is_slim=False)
-            slim_image_id = builder.build_docker_image(target_os, is_slim=True)
-            if kwargs['push']:
-                builder.push_image(image_id, target_os, is_slim=False)
-                builder.push_image(slim_image_id, target_os, is_slim=True)
+            print("Building Docker image for %s %s (platforms: %s)" % (product_conf['name'], target_os, ', '.join(platforms)))
+            builder.build_docker_image(target_os, is_slim=False, platforms=platforms)
+            builder.build_docker_image(target_os, is_slim=True, platforms=platforms)
 
 
 if __name__ == '__main__':

@@ -2,6 +2,15 @@
 from pathlib import Path
 import yaml
 
+# Multi-platform support
+SUPPORTED_PLATFORMS = ['linux/amd64', 'linux/arm64']
+DEFAULT_PLATFORMS = ['linux/amd64']
+
+
+def arch_from_platform(platform):
+    """Extract arch string from docker platform notation, e.g. 'linux/arm64' -> 'arm64'."""
+    return platform.split('/')[-1]
+
 
 def _copy(self, target):
     import shutil
