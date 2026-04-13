@@ -17,11 +17,9 @@ RUN mkdir -p ${APP_HOME}/driver/jdbc && \
 
 {%- if is_slim %}
 # Remove bundled drivers if slim
-RUN rm ${APP_HOME}/lib/derby*.jar && \
+RUN rm -f ${APP_HOME}/lib/derby*.jar && \
     rm -fr ${APP_HOME}/derbyns/ && \
-    {% if 'xl-release' in product -%}
-    rm ${APP_HOME}/lib/h2*.jar && \
-    {% endif -%}
+    rm -f ${APP_HOME}/lib/h2*.jar && \
     true
 {%- endif %}
 
