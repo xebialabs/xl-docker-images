@@ -12,7 +12,11 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
     {% include 'install.j2' %}
 {% endif %}
 
-FROM eclipse-temurin:25-jdk-bookworm
+FROM openjdk:21-jdk-slim-bullseye
+# We need to update this with jdk17
+# FROM openjdk:11-jdk-slim-buster
+# FROM docker.usw2mgt.dev.digitalai.cloud/dai-java:11-jdk
+# USER 0
 
 {% include 'metadata.j2' %}
 
