@@ -94,6 +94,7 @@ pipeline {
                 '''
 
                 // install pipenv and needed dependencies
+                sh 'pipenv --rm || true'
                 sh 'pipenv install'
 
                 // Rendering and Committing changes
@@ -292,18 +293,13 @@ def getLatestVersionFromNexus(groupId, artifactId, versionPattern) {
             exit 0
         fi
 
-        if [ -n '${normalizedVersionPattern}' ]; then
-            echo "\${metadata}" | \\
-            grep -o '<version>[^<]*</version>' | \\
-            sed 's/<version>\\(.*\\)<\\/version>/\\1/' | \\
-            grep '^${normalizedVersionPattern}\\.' | \\
-            sort -V | \\
-            tail -1
-        else
-            echo "\${metadata}" | \\
-            sed -n 's:.*<latest>\\([^<]*\\)</latest>.*:\\1:p' | \\
-            head -1
-        fi
+        version_filter='${normalizedVersionPattern:-.}'
+        echo "\${metadata}" | \\
+        grep -o '<version>[^<]*</version>' | \\
+        sed 's/<version>\\(.*\\)<\\/version>/\\1/' | \\
+        grep "^\${version_filter}" | \\
+        sort -V | \\
+        tail -1
     """
 
     def version = sh(script: versionCmd, returnStdout: true).trim()
