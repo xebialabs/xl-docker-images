@@ -281,19 +281,29 @@ def getVersionForNexusSearch(targetBranch) {
 * Fetches the latest version from Nexus for given groupId, artifactId, and optional version pattern.
 */
 def getLatestVersionFromNexus(groupId, artifactId, versionPattern) {
-    def searchUrl = "https://nexus.xebialabs.com/nexus/service/local/lucene/search?g=${groupId}&a=${artifactId}"
-
-    if (versionPattern) {
-        searchUrl += "&v=${versionPattern}*"
-        echo "Searching for versions matching: ${versionPattern}.*"
-    }
+    def groupPath = groupId.replace('.', '/')
+    def normalizedVersionPattern = versionPattern ?: ''
+    def metadataUrl = "https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/${groupPath}/${artifactId}/maven-metadata.xml"
 
     def versionCmd = """
-        curl -su \${NEXUS_CRED} '${searchUrl}' 2>/dev/null | \\
-        grep -o '<version>[^<]*</version>' | \\
-        sed 's/<version>\\(.*\\)<\\/version>/\\1/' | \\
-        sort -V | \\
-        tail -1
+        metadata=\$(curl -su \${NEXUS_CRED} '${metadataUrl}' 2>/dev/null)
+
+        if [ -z "\${metadata}" ]; then
+            exit 0
+        fi
+
+        if [ -n '${normalizedVersionPattern}' ]; then
+            echo "\${metadata}" | \\
+            grep -o '<version>[^<]*</version>' | \\
+            sed 's/<version>\\(.*\\)<\\/version>/\\1/' | \\
+            grep '^${normalizedVersionPattern}\\.' | \\
+            sort -V | \\
+            tail -1
+        else
+            echo "\${metadata}" | \\
+            sed -n 's:.*<latest>\\([^<]*\\)</latest>.*:\\1:p' | \\
+            head -1
+        fi
     """
 
     def version = sh(script: versionCmd, returnStdout: true).trim()
