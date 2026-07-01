@@ -294,7 +294,7 @@ def getLatestVersionFromNexus(groupId, artifactId, versionPattern) {
         fi
 
         # If no version pattern is provided, defaults to '.' so grep below behaves as passthrough.
-        version_filter='${normalizedVersionPattern:-.}'
+        version_filter="${normalizedVersionPattern ?: '.'}"
         echo "\${metadata}" | \\
         grep -o '<version>[^<]*</version>' | \\
         sed 's/<version>\\(.*\\)<\\/version>/\\1/' | \\
