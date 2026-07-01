@@ -293,6 +293,7 @@ def getLatestVersionFromNexus(groupId, artifactId, versionPattern) {
             exit 0
         fi
 
+        # If no version pattern is provided, defaults to '.' so grep below behaves as passthrough.
         version_filter='${normalizedVersionPattern:-.}'
         echo "\${metadata}" | \\
         grep -o '<version>[^<]*</version>' | \\
@@ -365,7 +366,7 @@ def testDockerImage(product, productVersion, registry, targetOs) {
         // Remove any existing container with the same name to prevent conflicts
         def containerName = "${product}-${targetOs}"
         sh "docker rm -f ${containerName} 2>/dev/null || true"
-        
+
         // Run Docker container
         def status = sh(script: config.dockerCmd, returnStatus: true)
 
