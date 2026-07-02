@@ -80,11 +80,19 @@ pipeline {
                 // Clean old workspace
                 step([$class: 'WsCleanup'])
 
-                // Checkout from specified branch
-                checkout([$class: 'GitSCM',
-                    branches: [[name: "*/${params.branch}"]],
-                    userRemoteConfigs: scm.userRemoteConfigs
-                ])
+                // Use the PR ref Jenkins resolved for PR jobs; otherwise honor the selected branch.
+                script {
+                    def checkoutBranches = env.CHANGE_ID ? scm.branches : [[name: "*/${params.branch}"]]
+
+                    checkout([$class: 'GitSCM',
+                        branches: checkoutBranches,
+                        userRemoteConfigs: scm.userRemoteConfigs,
+                        extensions: [
+                            [$class: 'CleanCheckout'],
+                            [$class: 'CloneOption', depth: 0, noTags: false, shallow: false]
+                        ]
+                    ])
+                }
 
                 // Clean docker images including volumes
                 sh '''
@@ -401,8 +409,9 @@ def testDockerImage(product, productVersion, registry, targetOs) {
 
             // Check if service is accessible
             if (retryCount == 0) {
+                sh "docker rm -f ${containerName} 2>/dev/null || true"
                 currentBuild.result = 'FAILURE'
-                error("Service is not accessible in container: ${registry}/${product}:${productVersion}-${targetOs}")
+                error("Service is not accessible in container after ${totalWaitTime} seconds: ${registry}/${product}:${productVersion}-${targetOs}")
             }
         }
     }
