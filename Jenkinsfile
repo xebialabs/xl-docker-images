@@ -80,11 +80,19 @@ pipeline {
                 // Clean old workspace
                 step([$class: 'WsCleanup'])
 
-                // Checkout from specified branch
-                checkout([$class: 'GitSCM',
-                    branches: [[name: "*/${params.branch}"]],
-                    userRemoteConfigs: scm.userRemoteConfigs
-                ])
+                // Use the PR ref Jenkins resolved for PR jobs; otherwise honor the selected branch.
+                script {
+                    def checkoutBranches = env.CHANGE_ID ? scm.branches : [[name: "*/${params.branch}"]]
+
+                    checkout([$class: 'GitSCM',
+                        branches: checkoutBranches,
+                        userRemoteConfigs: scm.userRemoteConfigs,
+                        extensions: [
+                            [$class: 'CleanCheckout'],
+                            [$class: 'CloneOption', depth: 0, noTags: false, shallow: false]
+                        ]
+                    ])
+                }
 
                 // Clean docker images including volumes
                 sh '''
@@ -94,6 +102,7 @@ pipeline {
                 '''
 
                 // install pipenv and needed dependencies
+                sh 'pipenv --rm || true'
                 sh 'pipenv install'
 
                 // Rendering and Committing changes
@@ -281,17 +290,23 @@ def getVersionForNexusSearch(targetBranch) {
 * Fetches the latest version from Nexus for given groupId, artifactId, and optional version pattern.
 */
 def getLatestVersionFromNexus(groupId, artifactId, versionPattern) {
-    def searchUrl = "https://nexus.xebialabs.com/nexus/service/local/lucene/search?g=${groupId}&a=${artifactId}"
-
-    if (versionPattern) {
-        searchUrl += "&v=${versionPattern}*"
-        echo "Searching for versions matching: ${versionPattern}.*"
-    }
+    def groupPath = groupId.replace('.', '/')
+    def normalizedVersionPattern = versionPattern ?: ''
+    def metadataUrl = "https://nexus.xebialabs.com/nexus/service/local/repositories/releases/content/${groupPath}/${artifactId}/maven-metadata.xml"
 
     def versionCmd = """
-        curl -su \${NEXUS_CRED} '${searchUrl}' 2>/dev/null | \\
+        metadata=\$(curl -su \${NEXUS_CRED} '${metadataUrl}' 2>/dev/null)
+
+        if [ -z "\${metadata}" ]; then
+            exit 0
+        fi
+
+        # If no version pattern is provided, defaults to '.' so grep below behaves as passthrough.
+        version_filter="${normalizedVersionPattern ?: '.'}"
+        echo "\${metadata}" | \\
         grep -o '<version>[^<]*</version>' | \\
         sed 's/<version>\\(.*\\)<\\/version>/\\1/' | \\
+        grep "^\${version_filter}" | \\
         sort -V | \\
         tail -1
     """
@@ -359,7 +374,7 @@ def testDockerImage(product, productVersion, registry, targetOs) {
         // Remove any existing container with the same name to prevent conflicts
         def containerName = "${product}-${targetOs}"
         sh "docker rm -f ${containerName} 2>/dev/null || true"
-        
+
         // Run Docker container
         def status = sh(script: config.dockerCmd, returnStatus: true)
 
@@ -394,8 +409,9 @@ def testDockerImage(product, productVersion, registry, targetOs) {
 
             // Check if service is accessible
             if (retryCount == 0) {
+                sh "docker rm -f ${containerName} 2>/dev/null || true"
                 currentBuild.result = 'FAILURE'
-                error("Service is not accessible in container: ${registry}/${product}:${productVersion}-${targetOs}")
+                error("Service is not accessible in container after ${totalWaitTime} seconds: ${registry}/${product}:${productVersion}-${targetOs}")
             }
         }
     }
