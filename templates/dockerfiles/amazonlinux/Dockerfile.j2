@@ -24,7 +24,11 @@ FROM amazonlinux:2
 
 # Install dependencies
 RUN yum update -y && \
+{% if xl_version.startswith('26.3') and image_version.endswith('-jdk25') %}
+    yum install -y java-25-amazon-corretto curl jq shadow-utils.x86_64 hostname unzip which telnet && \
+{% else %}
     yum install -y java-21-amazon-corretto curl jq shadow-utils.x86_64 hostname unzip which telnet && \
+{% endif %}
     yum clean all -q
 
 # Copy installed {{ product_name }}
