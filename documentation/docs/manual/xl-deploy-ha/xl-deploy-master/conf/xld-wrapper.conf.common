@@ -34,18 +34,15 @@ wrapper.java.app.relativize_classapth=true
 wrapper.java.additional.1=-Dlogback.config=conf/logback.xml
 wrapper.java.additional.2=-Dderby.stream.error.file=log/derby.log
 
-wrapper.java.additional.3=-Djava.security.manager=java.lang.SecurityManager
-wrapper.java.additional.4=-Djava.security.policy=conf/xl-deploy.policy
+wrapper.java.additional.3=-XX:+UseParallelGC
 
-wrapper.java.additional.5=-XX:+UseParallelGC
-
+wrapper.java.additional.4=-XX:+UseContainerSupport
+wrapper.java.additional.5=-XX:MaxRAMFraction=2
+wrapper.java.additional.6=-Dcom.sun.management.jmxremote
+wrapper.java.additional.7=-Dcom.sun.management.jmxremote.authenticate=false
+wrapper.java.additional.8=-Dcom.sun.management.jmxremote.ssl=false
+wrapper.java.additional.9=-Dcom.sun.management.jmxremote.port=9011
+wrapper.java.additional.10=-Dcom.sun.management.jmxremote.rmi.port=9011
+wrapper.java.additional.11=-javaagent:lib/jmx_prometheus_javaagent.jar=9100:conf/jmx-exporter.yaml
 # Uncomment the line below when enabling JMX monitoring (deploy.jmx.enabled) to capture performance metrics on the task engine.
-#wrapper.java.additional.7=-javaagent:lib/aspectjweaver-1.9.6.jar
-wrapper.java.additional.6=-XX:+UseContainerSupport
-wrapper.java.additional.7=-XX:MaxRAMFraction=2
-wrapper.java.additional.8=-Dcom.sun.management.jmxremote
-wrapper.java.additional.9=-Dcom.sun.management.jmxremote.authenticate=false
-wrapper.java.additional.10=-Dcom.sun.management.jmxremote.ssl=false
-wrapper.java.additional.11=-Dcom.sun.management.jmxremote.port=9011
-wrapper.java.additional.12=-Dcom.sun.management.jmxremote.rmi.port=9011
-wrapper.java.additional.13=-javaagent:lib/jmx_prometheus_javaagent.jar=9100:conf/jmx-exporter.yaml
+#wrapper.java.additional.12=-javaagent:lib/aspectjweaver-1.9.6.jar
