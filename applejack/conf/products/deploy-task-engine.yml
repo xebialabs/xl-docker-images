@@ -41,7 +41,7 @@ context:
     - key: APP_PORT
       value: 4516
     - key: XL_DB_URL
-      value: "jdbc:derby:repository/db;create=true"
+      value: "jdbc:h2:file:repository/db"
     - key: XLD_TASK_QUEUE_NAME
       value: "xld-tasks-queue"
     - key: XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE
