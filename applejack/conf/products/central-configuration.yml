@@ -47,7 +47,7 @@ context:
     - key: XL_CLUSTER_MODE
       value: default
     - key: XL_DB_URL
-      value: "jdbc:h2:file:repository/db"
+      value: "jdbc:h2:file:${APP_HOME}/repository/db;DB_CLOSE_DELAY=-1"
     - key: XL_DB_USERNAME
       value: sa
     - key: XL_DB_PASSWORD
@@ -55,7 +55,7 @@ context:
     - key: XL_DB_MAX_POOL_SIZE
       value: 10
     - key: XL_REPORT_DB_URL
-      value: "jdbc:h2:file:repository/db-report"
+      value: "jdbc:h2:file:${APP_HOME}/repository/db-report;DB_CLOSE_DELAY=-1"
     - key: XL_REPORT_DB_USERNAME
       value: sa
     - key: XL_REPORT_DB_PASSWORD
