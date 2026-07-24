@@ -41,7 +41,7 @@ context:
     - key: APP_PORT
       value: 4516
     - key: XL_DB_URL
-      value: "jdbc:h2:file:repository/db"
+      value: "jdbc:h2:file:${APP_HOME}/repository/db;DB_CLOSE_DELAY=-1"
     - key: XLD_TASK_QUEUE_NAME
       value: "xld-tasks-queue"
     - key: XLD_TASK_QUEUE_IN_PROCESS_MAX_DISK_USAGE
