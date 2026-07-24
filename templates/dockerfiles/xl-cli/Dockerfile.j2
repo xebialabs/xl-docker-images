@@ -41,7 +41,11 @@ RUN apk add --no-cache curl && \
     kubectl version --client --output=yaml
 
 # Install keytool
+{% if xl_version.startswith('26.3') and image_version.endswith('-jdk25') %}
+RUN apk add --no-cache openjdk25-jre-headless ca-certificates
+{% else %}
 RUN apk add --no-cache openjdk21-jre-headless ca-certificates
+{% endif %}
 
 # Install yq
 RUN apk add --no-cache yq && \
