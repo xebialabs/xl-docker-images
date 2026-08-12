@@ -1,4 +1,8 @@
+{% if xl_version.startswith('26.3') and image_version.endswith('-jdk25') %}
+FROM registry.access.redhat.com/ubi9/openjdk-25-runtime:latest as installer
+{% else %}
 FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:latest as installer
+{% endif %}
 
 # Install dependencies
 USER root
@@ -18,7 +22,11 @@ RUN microdnf update -y && rm -rf /var/cache/yum && \
     {% include 'install.j2' %}
 {% endif %}
 
+{% if xl_version.startswith('26.3') and image_version.endswith('-jdk25') %}
+FROM registry.access.redhat.com/ubi9/openjdk-25-runtime:latest
+{% else %}
 FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:latest
+{% endif %}
 
 {% include 'metadata.j2' %}
 

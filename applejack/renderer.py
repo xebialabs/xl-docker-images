@@ -47,7 +47,8 @@ class Renderer(object):
     def __copy_render_resources(self, source_dir, product_conf, target_os):
         template_path = Path('templates') / 'resources'
         source_path = template_path / source_dir
-        dest_path = target_path(product_conf['name'], self.version) / 'resources'
+        # Use the suffixed image version only for the 26.3-specific separate image variant.
+        dest_path = target_path(product_conf['name'], self.image_version) / 'resources'
         if not dest_path.is_dir():
             dest_path.mkdir()
         for p in sorted(source_path.rglob('*')):
@@ -71,7 +72,8 @@ class Renderer(object):
                 p.copy(dest_path / relative)
 
     def __get_target_path(self, target_os, product_name):
-        target_path = dockerfile_path(self.version, target_os, product_name)
+        # Use the suffixed image version only for the 26.3-specific separate image variant.
+        target_path = dockerfile_path(self.image_version, target_os, product_name)
         if not target_path.exists():
             target_path.mkdir(parents=True)
         return target_path
