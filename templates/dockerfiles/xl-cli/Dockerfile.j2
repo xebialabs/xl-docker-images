@@ -1,4 +1,4 @@
-FROM alpine:3.23 as installer
+FROM alpine:3.24 as installer
 
 # Install dependencies
 RUN apk update
@@ -22,7 +22,7 @@ RUN mkdir -p ${XL_OP_BLUEPRINTS_HOME} && \
     chgrp -R 0 ${XL_OP_BLUEPRINTS_HOME} && \
     chmod -R g=u ${XL_OP_BLUEPRINTS_HOME}
 
-FROM alpine:3.23
+FROM alpine:3.24
 
 {% include 'metadata.j2' %}
 
