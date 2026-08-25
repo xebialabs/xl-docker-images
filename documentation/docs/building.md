@@ -38,6 +38,27 @@ If you want to push Docker image while building you need to use `--push` and `--
 $ ./applejack.py build --xl-version <version> --target-os centos --push --registry xebialabs
 ```
 
+### Building Java 21 and Java 25 variants with `build_image.sh`
+
+The helper script `build_image.sh` supports building Java-specific image variants by passing one of these environment variables:
+
+- `JAVA_VERSION`: single Java major (`21` or `25`)
+- `JAVA_VERSIONS`: list of Java majors (`21,25` or `21 25`)
+
+When Java versions are provided, `build_image.sh` uses `--suffix jdk<version>` during render/build and pushes tags like `<version>-jdk21-<os>` and `<version>-jdk25-<os>` (including `-slim` variants).
+
+Examples:
+
+```shell
+# Build Java 21 only
+RELEASE_EXPLICIT=26.3.0 JAVA_VERSION=21 NEXUS_USERNAME=<username> NEXUS_PASSWORD=<password> \
+  ./build_image.sh xl-release
+
+# Build both Java 21 and Java 25
+RELEASE_EXPLICIT=26.3.0 JAVA_VERSIONS=21,25 NEXUS_USERNAME=<username> NEXUS_PASSWORD=<password> \
+  ./build_image.sh xl-release
+```
+
 ### Building an image for an alpha version of XL Deploy or XL Release
 Alpha versions are not released to Distribution site hence you will need to get those versions from nexus by specifying `--download-source`, see the following command:
 ```shell

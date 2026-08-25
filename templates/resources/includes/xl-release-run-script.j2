@@ -72,7 +72,7 @@ fi
 # Set up new installation for security.properties
 if [ ! -f "${APP_HOME}/conf/security.properties" ]; then
   echo "No ${APP_HOME}/conf/security.properties file detected:"
-  
+
   echo "... Generating {{ boot_conf }}"
 
   sed -e "s#\${NETWORK_ADDRESS_CACHE_TTL}#${NETWORK_ADDRESS_CACHE_TTL}#g" \
@@ -213,6 +213,9 @@ case ${OS} in
     ;;
 esac
 
-if [[ ${GENERATE_XL_CONFIG,,} == "true" ]]; then
+JAVA_VERSION_MAJOR=$(java -version 2>&1 | awk -F[\".] '/version/ {print $2}')
+if [[ "$JAVA_VERSION_MAJOR" =~ ^[0-9]+$ ]] && (( JAVA_VERSION_MAJOR >= 25 )); then
+    rm -f ${APP_HOME}/conf/script.policy ${APP_HOME}/conf/xl-release.policy
+elif [[ ${GENERATE_XL_CONFIG,,} == "true" ]]; then
     sed "s#\${JAVA_CERT_PATH}#${JAVA_CERT_PATH}#g" ${APP_HOME}/default-conf/script.policy.template > ${APP_HOME}/conf/script.policy
 fi
