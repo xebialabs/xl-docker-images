@@ -34,7 +34,7 @@ match($0, /^(wrapper.java.classpath).([0-9]+)=(.*)$/, a) {
   next;
 }
 
-{% if xl_version.startswith('26.3') and image_version.endswith('-jdk25') %}
+{% if xl_version.startswith('27.1') and image_version.endswith('-jdk25') %}
 # Remove Security Manager JVM option (not supported on JDK 25+)
 /^(wrapper.java.additional).([0-9]+)=-Djava.security.manager=.*$/ {
   additionals = additionals - 1

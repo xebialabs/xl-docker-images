@@ -51,7 +51,7 @@ Examples:
     $0 xl-deploy
 
   # Build Java 21 and Java 25 image variants
-  RELEASE_EXPLICIT=26.3.0 JAVA_VERSIONS=21,25 NEXUS_USERNAME=user NEXUS_PASSWORD=pass \
+  RELEASE_EXPLICIT=27.1.0 JAVA_VERSIONS=21,25 NEXUS_USERNAME=user NEXUS_PASSWORD=pass \
     $0 xl-release
 EOF
 }

@@ -12,7 +12,7 @@ RUN apk add --no-cache gawk unzip curl busybox-extras
     {% include 'install.j2' %}
 {% endif %}
 
-{% if xl_version.startswith('26.3') and image_version.endswith('-jdk25') %}
+{% if xl_version.startswith('27.1') and image_version.endswith('-jdk25') %}
 FROM openjdk:25-jdk-slim-bullseye
 {% else %}
 FROM openjdk:21-jdk-slim-bullseye

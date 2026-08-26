@@ -51,11 +51,11 @@ Examples:
 
 ```shell
 # Build Java 21 only
-RELEASE_EXPLICIT=26.3.0 JAVA_VERSION=21 NEXUS_USERNAME=<username> NEXUS_PASSWORD=<password> \
+RELEASE_EXPLICIT=27.1.0 JAVA_VERSION=21 NEXUS_USERNAME=<username> NEXUS_PASSWORD=<password> \
   ./build_image.sh xl-release
 
 # Build both Java 21 and Java 25
-RELEASE_EXPLICIT=26.3.0 JAVA_VERSIONS=21,25 NEXUS_USERNAME=<username> NEXUS_PASSWORD=<password> \
+RELEASE_EXPLICIT=27.1.0 JAVA_VERSIONS=21,25 NEXUS_USERNAME=<username> NEXUS_PASSWORD=<password> \
   ./build_image.sh xl-release
 ```
 
