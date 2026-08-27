@@ -22,10 +22,10 @@ curl https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/${MSSQL_V
 echo "Downloading MQ drivers to ${APP_ROOT}/mq-libs"
 mkdir ${APP_ROOT}/mq-libs
 
-RABBIT_MQ_AMQP_VERSION="5.21.0"
-RABBIT_MQ_JMS_VERSION="3.2.0"
+RABBIT_MQ_AMQP_VERSION="5.35.0"
+RABBIT_MQ_JMS_VERSION="3.9.0"
 {%- if not is_slim %}
-ACTIVE_MQ_VERSION="5.18.4"
+ACTIVE_MQ_VERSION="6.1.0"
 {%- endif %}
 
 curl https://repo1.maven.org/maven2/com/rabbitmq/amqp-client/${RABBIT_MQ_AMQP_VERSION}/amqp-client-${RABBIT_MQ_AMQP_VERSION}.jar -o ${APP_ROOT}/mq-libs/amqp-client-${RABBIT_MQ_AMQP_VERSION}.jar -f
@@ -40,7 +40,7 @@ curl https://repo1.maven.org/maven2/org/apache/activemq/activemq-client-jakarta/
 echo "Downloading extra libs to ${APP_ROOT}/extra-libs"
 mkdir ${APP_ROOT}/extra-libs
 
-AWS_SDK_VERSION="2.31.9"
+AWS_SDK_VERSION="2.54.4"
 
 curl https://repo1.maven.org/maven2/software/amazon/awssdk/sts/${AWS_SDK_VERSION}/sts-${AWS_SDK_VERSION}.jar -o ${APP_ROOT}/extra-libs/sts-${AWS_SDK_VERSION}.jar -f
 {%- endif %}
