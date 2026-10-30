@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-POSTGRESQL_VERSION="42.7.13"
+POSTGRESQL_VERSION="42.7.14"
 {%- if not is_slim %}
-MYSQL_VERSION="26.7.0"
-H2_VERSION="2.4.240"
-MSSQL_VERSION="13.4.0.jre11"
+MYSQL_VERSION="26.10.0"
+H2_VERSION="2.5.252"
+MSSQL_VERSION="13.6.1.jre11"
 {%- endif %}
 
 echo "Downloading DB drivers to ${APP_ROOT}/db-libs"
@@ -22,7 +22,7 @@ curl https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/${MSSQL_V
 echo "Downloading MQ drivers to ${APP_ROOT}/mq-libs"
 mkdir ${APP_ROOT}/mq-libs
 
-RABBIT_MQ_AMQP_VERSION="5.35.0"
+RABBIT_MQ_AMQP_VERSION="5.37.0"
 RABBIT_MQ_JMS_VERSION="3.9.0"
 {%- if not is_slim %}
 ACTIVE_MQ_VERSION="6.1.0"

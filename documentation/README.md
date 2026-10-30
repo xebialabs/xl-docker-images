@@ -4,9 +4,14 @@ This website is built using [Docusaurus 2](https://docusaurus.io/), a modern sta
 
 ### Installation
 
+From the `documentation` directory:
+
+```shell
+yarn install --frozen-lockfile  # Install without changing yarn.lock
+yarn install                    # Update yarn.lock after package.json changes
 ```
-$ yarn
-```
+
+Always preserve `package.json`.
 
 ### Local Development
 
