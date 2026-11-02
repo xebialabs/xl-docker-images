@@ -22,7 +22,7 @@ RUN microdnf install --enablerepo=rhel-7-server-rpms --nodocs unzip gawk java-17
 
 ### Install JQ
 RUN JQ_LOCATION="/usr/bin/jq" && \
-    curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
+    curl https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-linux-amd64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION
 
 {% if 'deploy-task-engine' in product %}
     {% include './deploy-task-engine/install.j2' %}
