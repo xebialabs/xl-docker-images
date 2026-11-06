@@ -78,7 +78,7 @@ $ ./applejack.py build --xl-version <version> --download-source=localm2 # looks 
 
 $ ./applejack.py build --xl-version <version> --download-source=localm2 --m2location=/tmp/foo/m2/repo
 ```
-This relies on `./applejack/conf/products/*.yml` each having a key `repositories.localm2` (sibling to `repositories.nexus` and `repositories.dist`) with a value specifying a relative path inside the repository (e.g. 'com/xebialabs/deployit/xl-deploy-base/{version}/{product}-base-{version}-server.zip')
+This relies on `./applejack/conf/products/*.yml` each having a key `repositories.localm2` (sibling to `repositories.nexus` and `repositories.dist`) with a value specifying a relative path inside the repository (e.g. `com/xebialabs/deployit/xl-deploy-base/{version}/{product}-base-{version}-server.zip`)
 
 For building an image for one specific product only, you can also just point to the specific zipfile to use:
 ```shell
