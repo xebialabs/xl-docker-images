@@ -40,7 +40,7 @@ curl https://repo1.maven.org/maven2/org/apache/activemq/activemq-client/${ACTIVE
 echo "Downloading extra libs to ${APP_ROOT}/extra-libs"
 mkdir ${APP_ROOT}/extra-libs
 
-AWS_SDK_VERSION="2.54.4"
+AWS_SDK_VERSION="2.55.9"
 
 curl https://repo1.maven.org/maven2/software/amazon/awssdk/sts/${AWS_SDK_VERSION}/sts-${AWS_SDK_VERSION}.jar -o ${APP_ROOT}/extra-libs/sts-${AWS_SDK_VERSION}.jar -f
 {%- endif %}
