@@ -1,12 +1,17 @@
 # Website
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+This website is built using [Docusaurus 3](https://docusaurus.io/), a modern static website generator.
 
 ### Installation
 
+Use Node.js 24 LTS and Yarn Classic 1.22.22. From this directory:
+
+```shell
+yarn install --frozen-lockfile  # Install without changing yarn.lock
+yarn install                    # Update yarn.lock after package.json changes
 ```
-$ yarn
-```
+
+Always preserve `package.json`.
 
 ### Local Development
 

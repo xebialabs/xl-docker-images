@@ -1,5 +1,4 @@
-const lightCodeTheme = require('prism-react-renderer/themes/github');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const {themes} = require('prism-react-renderer');
 
 module.exports = {
   title: 'DevOps Platform Docker Images',
@@ -7,7 +6,11 @@ module.exports = {
   url: 'https://xebialabs.github.io',
   baseUrl: '/xl-docker-images/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
   favicon: 'img/digital_ai_deploy.svg',
   organizationName: 'Digital.ai',
   projectName: 'xl-docker-images',
@@ -53,8 +56,9 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} DevOps Platform Docker Images Digital.ai`,
     },
     prism: {
-      theme: lightCodeTheme,
-      darkTheme: darkCodeTheme,
+      theme: themes.github,
+      darkTheme: themes.dracula,
+      additionalLanguages: ['bash', 'yaml'],
     },
   },
   presets: [
