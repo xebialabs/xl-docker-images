@@ -7,7 +7,7 @@ RUN microdnf update -y && rm -rf /var/cache/yum && \
    microdnf install -y --nodocs ${INSTALL_PKGS} && \
    ### Install JQ
    JQ_LOCATION="/usr/bin/jq" && \
-   curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
+   curl https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-linux-amd64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
    microdnf clean all
 
 {% if 'deploy-task-engine' in product %}
@@ -41,7 +41,7 @@ RUN microdnf update -y && rm -rf /var/cache/yum && \
    INSTALL_PKGS="curl-minimal hostname shadow-utils which unzip nc" && \
    microdnf install -y --nodocs ${INSTALL_PKGS} && \
    JQ_LOCATION="/usr/bin/jq" && \
-   curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
+   curl https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-linux-amd64 -L > $JQ_LOCATION && chmod +x $JQ_LOCATION && \
    microdnf clean all
 
 {% include 'runtime.j2' %}
